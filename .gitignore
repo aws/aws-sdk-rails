@@ -2,5 +2,6 @@
 .yardoc
 *.gem
 coverage
+doc
 Gemfile.lock
 vendor

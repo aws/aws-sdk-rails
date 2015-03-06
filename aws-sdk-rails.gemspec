@@ -11,7 +11,8 @@ Gem::Specification.new do |spec|
   spec.license       = "Apache 2.0"
 
   spec.require_paths = ["lib"]
-  spec.files         += Dir['lib/**/*.rb']
+  spec.files         += Dir['lib/**/*.rb', 'lib/aws-sdk-rails.rb']
 
-  spec.add_dependency('aws-sdk', '~> 2.0.0')
+  spec.add_dependency('aws-sdk-resources', '~> 2')
+  spec.add_dependency('rails', '>= 3')
 end
