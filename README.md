@@ -23,7 +23,12 @@ for using Amazon Simple Email Service as a delivery method for ActionMailer:
     creds = JSON.load(File.read('secrets.json'))
     creds = Aws::Credentials.new(creds['AccessKeyId'], creds['SecretAccessKey'])
     Aws::Rails.add_action_mailer_delivery_method(:aws_sdk, credentials: creds, region: 'us-east-1')
-    
+
+## AWS SDK for Ruby Logging Uses the Rails Logger
+
+Automatically, the AWS SDK for Ruby will be configured to use the built-in Rails
+logger for any SDK log output.
+
 ## Using Amazon SES as an ActionMailer Delivery Method
 
 The gem will set this up automatically, with an example of doing this manually
