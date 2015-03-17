@@ -18,7 +18,7 @@ task 'release:check' => [
   'git:require-clean-workspace',
 ]
 
-# builds release artificats
+# builds release artifacts
 task 'release:build' => [
   'changelog:version',
   'release:bump-version',
@@ -26,7 +26,7 @@ task 'release:build' => [
   'gems:build'
 ]
 
-# deploys release artificats
+# deploys release artifacts
 task 'release:publish' => [
   'release:require-version',
   'git:push',
