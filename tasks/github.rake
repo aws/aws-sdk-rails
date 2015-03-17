@@ -13,7 +13,7 @@ task 'github:release' do
 
   gh = Octokit::Client.new(access_token: ENV['AWS_SDK_FOR_RUBY_GH_TOKEN'])
 
-  repo = 'aws/aws-sdk-ruby'
+  repo = 'aws/aws-sdk-rails'
   tag_ref_sha = `git show-ref v#{$VERSION}`.split(' ').first
   tag = gh.tag(repo, tag_ref_sha)
 
