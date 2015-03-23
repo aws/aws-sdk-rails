@@ -36,6 +36,6 @@ above. With the delivery method in place, you simply need to configure Rails
 to use SES as a delivery method in your environment configuration:
 
     # for e.g.: RAILS_ROOT/config/environments/production.rb
-    config.action_mailer.delivery_methods = :aws_sdk
+    config.action_mailer.delivery_method = :aws_sdk
 
 With this in place, the AWS SDK's SES client will be used by ActionMailer.
