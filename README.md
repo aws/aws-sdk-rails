@@ -28,6 +28,11 @@ creds = Aws::Credentials.new(creds['AccessKeyId'], creds['SecretAccessKey'])
 Aws::Rails.add_action_mailer_delivery_method(:aws_sdk, credentials: creds, region: 'us-east-1')
 ```
 
+If you're running your Ruby on Rails application on Amazon Elastic Compute
+Cloud, keep in mind that the AWS SDK for Ruby will automatically check Amazon
+EC2 instance metadata for credentials. Learn more:
+[IAM Roles for Amazon EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
+
 ## AWS SDK for Ruby Logging Uses the Rails Logger
 
 Automatically, the AWS SDK for Ruby will be configured to use the built-in Rails
