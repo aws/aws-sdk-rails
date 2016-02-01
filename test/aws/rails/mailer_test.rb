@@ -26,7 +26,7 @@ module Aws
       def test_deliver
         message = sample_message
         resp = @mailer.deliver!(message)
-        assert_equal resp.context.params[:raw_message][:data].string, message.to_s
+        assert_equal resp.context.params[:raw_message][:data].to_s, message.to_s
         assert_equal resp.context.params[:destinations], message.destinations
       end
 
