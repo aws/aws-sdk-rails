@@ -1,4 +1,4 @@
-Unreleased Changes
+1.0.1 (2016-02-01)
 ------------------
 
 * Feature - Gemfile - Replaced `rails` gem dependency with `railties`
