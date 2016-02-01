@@ -1,5 +1,7 @@
 # AWS SDK for Ruby Rails Plugin
 
+[![Build Status](https://travis-ci.org/aws/aws-sdk-rails.png?branch=master)](https://travis-ci.org/aws/aws-sdk-rails) [![Code Climate](https://codeclimate.com/github/aws/aws-sdk-rails.png)](https://codeclimate.com/github/aws/aws-sdk-rails)
+
 A Ruby on Rails plugin that integrates AWS services with your Rails application
 using the AWS SDK for Ruby Version 2.
 
