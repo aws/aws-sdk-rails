@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["alexwood@amazon.com"]
   spec.summary       = "AWS SDK for Ruby Rails Plugin"
   spec.description   = "Provides helpers to integrate the AWS SDK for Ruby with Ruby on Rails."
-  spec.homepage      = "http://github.com/awslabs/aws-sdk-rails"
+  spec.homepage      = "https://github.com/aws/aws-sdk-rails"
   spec.license       = "Apache 2.0"
 
   spec.require_paths = ["lib"]
