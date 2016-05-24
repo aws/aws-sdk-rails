@@ -27,7 +27,7 @@ require 'json'
 # Because you're never going to commit credentials to source. Please.
 creds = JSON.load(File.read('secrets.json'))
 creds = Aws::Credentials.new(creds['AccessKeyId'], creds['SecretAccessKey'])
-Aws::Rails.add_action_mailer_delivery_method(:aws_sdk, credentials: creds, region: 'us-east-1')
+ActionMailer::Base.add_delivery_method :aws_sdk, Aws::SES::Client.new(region: 'us-east-1', credentials: creds)
 ```
 
 If you're running your Ruby on Rails application on Amazon Elastic Compute
