@@ -3,7 +3,7 @@ module Aws
 
     # Provides a delivery method for ActionMailer that uses Amazon Simple Email
     # Service.
-    # 
+    #
     # Once you have an SES delivery method you can configure Rails to
     # use this for ActionMailer in your environment configuration
     # (e.g. RAILS_ROOT/config/environments/production.rb)
@@ -31,7 +31,9 @@ module Aws
           send_opts[:destinations] = message.destinations
         end
 
-        @client.send_raw_email(send_opts)
+        result = @client.send_raw_email(send_opts)
+        message.message_id = "<#{result.message_id}@email.amazonses.com>"
+        result
 
       end
 
