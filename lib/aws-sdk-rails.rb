@@ -7,7 +7,7 @@ module Aws
 
     # @api private
     class Railtie < ::Rails::Railtie
-      initializer "aws-sdk-rails.initialize" do |app|
+      initializer "aws-sdk-rails.initialize", before: :load_config_initializers do |app|
         # Initialization Actions
         Aws::Rails.add_action_mailer_delivery_method
         Aws::Rails.log_to_rails_logger
