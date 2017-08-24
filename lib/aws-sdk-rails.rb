@@ -1,9 +1,7 @@
-require 'aws-sdk-resources'
+require_relative 'aws/rails/mailer'
 
 module Aws
   module Rails
-
-    autoload :Mailer, 'aws/rails/mailer'
 
     # @api private
     class Railtie < ::Rails::Railtie
