@@ -1,3 +1,5 @@
+require 'aws-sdk-ses'
+
 module Aws
   module Rails
 
