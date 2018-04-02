@@ -22,9 +22,19 @@ for details. If you need to provide your own credentials, you can call
 client-creating actions manually. For example, to provide your own credentials
 for using Amazon Simple Email Service as a delivery method for ActionMailer:
 
+RAILS_ROOT/secrets.json
+```json
+{
+	"AccessKeyId":"your-access-key-id",
+	"SecretAccessKey":"your-secret-access-key"
+}
+```
+
+
+RAILS_ROOT/config/initializers/aws-sdk.rb
 ```ruby
 require 'json'
-# Because you're never going to commit credentials to source. Please.
+# Because you're never going to commit credentials to source. Please add it in .gitignore.
 creds = JSON.load(File.read('secrets.json'))
 creds = Aws::Credentials.new(creds['AccessKeyId'], creds['SecretAccessKey'])
 Aws::Rails.add_action_mailer_delivery_method(:aws_sdk, credentials: creds, region: 'us-east-1')
