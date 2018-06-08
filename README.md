@@ -20,14 +20,40 @@ You will have to ensure that you provide credentials for the SDK to use. See the
 [AWS SDK for Ruby V2 Docs](http://docs.aws.amazon.com/sdkforruby/api/index.html#Credentials)
 for details. If you need to provide your own credentials, you can call
 client-creating actions manually. For example, to provide your own credentials
-for using Amazon Simple Email Service as a delivery method for ActionMailer:
+and make Amazon Simple Email Service available as a delivery method for
+ActionMailer, you can create an initializer `RAILS_ROOT/config/initializers/aws_sdk.rb`
+with contents similar to the following:
 
 ```ruby
 require 'json'
-# Because you're never going to commit credentials to source. Please.
-creds = JSON.load(File.read('secrets.json'))
-creds = Aws::Credentials.new(creds['AccessKeyId'], creds['SecretAccessKey'])
+
+# Assuming a file "path/to/aws_secrets.json" with contents like:
+#
+#     { "AccessKeyId": "YOUR_KEY_ID", "SecretAccessKey": "YOUR_ACCESS_KEY" }
+#
+# Remember to exclude "path/to/aws_secrets.json" from version control, e.g. by
+# adding it to .gitignore
+secrets = JSON.load(File.read('path/to/aws_secrets.json'))
+
+creds = Aws::Credentials.new(secrets['AccessKeyId'], secrets['SecretAccessKey'])
 Aws::Rails.add_action_mailer_delivery_method(:aws_sdk, credentials: creds, region: 'us-east-1')
+```
+
+Or, if you are storing your AWS keys using Rails 5.2's [Encrypted
+Credentials](http://guides.rubyonrails.org/security.html#custom-credentials),
+use the following initializer code instead:
+
+```ruby
+# Assuming an encrypted credentials file with decrypted contents like:
+#
+#     aws:
+#       access_key_id: YOUR_KEY_ID
+#       secret_access_key: YOUR_ACCESS_KEY
+#
+keys = Rails.application.credentials[:aws]
+
+creds = Aws::Credentials.new(keys[:access_key_id], keys[:secret_access_key])
+Aws::Rails.add_action_mailer_delivery_method(:aws_sdk, credentials: creds, region: "us-east-1")
 ```
 
 If you're running your Ruby on Rails application on Amazon Elastic Compute
