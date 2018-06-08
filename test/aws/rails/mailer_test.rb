@@ -26,7 +26,14 @@ module Aws
       def test_deliver
         message = sample_message
         resp = @mailer.deliver!(message)
-        assert_equal resp.context.params[:raw_message][:data].to_s, message.to_s
+
+        # over ride message-id by ses
+        message_id = resp.context.params[:raw_message][:data].to_s.match(/Message-ID: <(.*)>/)[1]
+        message_text = resp.context.params[:raw_message][:data].to_s.sub(
+          message_id,
+          "#{resp.message_id}@email.amazonses.com"
+        )
+        assert_equal message_text, message.to_s
         assert_equal resp.context.params[:destinations], message.destinations
       end
 
