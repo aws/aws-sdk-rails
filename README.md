@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/aws/aws-sdk-rails.png?branch=master)](https://travis-ci.org/aws/aws-sdk-rails) [![Code Climate](https://codeclimate.com/github/aws/aws-sdk-rails.png)](https://codeclimate.com/github/aws/aws-sdk-rails)
 
 A Ruby on Rails plugin that integrates AWS services with your Rails application
-using the AWS SDK for Ruby Version 2.
+using the AWS SDK for Ruby Version 3.
 
 ## Usage
 
@@ -14,10 +14,17 @@ be added to your Rails environment:
 gem 'aws-sdk-rails'
 ```
 
-This dependency will automatically pull in version 2 of the AWS SDK for Ruby.
+This dependency will automatically pull the core gem for version 3 of the AWS SDK for Ruby. It
+also brings in the `aws-sdk-ses` and `aws-sdk-sts` gems. You will still need to add other
+service gems you need to your Gemfile. For example:
+
+```ruby
+gem 'aws-sdk-rails', '~> 2'
+gem 'aws-sdk-s3', '~> 1'
+```
 
 You will have to ensure that you provide credentials for the SDK to use. See the
-[AWS SDK for Ruby V2 Docs](http://docs.aws.amazon.com/sdkforruby/api/index.html#Credentials)
+[AWS SDK for Ruby V3 Docs](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/index.html#Configuration)
 for details. If you need to provide your own credentials, you can call
 client-creating actions manually. For example, to provide your own credentials
 and make Amazon Simple Email Service available as a delivery method for
