@@ -1,4 +1,4 @@
-require 'aws-sdk-pinpoint'
+require 'aws-sdk-pinpointemail'
 
 module Aws
   module Rails
