@@ -3,10 +3,10 @@ require 'mail'
 
 module Aws
   module Rails
-    class MailerTest < Minitest::Test
+    class AwsSdkTest < Minitest::Test
 
       def setup
-        @mailer = Mailer.new(stub_responses: true)
+        @mailer = AwsSdk.new(stub_responses: true)
       end
 
       def sample_message
