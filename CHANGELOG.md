@@ -1,3 +1,16 @@
+
+## [Unreleased]
+------------------
+### Added
+* Added support for email delivery using AWS Pinpoint.
+* Added `aws-sdk-pinpointemail` as a dependency
+
+### Changed
+* Updated references and links to the appropriate v3 documentation
+
+### Deprecated
+* In order to better support different mail services, deprecate `:aws_sdk` for `:ses_mailer` and `:pinpoint_mailer`.
+
 2.0.1 (2017-10-03)
 ------------------
 

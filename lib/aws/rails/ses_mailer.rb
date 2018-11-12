@@ -10,14 +10,14 @@ module Aws
     # use this for ActionMailer in your environment configuration
     # (e.g. RAILS_ROOT/config/environments/production.rb)
     #
-    #     config.action_mailer.delivery_method = :aws_sdk
+    #     config.action_mailer.delivery_method = :ses_mailer
     #
-    # Uses the AWS SDK for Ruby V2's credential provider chain when creating an
+    # Uses the AWS SDK for Ruby V3's credential provider chain when creating an
     # SES client instance.
-    class Mailer
+    class SesMailer
 
       # @param [Hash] options Passes along initialization options to
-      #   [Aws::SES::Client.new](http://docs.aws.amazon.com/sdkforruby/api/Aws/SES/Client.html#initialize-instance_method).
+      #   [Aws::SES::Client.new](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#initialize-instance_method).
       def initialize(options = {})
         @client = SES::Client.new(options)
       end
