@@ -33,8 +33,9 @@ module Aws
           send_opts[:destinations] = message.destinations
         end
 
-        @client.send_raw_email(send_opts)
-
+        @client.send_raw_email(send_opts).tap do |response|
+          message.header[:ses_message_id] = response.message_id
+        end
       end
 
       # ActionMailer expects this method to be present and to return a hash.

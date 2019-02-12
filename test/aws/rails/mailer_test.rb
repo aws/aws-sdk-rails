@@ -6,7 +6,17 @@ module Aws
     class MailerTest < Minitest::Test
 
       def setup
-        @mailer = Mailer.new(stub_responses: true)
+        @mailer = Mailer.new(
+          stub_responses: {
+            send_raw_email: {
+              message_id: message_id
+            }
+          }
+        )
+      end
+
+      def message_id
+        '0000000000000000-1111111-2222-3333-4444-555555555555-666666'
       end
 
       def sample_message
@@ -25,9 +35,11 @@ module Aws
 
       def test_deliver
         message = sample_message
-        resp = @mailer.deliver!(message)
-        assert_equal resp.context.params[:raw_message][:data].to_s, message.to_s
-        assert_equal resp.context.params[:destinations], message.destinations
+        data = @mailer.deliver!(message).context.params
+        body = data[:raw_message][:data].to_s
+        body.gsub!("\r\nHallo", "ses-message-id: #{message_id}\r\n\r\nHallo")
+        assert_equal body, message.to_s
+        assert_equal data[:destinations], message.destinations
       end
 
     end
