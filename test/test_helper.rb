@@ -6,13 +6,13 @@ require 'minitest/autorun'
 class TestMailer < ActionMailer::Base
   layout nil
 
-  def deliverable(body:, from:, subject:, to:)
+  def deliverable(options = {})
     mail(
-      body: body,
+      body: options[:body],
       delivery_method: :aws_sdk,
-      from: from,
-      subject: subject,
-      to: to
+      from: options[:from],
+      subject: options[:subject],
+      to: options[:to]
     )
   end
 end
