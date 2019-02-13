@@ -4,28 +4,32 @@ require 'mail'
 module Aws
   module Rails
     class MailerTest < Minitest::Test
-
       def setup
-        @mailer = Mailer.new(
-          stub_responses: {
-            send_raw_email: {
-              message_id: message_id
-            }
-          }
-        )
+        @mailer = Mailer.new(client_options)
+        ActionMailer::Base.add_delivery_method(:aws_sdk, Mailer, client_options)
       end
 
-      def message_id
+      def client_options
+        {
+          stub_responses: {
+            send_raw_email: {
+              message_id: ses_message_id
+            }
+          }
+        }
+      end
+
+      def ses_message_id
         '0000000000000000-1111111-2222-3333-4444-555555555555-666666'
       end
 
       def sample_message
-        Mail.new do
-          from    'sender@example.com'
-          to      'recipient@example.com'
-          subject 'This is a test'
-          body    'Hallo'
-        end
+        TestMailer.deliverable(
+          body: 'Hallo',
+          from: 'sender@example.com',
+          subject: 'This is a test',
+          to: 'recipient@example.com'
+        )
       end
 
       def test_settings_method
@@ -35,13 +39,17 @@ module Aws
 
       def test_deliver
         message = sample_message
-        data = @mailer.deliver!(message).context.params
-        body = data[:raw_message][:data].to_s
-        body.gsub!("\r\nHallo", "ses-message-id: #{message_id}\r\n\r\nHallo")
-        assert_equal body, message.to_s
-        assert_equal data[:destinations], message.destinations
+        mailer_data = @mailer.deliver!(message).context.params
+        raw = mailer_data[:raw_message][:data].to_s
+        raw.gsub!("\r\nHallo", "ses-message-id: #{ses_message_id}\r\n\r\nHallo")
+        assert_equal raw, message.to_s
+        assert_equal mailer_data[:destinations], message.destinations
       end
 
+      def test_deliver_with_action_mailer
+        message = sample_message.deliver_now
+        assert_equal ses_message_id, message.header[:ses_message_id].value
+      end
     end
   end
 end
