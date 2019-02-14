@@ -1,3 +1,8 @@
+Unreleased Changes
+------------------
+
+* Feature - Aws::Rails::Mailer - Adds the Amazon SES message ID as a header to raw emails after sending, for tracking purposes. See [related GitHub pull request #25](https://github.com/aws/aws-sdk-rails/pull/25).
+
 2.0.1 (2017-10-03)
 ------------------
 
