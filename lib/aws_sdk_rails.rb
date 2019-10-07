@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 require_relative 'aws/rails/mailer'
 
 module Aws
+  # Use the Rails namespace.
   module Rails
-
     # @api private
     class Railtie < ::Rails::Railtie
-      initializer "aws-sdk-rails.initialize", before: :load_config_initializers do |app|
+      initializer 'aws_sdk_rails.initialize',
+                  before: :load_config_initializers do
         # Initialization Actions
         Aws::Rails.use_rails_encrypted_credentials
         Aws::Rails.add_action_mailer_delivery_method
@@ -28,7 +31,7 @@ module Aws
     #   Aws::SES::Client initialization method.
     def self.add_action_mailer_delivery_method(name = :aws_sdk, options = {})
       ActiveSupport.on_load(:action_mailer) do
-        self.add_delivery_method(name, Aws::Rails::Mailer, options)
+        add_delivery_method(name, Aws::Rails::Mailer, options)
       end
     end
 
@@ -37,7 +40,5 @@ module Aws
       Aws.config[:logger] = ::Rails.logger
       nil
     end
-
   end
 end
-

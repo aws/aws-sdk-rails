@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails/railtie'
 require 'action_mailer'
-require 'aws-sdk-rails'
+require 'aws_sdk_rails'
 require 'minitest/autorun'
 
 class TestMailer < ActionMailer::Base

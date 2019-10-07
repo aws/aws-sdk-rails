@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 task 'git:require-clean-workspace' do
   # Ensure the git repo is free of unstaged or untracked files prior
   # to building / testing / pushing a release.
@@ -13,8 +15,9 @@ task 'git:tag' do
 end
 
 task 'git:tag_message' do
-  issues = `git log $(git describe --tags --abbrev=0)...HEAD -E --grep '#[0-9]+' 2>/dev/null`
-  issues = issues.scan(/((?:\S+\/\S+)?#\d+)/).flatten
+  issues = `git log $(git describe --tags --abbrev=0)...HEAD -E \
+            --grep '#[0-9]+' 2>/dev/null`
+  issues = issues.scan(%r{((?:\S+/\S+)?#\d+)}).flatten
   msg = "Tag release v#{$VERSION}"
   msg << "\n\n"
   unless issues.empty?

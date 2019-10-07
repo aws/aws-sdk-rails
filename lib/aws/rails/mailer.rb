@@ -1,21 +1,21 @@
+# frozen_string_literal: true
+
 require 'aws-sdk-ses'
 
 module Aws
   module Rails
-
     # Provides a delivery method for ActionMailer that uses Amazon Simple Email
     # Service.
-    # 
+    #
     # Once you have an SES delivery method you can configure Rails to
     # use this for ActionMailer in your environment configuration
     # (e.g. RAILS_ROOT/config/environments/production.rb)
     #
     #     config.action_mailer.delivery_method = :aws_sdk
     #
-    # Uses the AWS SDK for Ruby V2's credential provider chain when creating an
+    # Uses the AWS SDK for Ruby V3's credential provider chain when creating an
     # SES client instance.
     class Mailer
-
       # @param [Hash] options Passes along initialization options to
       #   [Aws::SES::Client.new](http://docs.aws.amazon.com/sdkforruby/api/Aws/SES/Client.html#initialize-instance_method).
       def initialize(options = {})
@@ -42,7 +42,6 @@ module Aws
       def settings
         {}
       end
-
     end
   end
 end
