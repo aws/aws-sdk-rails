@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Drop support for Ruby < 2.4 and Rails < 5.2.
+
 2.1.0 (2019-02-14)
 ------------------
 
