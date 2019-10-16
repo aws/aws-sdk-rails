@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails/railtie'
-require 'action_mailer'
+require 'rails/all'
 require 'aws_sdk_rails'
 require 'minitest/autorun'
 
@@ -12,6 +11,7 @@ module Dummy
     config.root = File.join(__dir__, 'dummy')
     config.load_defaults Rails::VERSION::STRING.to_f
     config.eager_load = false
+    config.require_master_key = true
   end
 end
 
