@@ -14,5 +14,7 @@ Gem::Specification.new do |spec|
   spec.files         += Dir['lib/**/*.rb', 'lib/aws-sdk-rails.rb']
 
   spec.add_dependency('aws-sdk-ses', '~> 1')
-  spec.add_dependency('railties', '>= 3')
+  spec.add_dependency('railties', '>= 5.2')
+
+  spec.add_development_dependency('rails')
 end
