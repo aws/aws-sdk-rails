@@ -7,9 +7,15 @@ module Aws
     class Railtie < ::Rails::Railtie
       initializer "aws-sdk-rails.initialize", before: :load_config_initializers do |app|
         # Initialization Actions
+        Aws::Rails.use_rails_encrypted_credentials
         Aws::Rails.add_action_mailer_delivery_method
         Aws::Rails.log_to_rails_logger
       end
+    end
+
+    # Configures the AWS SDK with credentials from Rails encrypted credentials
+    def self.use_rails_encrypted_credentials
+      Aws.config.merge!(Rails.application.try(:credentials).try(:aws).to_h)
     end
 
     # This is called automatically from the SDK's Railtie, but if you want to
