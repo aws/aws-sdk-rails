@@ -1,7 +1,10 @@
 .bundle
 .yardoc
 *.gem
+*.gemfile.lock
 coverage
 doc
 Gemfile.lock
+test/dummy/log/
+test/dummy/tmp/
 vendor

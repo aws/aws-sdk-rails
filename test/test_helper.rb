@@ -5,16 +5,14 @@ require 'action_mailer'
 require 'aws_sdk_rails'
 require 'minitest/autorun'
 
-class TestMailer < ActionMailer::Base
-  layout nil
+ENV['RAILS_ENV'] = 'test'
 
-  def deliverable(options = {})
-    mail(
-      body: options[:body],
-      delivery_method: :aws_sdk,
-      from: options[:from],
-      subject: options[:subject],
-      to: options[:to]
-    )
+module Dummy
+  class Application < Rails::Application
+    config.root = File.join(__dir__, 'dummy')
+    config.load_defaults Rails::VERSION::STRING.to_f
+    config.eager_load = false
   end
 end
+
+Rails.application.initialize!
