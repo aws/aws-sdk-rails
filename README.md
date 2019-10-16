@@ -43,7 +43,7 @@ require 'json'
 secrets = JSON.load(File.read('path/to/aws_secrets.json'))
 
 creds = Aws::Credentials.new(secrets['AccessKeyId'], secrets['SecretAccessKey'])
-Aws::Rails.add_action_mailer_delivery_method(:aws_sdk, credentials: creds, region: 'us-east-1')
+Aws::Rails.add_action_mailer_delivery_method(:ses, credentials: creds, region: 'us-east-1')
 ```
 
 Or, if you are storing your AWS keys using Rails 5.2's [Encrypted
@@ -60,7 +60,7 @@ use the following initializer code instead:
 keys = Rails.application.credentials[:aws]
 
 creds = Aws::Credentials.new(keys[:access_key_id], keys[:secret_access_key])
-Aws::Rails.add_action_mailer_delivery_method(:aws_sdk, credentials: creds, region: "us-east-1")
+Aws::Rails.add_action_mailer_delivery_method(:ses, credentials: creds, region: "us-east-1")
 ```
 
 If you're running your Ruby on Rails application on Amazon Elastic Compute
@@ -81,7 +81,7 @@ to use SES as a delivery method in your environment configuration:
 
 ```ruby
 # for e.g.: RAILS_ROOT/config/environments/production.rb
-config.action_mailer.delivery_method = :aws_sdk
+config.action_mailer.delivery_method = :ses
 ```
 
 With this in place, the AWS SDK's SES client will be used by ActionMailer.

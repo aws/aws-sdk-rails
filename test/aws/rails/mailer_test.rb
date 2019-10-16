@@ -9,7 +9,7 @@ class TestMailer < ActionMailer::Base
   def deliverable(options = {})
     mail(
       body: options[:body],
-      delivery_method: :aws_sdk,
+      delivery_method: :ses,
       from: options[:from],
       subject: options[:subject],
       to: options[:to]
@@ -22,7 +22,7 @@ module Aws
     class MailerTest < Minitest::Test
       def setup
         @mailer = Mailer.new(client_options)
-        ActionMailer::Base.add_delivery_method(:aws_sdk, Mailer, client_options)
+        ActionMailer::Base.add_delivery_method(:ses, Mailer, client_options)
       end
 
       def client_options

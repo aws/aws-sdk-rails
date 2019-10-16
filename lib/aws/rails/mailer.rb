@@ -11,7 +11,7 @@ module Aws
     # use this for ActionMailer in your environment configuration
     # (e.g. RAILS_ROOT/config/environments/production.rb)
     #
-    #     config.action_mailer.delivery_method = :aws_sdk
+    #     config.action_mailer.delivery_method = :ses
     #
     # Uses the AWS SDK for Ruby V3's credential provider chain when creating an
     # SES client instance.

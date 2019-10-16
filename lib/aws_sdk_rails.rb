@@ -29,7 +29,7 @@ module Aws
     #   register.
     # @param [Hash] options The options you wish to pass on to the
     #   Aws::SES::Client initialization method.
-    def self.add_action_mailer_delivery_method(name = :aws_sdk, options = {})
+    def self.add_action_mailer_delivery_method(name = :ses, options = {})
       ActiveSupport.on_load(:action_mailer) do
         add_delivery_method(name, Aws::Rails::Mailer, options)
       end

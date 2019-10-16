@@ -7,7 +7,7 @@ module Aws
     class RailtieTest < Minitest::Test
       def test_adds_action_mailer_delivery_method
         assert_equal ::Aws::Rails::Mailer,
-                     ::ActionMailer::Base.delivery_methods[:aws_sdk]
+                     ::ActionMailer::Base.delivery_methods[:ses]
       end
 
       def test_configures_aws_sdk_logger
