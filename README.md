@@ -8,7 +8,7 @@ Climate](https://codeclimate.com/github/aws/aws-sdk-rails.png)](https://codeclim
 A Ruby on Rails plugin that integrates AWS services with your application using
 the latest version of [AWS SDK For Ruby](https://github.com/aws/aws-sdk-ruby).
 
-## Usage
+## Installation
 
 Add this gem to your Rails project's Gemfile:
 
@@ -30,7 +30,32 @@ latest [AWS SDK for Ruby
 Docs](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/index.html#Configuration)
 for details.
 
-## Use Amazon Simple Email Service (SES) as an ActionMailer Delivery Method
+If you're running your Rails application on Amazon EC2, keep in mind that the
+AWS SDK will automatically check Amazon EC2 instance metadata for credentials.
+Learn more: [IAM Roles for Amazon
+EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
+
+## AWS SDK uses the Rails logger
+
+The AWS SDK is automatically configured to use the built-in Rails logger for any
+SDK log output.
+
+## Supports Rails 5.2+ Encrypted Credentials
+
+If you are using Rails 5.2+ [Encrypted
+Credentials](http://guides.rubyonrails.org/security.html#custom-credentials),
+the credentials will be automatically loaded assuming the decrypted contents
+are provided as such:
+
+```yml
+# config/credentials.yml.enc
+# viewable with: `rails credentials:edit`
+aws:
+  access_key_id: YOUR_KEY_ID
+  secret_access_key: YOUR_ACCESS_KEY
+```
+
+## Amazon Simple Email Service (SES) as an ActionMailer Delivery Method
 
 This gem will automatically register SES as an ActionMailer delivery method. You
 simply need to configure Rails to use it in your environment configuration:
@@ -40,16 +65,11 @@ simply need to configure Rails to use it in your environment configuration:
 config.action_mailer.delivery_method = :ses
 ```
 
-## AWS SDK uses the Rails logger
+## Overriding credentials manually
 
-The AWS SDK is automatically configured to use the built-in Rails logger for any
-SDK log output.
-
-## Providing your own credentials manually
-
-If you need to provide your own credentials, you can call client-creating
+If you need to override default credentials, you can call client-creating
 actions manually. For example, you can create an initializer
-`config/initializers/aws_sdk.rb` with contents similar to the following:
+`config/initializers/aws.rb` with contents similar to the following:
 
 ```ruby
 require 'json'
@@ -70,9 +90,8 @@ Aws::Rails.add_action_mailer_delivery_method(
 )
 ```
 
-Or, if you are storing your AWS keys using Rails 5.2's [Encrypted
-Credentials](http://guides.rubyonrails.org/security.html#custom-credentials),
-use the following initializer code instead:
+Or, if you are using Rails 5.2's Encrypted Credentials, use the following
+initializer code instead:
 
 ```ruby
 # Assuming an encrypted credentials file with decrypted contents like:
@@ -81,7 +100,7 @@ use the following initializer code instead:
 #       access_key_id: YOUR_KEY_ID
 #       secret_access_key: YOUR_ACCESS_KEY
 #
-keys = Rails.application.credentials[:aws]
+keys = Rails.application.credentials.aws
 creds = Aws::Credentials.new(keys[:access_key_id], keys[:secret_access_key])
 
 Aws::Rails.add_action_mailer_delivery_method(
@@ -90,8 +109,3 @@ Aws::Rails.add_action_mailer_delivery_method(
   region: 'us-east-1'
 )
 ```
-
-If you're running your Rails application on Amazon EC2, keep in mind that the
-AWS SDK for Ruby will automatically check Amazon EC2 instance metadata for
-credentials. Learn more: [IAM Roles for Amazon
-EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
