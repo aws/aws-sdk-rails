@@ -1,6 +1,13 @@
 Unreleased Changes
 ------------------
 
+* Upgrading - Adds support for Rails Encrypted Credentials, requiring Rails 5.2+
+and thus needed a new major version. Consequently drops support for Ruby < 2.3
+and for Rails < 5.2. Delivery method configuration changed from `:aws_sdk` to
+`:ses`, to allow for future delivery methods. Adds rubocop to the package and
+fixed many violations. This test framework now includes a dummy application for
+testing future features.
+
 2.1.0 (2019-02-14)
 ------------------
 
