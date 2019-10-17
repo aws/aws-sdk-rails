@@ -1,6 +1,7 @@
 language: ruby
 
 rvm:
+  - 2.3
   - 2.4
   - 2.5
   - 2.6
@@ -11,12 +12,16 @@ gemfile:
   - gemfiles/rails-6.0.gemfile
   - gemfiles/rails-master.gemfile
 
-matrix:
+jobs:
   allow_failures:
     - gemfile: gemfiles/rails-master.gemfile
   exclude:
     - gemfile: gemfiles/rails-master.gemfile
+      rvm: 2.3
+    - gemfile: gemfiles/rails-master.gemfile
       rvm: 2.4
+    - gemfile: gemfiles/rails-6.0.gemfile
+      rvm: 2.3
     - gemfile: gemfiles/rails-6.0.gemfile
       rvm: 2.4
 

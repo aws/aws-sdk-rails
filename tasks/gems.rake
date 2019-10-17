@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 desc 'Builds the aws-sdk-rails gem'
 task 'gems:build' do
-  sh("rm -f *.gem")
-  sh("gem build aws-sdk-rails.gemspec")
+  sh('rm -f *.gem')
+  sh('gem build aws-sdk-rails.gemspec')
 end
 
 task 'gems:push' do

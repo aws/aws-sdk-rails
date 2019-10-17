@@ -1,0 +1,10 @@
+# Exclude test gemfiles from snake_case enforcement.
+Naming/FileName:
+  Exclude:
+    - 'gemfiles/*.gemfile'
+
+# Allow the $VERSION global variable.
+# Ideally we shouldn't use any global variables, but here we are.
+Style/GlobalVars:
+  AllowedVariables:
+    - $VERSION
