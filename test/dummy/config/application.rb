@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'rails/all'
+require 'aws_sdk_rails'
+
 module Dummy
   class Application < Rails::Application
     config.load_defaults Rails::VERSION::STRING.to_f

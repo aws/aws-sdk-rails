@@ -65,10 +65,10 @@ simply need to configure Rails to use it in your environment configuration:
 config.action_mailer.delivery_method = :ses
 ```
 
-## Overriding credentials manually
+## Manually setting Action Mailer credentials
 
-If you need to override default credentials, you can call client-creating
-actions manually. For example, you can create an initializer
+If you need to provide different credentials for Action Mailer, you can call
+client-creating actions manually. For example, you can create an initializer
 `config/initializers/aws.rb` with contents similar to the following:
 
 ```ruby
@@ -82,26 +82,6 @@ require 'json'
 # adding it to .gitignore
 secrets = JSON.load(File.read('path/to/aws_secrets.json'))
 creds = Aws::Credentials.new(secrets['AccessKeyId'], secrets['SecretAccessKey'])
-
-Aws::Rails.add_action_mailer_delivery_method(
-  :ses,
-  credentials: creds,
-  region: 'us-east-1'
-)
-```
-
-Or, if you are using Rails 5.2's Encrypted Credentials, use the following
-initializer code instead:
-
-```ruby
-# Assuming an encrypted credentials file with decrypted contents like:
-#
-#     aws:
-#       access_key_id: YOUR_KEY_ID
-#       secret_access_key: YOUR_ACCESS_KEY
-#
-keys = Rails.application.credentials.aws
-creds = Aws::Credentials.new(keys[:access_key_id], keys[:secret_access_key])
 
 Aws::Rails.add_action_mailer_delivery_method(
   :ses,
