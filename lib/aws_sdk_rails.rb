@@ -10,9 +10,9 @@ module Aws
       initializer 'aws_sdk_rails.initialize',
                   before: :load_config_initializers do
         # Initialization Actions
+        Aws::Rails.use_rails_encrypted_credentials
         Aws::Rails.add_action_mailer_delivery_method
         Aws::Rails.log_to_rails_logger
-        Aws::Rails.use_rails_encrypted_credentials
       end
     end
 

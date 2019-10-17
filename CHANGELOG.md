@@ -33,7 +33,8 @@ the `aws-sdk-ses` dependency.
   dependency. With this change, applications that bring their own dependencies
   in place of, for example, ActiveRecord, can do so with reduced bloat.
 
-  See [related GitHub pull request #4](https://github.com/aws/aws-sdk-rails/pull/4).
+  See [related GitHub pull request
+  #4](https://github.com/aws/aws-sdk-rails/pull/4).
 
 1.0.0 (2015-03-17)
 ------------------
