@@ -1,4 +1,4 @@
-Unreleased Changes
+3.0.5 (2019-10-17)
 ------------------
 
 * Upgrading - Adds support for Rails Encrypted Credentials, requiring Rails 5.2+
