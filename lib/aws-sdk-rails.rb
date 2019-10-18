@@ -7,7 +7,7 @@ module Aws
   module Rails
     # @api private
     class Railtie < ::Rails::Railtie
-      initializer 'aws_sdk_rails.initialize',
+      initializer 'aws-sdk-rails.initialize',
                   before: :load_config_initializers do
         # Initialization Actions
         Aws::Rails.use_rails_encrypted_credentials
