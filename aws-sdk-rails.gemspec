@@ -10,10 +10,10 @@ Gem::Specification.new do |spec|
   spec.summary       = 'AWS SDK for Ruby on Rails Plugin'
   spec.description   = 'Integrates the AWS Ruby SDK with Ruby on Rails'
   spec.homepage      = 'https://github.com/aws/aws-sdk-rails'
-  spec.license       = 'Apache 2.0'
+  spec.license       = 'Apache-2.0'
 
   spec.require_paths = ['lib']
-  spec.files += Dir['lib/**/*.rb', 'lib/aws_sdk_rails.rb']
+  spec.files += Dir['lib/**/*.rb', 'lib/aws-sdk-rails.rb']
 
   spec.add_dependency('aws-sdk-ses', '~> 1')
   spec.add_dependency('railties', '>= 5.2.0')

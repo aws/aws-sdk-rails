@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails/all'
-require 'aws_sdk_rails'
+require 'aws-sdk-rails'
 
 module Dummy
   class Application < Rails::Application
