@@ -18,7 +18,7 @@ task 'git:tag_message' do
   issues = `git log $(git describe --tags --abbrev=0)...HEAD -E \
             --grep '#[0-9]+' 2>/dev/null`
   issues = issues.scan(%r{((?:\S+/\S+)?#\d+)}).flatten
-  msg = "Tag release v#{$VERSION}"
+  msg = +"Tag release v#{$VERSION}"
   msg << "\n\n"
   unless issues.empty?
     msg << "References: #{issues.uniq.sort.join(', ')}"
