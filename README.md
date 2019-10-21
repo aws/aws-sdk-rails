@@ -35,12 +35,20 @@ AWS SDK will automatically check Amazon EC2 instance metadata for credentials.
 Learn more: [IAM Roles for Amazon
 EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
 
+# Features
+
 ## AWS SDK uses the Rails logger
 
 The AWS SDK is automatically configured to use the built-in Rails logger for any
-SDK log output.
+SDK log output. The logger is configured to use the `:info` log level. You can
+change the log level by setting `:log_level` in the
+[Aws.config](https://docs.aws.amazon.com/sdkforruby/api/Aws.html) hash.
 
-## Supports Rails 5.2+ Encrypted Credentials
+```ruby
+Aws.config.update(log_level: :debug)
+```
+
+## Rails 5.2+ Encrypted Credentials
 
 If you are using Rails 5.2+ [Encrypted
 Credentials](http://guides.rubyonrails.org/security.html#custom-credentials),
@@ -64,6 +72,8 @@ simply need to configure Rails to use it in your environment configuration:
 # for e.g.: config/environments/production.rb
 config.action_mailer.delivery_method = :ses
 ```
+
+# Other Usage
 
 ## Manually setting Action Mailer credentials
 
