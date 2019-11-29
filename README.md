@@ -21,7 +21,7 @@ gems. If you want to use other services (such as S3), you will still need to add
 them to your Gemfile:
 
 ```ruby
-gem 'aws-sdk-rails', '~> 2'
+gem 'aws-sdk-rails', '~> 3'
 gem 'aws-sdk-s3', '~> 1'
 ```
 
@@ -42,7 +42,7 @@ EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2
 The AWS SDK is automatically configured to use the built-in Rails logger for any
 SDK log output. The logger is configured to use the `:info` log level. You can
 change the log level by setting `:log_level` in the
-[Aws.config](https://docs.aws.amazon.com/sdkforruby/api/Aws.html) hash.
+[Aws.config](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws.html) hash.
 
 ```ruby
 Aws.config.update(log_level: :debug)

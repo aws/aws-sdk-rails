@@ -17,7 +17,7 @@ module Aws
     # client instance.
     class Mailer
       # @param [Hash] options Passes along initialization options to
-      #   [Aws::SES::Client.new](http://docs.aws.amazon.com/sdkforruby/api/Aws/SES/Client.html#initialize-instance_method).
+      #   [Aws::SES::Client.new](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#initialize-instance_method).
       def initialize(options = {})
         @client = SES::Client.new(options)
       end
