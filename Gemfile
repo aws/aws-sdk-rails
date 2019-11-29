@@ -9,7 +9,7 @@ group :development do
 end
 
 group :docs do
-  gem 'rdiscount'
+  gem 'kramdown'
   gem 'yard'
 end
 
