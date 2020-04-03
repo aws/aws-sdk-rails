@@ -18,6 +18,9 @@ module Aws
         creds = ::Rails.application.credentials.aws
         assert_equal Aws.config[:access_key_id], creds[:access_key_id]
         assert_equal Aws.config[:secret_access_key], creds[:secret_access_key]
+
+        refute_nil creds[:non_credential_key]
+        assert_nil Aws.config[:non_credential_key]
       end
     end
   end

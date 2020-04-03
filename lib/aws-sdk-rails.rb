@@ -37,7 +37,14 @@ module Aws
 
     # Configures the AWS SDK with credentials from Rails encrypted credentials.
     def self.use_rails_encrypted_credentials
-      Aws.config.merge!(::Rails.application.try(:credentials).try(:aws).to_h)
+      # limit the config keys we merge to credentials only
+      aws_credential_keys = %i[access_key_id secret_access_key session_token credentials]
+      Aws.config.merge!(
+        ::Rails.application
+        .try(:credentials)
+        .try(:aws)
+        .to_h.slice(*aws_credential_keys)
+      )
     end
   end
 end
