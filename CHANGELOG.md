@@ -1,4 +1,4 @@
-Unreleased Changes
+3.1.0 (2020-04-06)
 ------------------
 * Issue - Merge only credential related keys from Rails encrypted credentials
 into `Aws.config`.
