@@ -1,2 +1,4 @@
+--title 'AWS SDK Rails'
+--template-path doc-src/templates
 --plugin sitemap
 --hide-api private
