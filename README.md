@@ -16,9 +16,9 @@ Add this gem to your Rails project's Gemfile:
 gem 'aws-sdk-rails'
 ```
 
-This gem also brings in the `aws-sdk-core`, `aws-sdk-sts`, and `aws-sdk-ses`
-gems. If you want to use other services (such as S3), you will still need to add
-them to your Gemfile:
+This gem also brings in the `aws-sdk-core` and `aws-sdk-ses` gems. If you want
+to use other services (such as S3), you will still need to add them to your
+Gemfile:
 
 ```ruby
 gem 'aws-sdk-rails', '~> 3'
@@ -26,14 +26,12 @@ gem 'aws-sdk-s3', '~> 1'
 ```
 
 You will have to ensure that you provide credentials for the SDK to use. See the
-latest [AWS SDK for Ruby
-Docs](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/index.html#Configuration)
+latest [AWS SDK for Ruby Docs](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/index.html#Configuration)
 for details.
 
-If you're running your Rails application on Amazon EC2, keep in mind that the
-AWS SDK will automatically check Amazon EC2 instance metadata for credentials.
-Learn more: [IAM Roles for Amazon
-EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
+If you're running your Rails application on Amazon EC2, the AWS SDK will
+automatically check Amazon EC2 instance metadata for credentials. Learn more:
+[IAM Roles for Amazon EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
 
 # Features
 
@@ -98,4 +96,26 @@ Aws::Rails.add_action_mailer_delivery_method(
   credentials: creds,
   region: 'us-east-1'
 )
+```
+
+## Using ARNs with SES
+
+This gem uses [`Aws::SES::Client#send_raw_email`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#send_raw_email-instance_method)
+to send emails. This operation allows you to specify a cross-account identity
+for the email's Source, From, and Return-Path. To set these ARNs, use any of the
+following headers on your `Mail::Message` object returned by your Mailer class:
+
+* X-SES-SOURCE-ARN
+
+* X-SES-FROM-ARN
+
+* X-SES-RETURN-PATH-ARN
+
+Example:
+
+```
+# in your Rails controller
+message = MyMailer.send_email(options)
+message['X-SES-FROM-ARN'] = 'arn:aws:ses:us-west-2:012345678910:identity/bigchungus@memes.com'
+message.deliver
 ```
