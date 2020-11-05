@@ -1,0 +1,363 @@
+TestMailer#deliverable: processed outbound mail in 4.4ms
+[Aws::SES::Client 200 0.002235 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 15:52:04 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d041430269_40373fe112c3c02011967@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 1.6ms
+[Aws::SES::Client 200 0.001068 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 15:52:04 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d041436978_40373fe112c3c020120fe@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5e8d041436978_40373fe112c3c020120fe@f45c89a5782f.ant.amazon.com.mail (8.2ms)
+Date: Tue, 07 Apr 2020 15:52:04 -0700
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5e8d041436978_40373fe112c3c020120fe@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 4.7ms
+[Aws::SES::Client 200 0.000671 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 15:52:54 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d0446fcfb_40dd3fd21943c00811930@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5e8d0446fcfb_40dd3fd21943c00811930@f45c89a5782f.ant.amazon.com.mail (22.9ms)
+Date: Tue, 07 Apr 2020 15:52:54 -0700
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5e8d0446fcfb_40dd3fd21943c00811930@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 2.1ms
+[Aws::SES::Client 200 0.000567 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 15:52:54 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d044614dbe_40dd3fd21943c0081201f@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 4.9ms
+[Aws::SES::Client 200 0.000781 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 15:53:33 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d046d6a4b7_41b73fdb5c03c01093fb@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5e8d046d6a4b7_41b73fdb5c03c01093fb@f45c89a5782f.ant.amazon.com.mail (27.0ms)
+Date: Tue, 07 Apr 2020 15:53:33 -0700
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5e8d046d6a4b7_41b73fdb5c03c01093fb@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 3.3ms
+[Aws::SES::Client 200 0.002016 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 15:53:33 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d046d70df3_41b73fdb5c03c010949e@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 4.5ms
+[Aws::SES::Client 200 0.001447 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 16:10:21 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d085dc93cf_6cea3ff96b02bfd0663@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5e8d085dc93cf_6cea3ff96b02bfd0663@f45c89a5782f.ant.amazon.com.mail (26.0ms)
+Date: Tue, 07 Apr 2020 16:10:21 -0700
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5e8d085dc93cf_6cea3ff96b02bfd0663@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 1.6ms
+[Aws::SES::Client 200 0.000773 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 16:10:21 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d085dcec9e_6cea3ff96b02bfd067ec@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 3.4ms
+[Aws::SES::Client 200 0.001523 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 16:10:47 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d08772f776_6d553fe21f02bfd4167ab@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 1.4ms
+[Aws::SES::Client 200 0.000434 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 16:10:47 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d087734be6_6d553fe21f02bfd416894@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5e8d087734be6_6d553fe21f02bfd416894@f45c89a5782f.ant.amazon.com.mail (4.1ms)
+Date: Tue, 07 Apr 2020 16:10:47 -0700
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5e8d087734be6_6d553fe21f02bfd416894@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 3.9ms
+[Aws::SES::Client 200 0.003617 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 16:16:31 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d09cf35dab_74953ffc98420020320bc@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 1.4ms
+[Aws::SES::Client 200 0.00085 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 16:16:31 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d09cf3c16d_74953ffc9842002032193@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5e8d09cf3c16d_74953ffc9842002032193@f45c89a5782f.ant.amazon.com.mail (5.2ms)
+Date: Tue, 07 Apr 2020 16:16:31 -0700
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5e8d09cf3c16d_74953ffc9842002032193@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 6.0ms
+[Aws::SES::Client 200 0.001139 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 16:20:09 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d0aa9d52e6_794c3ff1adc30008573a7@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 1.4ms
+[Aws::SES::Client 200 0.00104 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 16:20:09 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d0aa9d8598_794c3ff1adc30008574f4@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5e8d0aa9d8598_794c3ff1adc30008574f4@f45c89a5782f.ant.amazon.com.mail (6.9ms)
+Date: Tue, 07 Apr 2020 16:20:09 -0700
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5e8d0aa9d8598_794c3ff1adc30008574f4@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 17.2ms
+[Aws::SES::Client 200 0.000672 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 16:21:56 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d0b14d8253_7f593fee4f43a00872461@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 1.4ms
+[Aws::SES::Client 200 0.000474 0 retries] send_raw_email(raw_message:{data:"Date: Tue, 07 Apr 2020 16:21:56 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8d0b14db09b_7f593fee4f43a00872541@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5e8d0b14db09b_7f593fee4f43a00872541@f45c89a5782f.ant.amazon.com.mail (5.0ms)
+Date: Tue, 07 Apr 2020 16:21:56 -0700
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5e8d0b14db09b_7f593fee4f43a00872541@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 5.1ms
+[Aws::SES::Client 200 0.002967 0 retries] send_raw_email(raw_message:{data:"Date: Wed, 08 Apr 2020 13:06:04 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8e2eac42bf4_17d3a3ff387c2e0108753f@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 1.5ms
+[Aws::SES::Client 200 0.001529 0 retries] send_raw_email(raw_message:{data:"Date: Wed, 08 Apr 2020 13:06:04 -0700\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5e8e2eac48571_17d3a3ff387c2e01087659@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5e8e2eac48571_17d3a3ff387c2e01087659@f45c89a5782f.ant.amazon.com.mail (7.6ms)
+Date: Wed, 08 Apr 2020 13:06:04 -0700
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5e8e2eac48571_17d3a3ff387c2e01087659@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 5.8ms
+[Aws::SES::Client 200 0.00237 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:09:47 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa4863b5ccc1_11f1f3ff8dfc12010616e5@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 4.6ms
+[Aws::SES::Client 200 0.000938 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:11:44 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa486b0de3d6_121373feecac2ffd0206cd@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 1.6ms
+[Aws::SES::Client 200 0.000433 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:11:44 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa486b0e2e95_121373feecac2ffd02073f@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa486b0e2e95_121373feecac2ffd02073f@f45c89a5782f.ant.amazon.com.mail (5.2ms)
+Date: Thu, 05 Nov 2020 15:11:44 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa486b0e2e95_121373feecac2ffd02073f@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 6.6ms
+[Aws::SES::Client 200 0.000655 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:13:09 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa48705f27df_121a33fe625c320082857f@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 1.6ms
+[Aws::SES::Client 200 0.001093 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:13:10 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa487062360_121a33fe625c3200828653@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa487062360_121a33fe625c3200828653@f45c89a5782f.ant.amazon.com.mail (8.4ms)
+Date: Thu, 05 Nov 2020 15:13:10 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa487062360_121a33fe625c3200828653@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 5.1ms
+[Aws::SES::Client 200 0.000686 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:15:49 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa487a5c9661_1231f3fdd7282ffd4517ba@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 3.4ms
+[Aws::SES::Client 200 0.000485 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:15:49 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa487a5cd70a_1231f3fdd7282ffd45181f@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa487a5cd70a_1231f3fdd7282ffd45181f@f45c89a5782f.ant.amazon.com.mail (5.3ms)
+Date: Thu, 05 Nov 2020 15:15:49 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa487a5cd70a_1231f3fdd7282ffd45181f@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 4.3ms
+[Aws::SES::Client 200 0.000806 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:16:20 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa487c4a75bb_123673fdc9a01a0205508@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 5.3ms
+[Aws::SES::Client 200 0.000437 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:16:20 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa487c4abe8d_123673fdc9a01a02055164@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa487c4abe8d_123673fdc9a01a02055164@f45c89a5782f.ant.amazon.com.mail (5.2ms)
+Date: Thu, 05 Nov 2020 15:16:20 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa487c4abe8d_123673fdc9a01a02055164@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 4.2ms
+[Aws::SES::Client 200 0.004896 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:17:16 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa487fc3e8b9_1238c3ff064432008184a0@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 2.4ms
+[Aws::SES::Client 200 0.000527 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:17:16 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa487fc437df_1238c3ff06443200818534@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa487fc437df_1238c3ff06443200818534@f45c89a5782f.ant.amazon.com.mail (5.5ms)
+Date: Thu, 05 Nov 2020 15:17:16 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa487fc437df_1238c3ff06443200818534@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 4.4ms
+[Aws::SES::Client 200 0.003405 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:19:30 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa48882ac31e_12e013fe52982ffd444759@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 10.4ms
+[Aws::SES::Client 200 0.000534 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:19:30 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa48882b8482_12e013fe52982ffd444842@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa48882b8482_12e013fe52982ffd444842@f45c89a5782f.ant.amazon.com.mail (11.3ms)
+Date: Thu, 05 Nov 2020 15:19:30 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa48882b8482_12e013fe52982ffd444842@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 4.8ms
+[Aws::SES::Client 200 0.000647 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:20:07 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa488a764a66_12e223fc67ec3201085729@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 3.7ms
+[Aws::SES::Client 200 0.000445 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:20:07 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa488a768aff_12e223fc67ec32010858ad@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa488a768aff_12e223fc67ec32010858ad@f45c89a5782f.ant.amazon.com.mail (5.4ms)
+Date: Thu, 05 Nov 2020 15:20:07 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa488a768aff_12e223fc67ec32010858ad@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 6.1ms
+[Aws::SES::Client 200 0.00065 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:20:26 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa488bae86f8_12f233fe7a9c2ffd0252e@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 1.6ms
+[Aws::SES::Client 200 0.000552 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:20:26 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa488baec14c_12f233fe7a9c2ffd026f1@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa488baec14c_12f233fe7a9c2ffd026f1@f45c89a5782f.ant.amazon.com.mail (5.6ms)
+Date: Thu, 05 Nov 2020 15:20:26 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa488baec14c_12f233fe7a9c2ffd026f1@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 4.3ms
+[Aws::SES::Client 200 0.001014 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:22:10 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa489222f09f_12faf3fe23003200865f0@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 1.6ms
+[Aws::SES::Client 200 0.00079 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:22:10 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa48922335bf_12faf3fe2300320086670@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa48922335bf_12faf3fe2300320086670@f45c89a5782f.ant.amazon.com.mail (5.8ms)
+Date: Thu, 05 Nov 2020 15:22:10 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa48922335bf_12faf3fe2300320086670@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 14.3ms
+[Aws::SES::Client 200 0.000735 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:39:40 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa48d3cc3b91_13e843ffb788320082265b@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 8.2ms
+[Aws::SES::Client 200 0.000623 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:39:40 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa48d3ccaf62_13e843ffb7883200822792@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa48d3ccaf62_13e843ffb7883200822792@f45c89a5782f.ant.amazon.com.mail (18.2ms)
+Date: Thu, 05 Nov 2020 15:39:40 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa48d3ccaf62_13e843ffb7883200822792@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
+TestMailer#deliverable: processed outbound mail in 6.0ms
+[Aws::SES::Client 200 0.002254 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:41:00 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa48d8c9728d_13f1f3ff56f01e010348c9@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+TestMailer#deliverable: processed outbound mail in 3.2ms
+[Aws::SES::Client 200 0.001192 0 retries] send_raw_email(raw_message:{data:"Date: Thu, 05 Nov 2020 15:41:00 -0800\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5fa48d8c9e12d_13f1f3ff56f01e010349b2@f45c89a5782f.ant.amazon.com.mail>\r\nSubject: This is a test\r\nMime-Version: 1.0\r\nContent-Type: text/plain;\r\n charset=UTF-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHallo"},destinations:["recipient@example.com"])  
+
+Delivered mail 5fa48d8c9e12d_13f1f3ff56f01e010349b2@f45c89a5782f.ant.amazon.com.mail (9.8ms)
+Date: Thu, 05 Nov 2020 15:41:00 -0800
+From: sender@example.com
+To: recipient@example.com
+Message-ID: <5fa48d8c9e12d_13f1f3ff56f01e010349b2@f45c89a5782f.ant.amazon.com.mail>
+Subject: This is a test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hallo
