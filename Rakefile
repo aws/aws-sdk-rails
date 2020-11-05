@@ -14,4 +14,6 @@ end
 desc 'Runs unit tests'
 task 'test' => ['test:unit']
 
+RuboCop::RakeTask.new
+
 task default: :test
