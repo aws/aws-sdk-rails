@@ -8,6 +8,10 @@ group :development do
   gem 'rubocop'
 end
 
+group :test do
+  gem 'rspec'
+end
+
 group :docs do
   gem 'yard'
   gem 'yard-sitemap', '~> 1.0'
