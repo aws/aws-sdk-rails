@@ -45,7 +45,9 @@ module Aws
         '0000000000000000-1111111-2222-3333-4444-555555555555-666666'
       end
 
-      before {ActionMailer::Base.add_delivery_method(:ses, Mailer, client_options) }
+      before do
+        ActionMailer::Base.add_delivery_method(:ses, Mailer, client_options)
+      end
 
       describe '#settings' do
         it 'returns an empty hash' do
