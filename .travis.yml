@@ -6,7 +6,8 @@ rvm:
   - 2.5
   - 2.6
   - 2.7
-  - jruby
+  - jruby-9.1
+  - jruby-9.2
 
 gemfile:
   - gemfiles/rails-5.2.gemfile
