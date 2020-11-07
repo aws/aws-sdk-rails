@@ -8,14 +8,18 @@ module Aws
     class NotificationsInstrument < Seahorse::Client::Plugin
 
       def add_handlers(handlers, config)
-        handlers.add(Handler, step: :initialize)
+        # This plugin needs to be first
+        # which means it is called first in the stack, to start recording time,
+        # and returns last
+        handlers.add(Handler, step: :initialize, priority: 99)
       end
 
       class Handler < Seahorse::Client::Handler
 
         def call(context)
-          # TODO: Should this be #{operation_name}.#{service}?
-          ActiveSupport::Notifications.instrument('operation.aws_sdk', context: context) do
+          # context.operation_name
+          event_name = "aws.#{context.config.api.metadata['serviceId']}.#{context.operation_name}"
+          ActiveSupport::Notifications.instrument(event_name, context: context) do
             @handler.call(context)
           end
         end
