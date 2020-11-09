@@ -4,8 +4,26 @@ require_relative 'aws/rails/mailer'
 require_relative 'aws/rails/notifications_instrument_plugin'
 
 module Aws
+
   # Use the Rails namespace.
   module Rails
+
+    class Configuration
+      def initialize
+        @notification_instrumentation = :all
+      end
+
+      attr_accessor :notification_instrumentation
+    end
+
+    def self.configure(&block)
+      block.call(config)
+    end
+
+    def self.config
+      @config ||= Configuration.new
+    end
+
     # @api private
     class Railtie < ::Rails::Railtie
       initializer 'aws-sdk-rails.initialize',
@@ -51,14 +69,13 @@ module Aws
     end
     
     def self.add_notifications_instrument_plugin
-      # TODO: Config based.  Enable/disable.
-      # specify which clients get instrumented?
+      return if Aws::Rails.config.notification_instrumentation == :none
+
       Aws.constants.each do|c|
         m = Aws.const_get(c)
         if m.is_a?(Module) &&
-          m.const_defined?(:Client) &&
-          m.const_get(:Client).superclass == Seahorse::Client::Base
-
+           m.const_defined?(:Client) &&
+           m.const_get(:Client).superclass == Seahorse::Client::Base
           m.const_get(:Client).add_plugin(Aws::Rails::NotificationsInstrument)
         end
       end

@@ -17,8 +17,7 @@ module Aws
       class Handler < Seahorse::Client::Handler
 
         def call(context)
-          # context.operation_name
-          event_name = "aws.#{context.config.api.metadata['serviceId']}.#{context.operation_name}"
+          event_name = "#{context.operation_name}.#{context.config.api.metadata['serviceId']}.aws"
           ActiveSupport::Notifications.instrument(event_name, context: context) do
             @handler.call(context)
           end
