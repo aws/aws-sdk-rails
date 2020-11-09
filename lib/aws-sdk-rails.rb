@@ -8,22 +8,6 @@ module Aws
   # Use the Rails namespace.
   module Rails
 
-    class Configuration
-      def initialize
-        @notification_instrumentation = :all
-      end
-
-      attr_accessor :notification_instrumentation
-    end
-
-    def self.configure(&block)
-      block.call(config)
-    end
-
-    def self.config
-      @config ||= Configuration.new
-    end
-
     # @api private
     class Railtie < ::Rails::Railtie
       initializer 'aws-sdk-rails.initialize',
@@ -32,7 +16,6 @@ module Aws
         Aws::Rails.use_rails_encrypted_credentials
         Aws::Rails.add_action_mailer_delivery_method
         Aws::Rails.log_to_rails_logger
-        Aws::Rails.add_notifications_instrument_plugin
       end
     end
 
@@ -67,10 +50,12 @@ module Aws
           .to_h.slice(*aws_credential_keys)
       )
     end
-    
-    def self.add_notifications_instrument_plugin
-      return if Aws::Rails.config.notification_instrumentation == :none
 
+    # Adds ActiveSupport Notifications instrumentation to AWS SDK
+    # client operations.  Each operation will produce an event with a name:
+    # <operation>.<service>.aws.  For example, S3's put_object has an event
+    # name of: put_object.S3.aws
+    def self.instrument_sdk_operations
       Aws.constants.each do|c|
         m = Aws.const_get(c)
         if m.is_a?(Module) &&

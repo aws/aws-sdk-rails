@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
 require 'aws-sdk-core'
+require 'active_support/notifications'
 
 module Aws
   module Rails
+
+    # Instruments client operation calls for ActiveSupport::Notifications
+    # Each client operation will produce an event with name:
+    # <operation>.<service>.aws
     # @api private
     class NotificationsInstrument < Seahorse::Client::Plugin
 
