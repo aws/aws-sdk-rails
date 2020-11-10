@@ -10,7 +10,7 @@ module Aws
     # Each client operation will produce an event with name:
     # <operation>.<service>.aws
     # @api private
-    class NotificationsInstrument < Seahorse::Client::Plugin
+    class Notifications < Seahorse::Client::Plugin
 
       def add_handlers(handlers, config)
         # This plugin needs to be first

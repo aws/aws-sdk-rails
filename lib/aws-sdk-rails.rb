@@ -61,7 +61,7 @@ module Aws
         if m.is_a?(Module) &&
            m.const_defined?(:Client) &&
            m.const_get(:Client).superclass == Seahorse::Client::Base
-          m.const_get(:Client).add_plugin(Aws::Rails::NotificationsInstrument)
+          m.const_get(:Client).add_plugin(Aws::Rails::Notifications)
         end
       end
     end

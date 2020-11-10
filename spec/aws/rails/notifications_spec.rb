@@ -16,8 +16,8 @@ module Aws
           Aws::Service1::Client = base_client.dup
           Aws::Service2::Client = base_client.dup
 
-          expect(Aws::Service1::Client).to receive(:add_plugin).with(Aws::Rails::NotificationsInstrument)
-          expect(Aws::Service2::Client).to receive(:add_plugin).with(Aws::Rails::NotificationsInstrument)
+          expect(Aws::Service1::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
+          expect(Aws::Service2::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
 
           # Ensure other Clients don't get plugin added
           allow_any_instance_of(Class).to receive(:add_plugin)
@@ -29,7 +29,7 @@ module Aws
       describe 'NotificationsInstrument Plugin' do
         let(:client) do
           Client = base_client.dup
-          Client.add_plugin(Aws::Rails::NotificationsInstrument)
+          Client.add_plugin(Aws::Rails::Notifications)
           Client.new(stub_responses: true, logger: nil)
         end
 
