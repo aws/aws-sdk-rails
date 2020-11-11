@@ -90,7 +90,7 @@ Next, configure the Rails session store to be `:dynamodb_store` by editing
 
 ```ruby
 # config/initializers/session_store.rb
-Rails.application.config.session_store :dynamodb_store
+Rails.application.config.session_store :dynamodb_store, key: '_your_app_session'
 ```
 
 You can now start your Rails application with session support.
@@ -103,7 +103,9 @@ initializer like so:
 
 ```ruby
 # config/initializers/session_store.rb
-Rails.application.config.session_store :dynamodb_store, table_name: 'foo'
+Rails.application.config.session_store :dynamodb_store,
+  key: '_your_app_session',
+  table_name: 'foo'
 ```
 
 Alternatively, you can use the generated YAML configuration file
@@ -112,6 +114,13 @@ per environment, with environment configuration having precedence. To do this,
 create `config/dynamo_db_session_store/#{Rails.env}.yml` files as needed.
 
 For configuration options, see the [Configuration](https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html) class.
+
+#### Rack Configuration
+
+DynamoDB session storage is implemented in the [`aws-sessionstore-dynamodb`](https://github.com/aws/aws-sessionstore-dynamodb-ruby)
+gem. The Rack middleware inherits from the [`Rack::Session::Abstract::Persisted`](https://www.rubydoc.info/github/rack/rack/Rack/Session/Abstract/Persisted)
+class, which also includes additional options (such as `:key`) that can be
+passed into the Rails initializer.
 
 ### Cleaning old sessions
 
