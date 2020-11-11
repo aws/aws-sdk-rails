@@ -1,3 +1,4 @@
+require 'rails/version'
 require 'rails/generators/named_base'
 
 # This class generates a migration file for deleting and creating
@@ -12,40 +13,35 @@ module DynamoDb
       source_root File.expand_path('templates', __dir__)
 
       # Desired name of migration class
-      argument :name, type: :string, default: 'sessionstore_migration'
+      argument :name, type: :string, default: 'create_dynamo_db_sessions_table'
 
       # @return [Rails Migration File] migration file for creation and deletion
       #   of a DynamoDB session table.
       def generate_migration_file
         migration_template(
-          'session_store_migration.rb',
-          "#{Rails.root}/db/migrate/#{file_name}.rb"
+          'dynamo_db_session_store.rb',
+          "db/migrate/#{name.underscore}.rb"
         )
       end
 
-      def copy_sample_config_file
+      def copy_config_file
         template(
           'dynamo_db_session_store.yml',
-          "#{Rails.root}/config/dynamo_db_session_store.yml"
+          'config/dynamo_db_session_store.yml'
         )
       end
 
-      # Inherited, must be implemented
-      def self.next_migration_number(dirname)
-        next_migration_number = current_migration_number(dirname) + 1
-        ActiveRecord::Migration.next_migration_number(next_migration_number)
+      # @return [String] migration version using time stamp YYYYMMDDHHSS
+      # Must be implemented
+      def self.next_migration_number(_dir = nil)
+        Time.now.utc.strftime('%Y%m%d%H%M%S')
       end
 
       private
 
-      # @return [String] filename
-      def file_name
-        name.underscore
-      end
-
       # @return [String] activerecord migration version
       def migration_version
-        "#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}"
+        "[#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}]"
       end
     end
   end

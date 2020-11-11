@@ -1,5 +1,6 @@
 .bundle
 .yardoc
+.byebug_history
 *.gem
 *.gemfile.lock
 coverage
@@ -7,4 +8,5 @@ doc
 Gemfile.lock
 spec/dummy/log/
 spec/dummy/tmp/
+spec/tmp/
 vendor

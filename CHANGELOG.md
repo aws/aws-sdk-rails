@@ -1,6 +1,10 @@
 Unreleased Changes
 ------------------
 
+* Feature - Add support for instrumenting AWS SDK Client calls using `ActiveSupport::Notifications`.
+
+* Feature - Support Dynamo DB as an `ActionDispatch::Session` storage type. DynamoDB session storage is implemented in the [`aws-sessionstore-dynamodb`](https://github.com/aws/aws-sessionstore-dynamodb-ruby) gem. 
+
 3.1.0 (2020-04-06)
 ------------------
 * Issue - Merge only credential related keys from Rails encrypted credentials
