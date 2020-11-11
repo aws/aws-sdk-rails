@@ -1,7 +1,6 @@
 require_relative '../../spec_helper'
 
 module Aws
-
   # Test namespaces
   module Service1; end
   module Service2; end

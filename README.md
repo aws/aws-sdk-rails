@@ -1,9 +1,8 @@
 # AWS SDK for Ruby Rails Plugin
 
-[![Build
-Status](https://travis-ci.org/aws/aws-sdk-rails.png?branch=master)](https://travis-ci.org/aws/aws-sdk-rails)
-[![Code
-Climate](https://codeclimate.com/github/aws/aws-sdk-rails.png)](https://codeclimate.com/github/aws/aws-sdk-rails)
+[![Gem Version](https://badge.fury.io/rb/aws-sdk-rails.svg)](https://badge.fury.io/rb/aws-sdk-rails) [![Build Status](https://travis-ci.com/aws/aws-sdk-rails.svg?branch=master)](https://travis-ci.com/aws/aws-sdk-rails) [![Github forks](https://img.shields.io/github/forks/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/network)
+[![Github stars](https://img.shields.io/github/stars/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/stargazers)
+[![Gitter](https://badges.gitter.im/aws/aws-sdk-rails.svg)](https://gitter.im/aws/aws-sdk-rails?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 A Ruby on Rails plugin that integrates AWS services with your application using
 the latest version of [AWS SDK For Ruby](https://github.com/aws/aws-sdk-ruby).
@@ -30,14 +29,14 @@ latest [AWS SDK for Ruby Docs](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/i
 for details.
 
 If you're running your Rails application on Amazon EC2, the AWS SDK will
-automatically check Amazon EC2 instance metadata for credentials. Learn more:
+check Amazon EC2 instance metadata for credentials to load. Learn more:
 [IAM Roles for Amazon EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
 
 # Features
 
 ## AWS SDK uses the Rails logger
 
-The AWS SDK is automatically configured to use the built-in Rails logger for any
+The AWS SDK is configured to use the built-in Rails logger for any
 SDK log output. The logger is configured to use the `:info` log level. You can
 change the log level by setting `:log_level` in the
 [Aws.config](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws.html) hash.
@@ -48,10 +47,8 @@ Aws.config.update(log_level: :debug)
 
 ## Rails 5.2+ Encrypted Credentials
 
-If you are using Rails 5.2+ [Encrypted
-Credentials](http://guides.rubyonrails.org/security.html#custom-credentials),
-the credentials will be automatically loaded assuming the decrypted contents
-are provided as such:
+If you are using Rails 5.2+ [Encrypted Credentials](http://guides.rubyonrails.org/security.html#custom-credentials),
+the credentials will be decrypted and loaded under the `:aws` top level key:
 
 ```yml
 # config/credentials.yml.enc
@@ -59,6 +56,84 @@ are provided as such:
 aws:
   access_key_id: YOUR_KEY_ID
   secret_access_key: YOUR_ACCESS_KEY
+```
+
+## DynamoDB Session Store
+
+You can configure session storage in Rails to use DynamoDB instead of cookies,
+allowing access to sessions from other applications and devices. You will need
+to have an existing Amazon DynamoDB session table to use this feature.
+
+You can generate a migration file for the session table using the following
+command (<MigrationName> is optional):
+
+```bash
+rails generate dynamo_db:session_store_migration <MigrationName>
+```
+
+The session store migration generator command will generate two	files: a
+migration file, `db/migration/#{VERSION}_#{MIGRATION_NAME}.rb`, and a
+configuration YAML file, `config/dynamo_db_session_store.yml`.
+
+The migration file will create and delete a table with default options. These
+options can be changed prior to running the migration and are documented in the
+[Table](https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Table.html) class.
+
+To create the table, run migrations as normal with:
+
+```bash
+rake db:migrate
+```
+
+Next, configure the Rails session store to be `:dynamodb_store` by editing
+`config/initializers/session_store.rb` to contain the following:
+
+```ruby
+# config/initializers/session_store.rb
+Rails.application.config.session_store :dynamodb_store, key: '_your_app_session'
+```
+
+You can now start your Rails application with session support.
+
+### Configuration
+
+You can configure the session store with code, YAML files, or ENV, in this order
+of precedence. To configure in code, you can directly pass options to your
+initializer like so:
+
+```ruby
+# config/initializers/session_store.rb
+Rails.application.config.session_store :dynamodb_store,
+  key: '_your_app_session',
+  table_name: 'foo'
+```
+
+Alternatively, you can use the generated YAML configuration file
+`config/dynamo_db_session_store.yml`. YAML configuration may also be specified
+per environment, with environment configuration having precedence. To do this,
+create `config/dynamo_db_session_store/#{Rails.env}.yml` files as needed.
+
+For configuration options, see the [Configuration](https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html) class.
+
+#### Rack Configuration
+
+DynamoDB session storage is implemented in the [`aws-sessionstore-dynamodb`](https://github.com/aws/aws-sessionstore-dynamodb-ruby)
+gem. The Rack middleware inherits from the [`Rack::Session::Abstract::Persisted`](https://www.rubydoc.info/github/rack/rack/Rack/Session/Abstract/Persisted)
+class, which also includes additional options (such as `:key`) that can be
+passed into the Rails initializer.
+
+### Cleaning old sessions
+
+By default sessions do not expire. See `config/dynamo_db_session_store.yml` to
+configure the max age or stale period of a session.
+
+You can use the DynamoDB [Time to Live (TTL) feature](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html)
+on the `expire_at` attribute to automatically delete expired items.
+
+Alternatively, a Rake task for garbage collection is provided:
+
+```bash
+rake dynamo_db:collect_garbage
 ```
 
 ## Amazon Simple Email Service (SES) as an ActionMailer Delivery Method
@@ -71,9 +146,7 @@ simply need to configure Rails to use it in your environment configuration:
 config.action_mailer.delivery_method = :ses
 ```
 
-# Other Usage
-
-## Manually setting Action Mailer credentials
+### Manually setting credentials
 
 If you need to provide different credentials for Action Mailer, you can call
 client-creating actions manually. For example, you can create an initializer
@@ -98,7 +171,7 @@ Aws::Rails.add_action_mailer_delivery_method(
 )
 ```
 
-## Using ARNs with SES
+### Using ARNs with SES
 
 This gem uses [`Aws::SES::Client#send_raw_email`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#send_raw_email-instance_method)
 to send emails. This operation allows you to specify a cross-account identity

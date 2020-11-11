@@ -5,6 +5,6 @@
 coverage
 doc
 Gemfile.lock
-test/dummy/log/
-test/dummy/tmp/
+spec/dummy/log/
+spec/dummy/tmp/
 vendor
