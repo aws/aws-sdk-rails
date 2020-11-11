@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'aws/rails/mailer'
+require_relative 'aws/rails/notifications_instrument_plugin'
 
 module Aws
+
   # Use the Rails namespace.
   module Rails
+
     # @api private
     class Railtie < ::Rails::Railtie
       initializer 'aws-sdk-rails.initialize',
@@ -46,6 +49,21 @@ module Aws
           .try(:aws)
           .to_h.slice(*aws_credential_keys)
       )
+    end
+
+    # Adds ActiveSupport Notifications instrumentation to AWS SDK
+    # client operations.  Each operation will produce an event with a name:
+    # <operation>.<service>.aws.  For example, S3's put_object has an event
+    # name of: put_object.S3.aws
+    def self.instrument_sdk_operations
+      Aws.constants.each do|c|
+        m = Aws.const_get(c)
+        if m.is_a?(Module) &&
+           m.const_defined?(:Client) &&
+           m.const_get(:Client).superclass == Seahorse::Client::Base
+          m.const_get(:Client).add_plugin(Aws::Rails::Notifications)
+        end
+      end
     end
   end
 end
