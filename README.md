@@ -58,6 +58,16 @@ aws:
   secret_access_key: YOUR_ACCESS_KEY
 ```
 
+Encrypted Credentials will take precedence over any other AWS Credentials that
+may exist in your environment (eg: credentials from profiles set in
+ `~/.aws/credentials`).
+
+If you are using [ActiveStorage](https://edgeguides.rubyonrails.org/active_storage_overview.html)
+with `S3` then you do not need to specify your credentials in your `storage.yml`
+configuration: they will be loaded automatically.
+
+
+
 ## DynamoDB Session Store
 
 You can configure session storage in Rails to use DynamoDB instead of cookies,
