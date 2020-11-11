@@ -120,19 +120,19 @@ message['X-SES-FROM-ARN'] = 'arn:aws:ses:us-west-2:012345678910:identity/bigchun
 message.deliver
 ```
 
-## Adding `ActiveSupport::Notifications` Instrumentation to AWS SDK calls
+## Active Support Notification Instrumentation for AWS SDK calls
 To add `ActiveSupport::Notifications` Instrumentation to all AWS SDK client 
 operations call `Aws::Rails.instrument_sdk_operations` before you construct any
 SDK clients.
 
-Example usage in `config/capplication.rb`
+Example usage in `config/initializers/instrument_aws_sdk.rb`
 ```ruby
 Aws::Rails.instrument_sdk_operations
 ```
 
 Events are published for each client operation call with the following event
 name: <operation>.<serviceId>.aws.  For example, S3's put_object has an event
-name of: put_object.S3.aws.  The payload of the event is the 
+name of: `put_object.S3.aws`.  The payload of the event is the 
 [request context](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Seahorse/Client/RequestContext.html).
 
 You can subscribe to these events as you would other
