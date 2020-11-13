@@ -14,7 +14,7 @@ module Aws
       end
 
       rake_tasks do
-        load 'tasks/dynamo_db/session_store/clean.rake'
+        load 'tasks/dynamo_db/session_store.rake'
       end
     end
 
