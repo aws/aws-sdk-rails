@@ -15,8 +15,8 @@ module Aws
           out[:name] = name
           out[:payload] = payload
         end
-        client.get_send_quota
-        expect(out[:name]).to eq('get_send_quota.SES.aws')
+        client.send_raw_email(raw_message: { data: 'test' })
+        expect(out[:name]).to eq('send_raw_email.SES.aws')
         expect(out[:payload][:context]).to be_a(Seahorse::Client::RequestContext)
       end
     end
