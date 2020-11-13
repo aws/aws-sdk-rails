@@ -14,9 +14,11 @@ Gem::Specification.new do |spec|
   spec.license       = 'Apache-2.0'
 
   spec.require_paths = ['lib']
-  spec.files += Dir['lib/**/*.rb']
+  spec.files += Dir['lib/**/*.rb', 'bin/*']
+  spec.executables = ['aws_sqs_job_poll']
 
   spec.add_dependency('aws-sdk-ses', '~> 1') # for ActionMailer
+  spec.add_dependency('aws-sdk-sqs', '~> 1') # for ActiveJob
   spec.add_dependency('aws-sessionstore-dynamodb', '~> 2') # includes dynamo db
   spec.add_dependency('railties', '>= 5.2.0') # encrypted credentials
 
