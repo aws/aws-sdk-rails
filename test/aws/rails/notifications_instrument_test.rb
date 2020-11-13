@@ -1,7 +1,4 @@
 require 'test_helper'
-require 'minitest/spec'
-require 'rspec/mocks/minitest_integration'
-require 'rspec/expectations/minitest_integration'
 
 module Aws
   module Rails

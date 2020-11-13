@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'rspec/mocks/minitest_integration'
 
 module Aws
   # Test services namespaces
@@ -14,34 +13,40 @@ module Aws
   end
 
   module Rails
-    class RailtieTest < Minitest::Test
-      def test_add_action_mailer_delivery_method
-        assert_equal ::Aws::Rails::Mailer,
-                     ::ActionMailer::Base.delivery_methods[:ses]
+    describe 'Railtie' do
+      it 'adds action mailer delivery method' do
+        expect(ActionMailer::Base.delivery_methods[:ses]).to eq Aws::Rails::Mailer
       end
 
-      def test_log_to_rails_logger
-        assert_equal ::Rails.logger, Aws.config[:logger]
+      it 'sets the Aws logger' do
+        expect(Aws.config[:logger]).to eq ::Rails.logger
       end
 
-      def test_use_rails_encrypted_credentials
-        creds = ::Rails.application.credentials.aws
-        assert_equal Aws.config[:access_key_id], creds[:access_key_id]
-        assert_equal Aws.config[:secret_access_key], creds[:secret_access_key]
+      describe 'rails encrypted credentials' do
+        let(:rails_creds) { ::Rails.application.credentials.aws }
+        it 'sets aws credentials' do
+          expect(Aws.config[:access_key_id]).to eq rails_creds[:access_key_id]
+          expect(Aws.config[:secret_access_key]).to eq rails_creds[:secret_access_key]
+        end
 
-        refute_nil creds[:non_credential_key]
-        assert_nil Aws.config[:non_credential_key]
+        it 'does not load non credential keys into aws config' do
+          expect(rails_creds[:non_credential_key]).not_to be_nil
+          expect(Aws.config[:non_credential_key]).to be_nil
+        end
       end
 
-      def test_instrument_sdk_operations
-        expect(Aws::Service1::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
-        expect(Aws::Service2::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
+      describe '.instrument_sdk_operations' do
+        it 'adds the Notifications plugin to sdk clients' do
+          expect(Aws::Service1::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
+          expect(Aws::Service2::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
 
-        # Ensure other Clients don't get plugin added
-        allow_any_instance_of(Class).to receive(:add_plugin)
+          # Ensure other Clients don't get plugin added
+          allow_any_instance_of(Class).to receive(:add_plugin)
 
-        Aws::Rails.instrument_sdk_operations
+          Aws::Rails.instrument_sdk_operations
+        end
       end
+
     end
   end
 end
