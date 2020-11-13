@@ -1,4 +1,4 @@
-Unreleased Changes
+3.2.0 (2020-11-13)
 ------------------
 
 * Feature - Add support for `ActiveSupport::Notifications` for instrumenting
