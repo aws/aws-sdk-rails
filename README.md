@@ -66,8 +66,6 @@ If you are using [ActiveStorage](https://edgeguides.rubyonrails.org/active_stora
 with `S3` then you do not need to specify your credentials in your `storage.yml`
 configuration: they will be loaded automatically.
 
-
-
 ## DynamoDB Session Store
 
 You can configure session storage in Rails to use DynamoDB instead of cookies,
@@ -204,7 +202,7 @@ message.deliver
 ```
 
 ## Active Support Notification Instrumentation for AWS SDK calls
-To add `ActiveSupport::Notifications` Instrumentation to all AWS SDK client 
+To add `ActiveSupport::Notifications` Instrumentation to all AWS SDK client
 operations call `Aws::Rails.instrument_sdk_operations` before you construct any
 SDK clients.
 
@@ -215,12 +213,12 @@ Aws::Rails.instrument_sdk_operations
 
 Events are published for each client operation call with the following event
 name: <operation>.<serviceId>.aws.  For example, S3's put_object has an event
-name of: `put_object.S3.aws`.  The payload of the event is the 
+name of: `put_object.S3.aws`.  The payload of the event is the
 [request context](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Seahorse/Client/RequestContext.html).
 
 You can subscribe to these events as you would other
  `ActiveSupport::Notifications`:
- 
+
  ```ruby
 ActiveSupport::Notifications.subscribe('put_object.s3.aws') do |name, start, finish, id, payload|
   # process event
