@@ -1,4 +1,4 @@
-Unreleased Changes
+3.2.1 (2020-11-13)
 ------------------
 
 * Issue - Include missing files into the gemspec
