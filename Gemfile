@@ -9,7 +9,7 @@ group :development do
 end
 
 group :test do
-  gem 'rspec-mocks'
+  gem 'rspec'
 end
 
 group :docs do

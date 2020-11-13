@@ -33,12 +33,6 @@ module Aws
         assert_nil Aws.config[:non_credential_key]
       end
 
-      def test_passing_positive_expectation
-        dbl = double
-        expect(dbl).to receive(:message)
-        dbl.message
-      end
-
       def test_instrument_sdk_operations
         expect(Aws::Service1::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
         expect(Aws::Service2::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
