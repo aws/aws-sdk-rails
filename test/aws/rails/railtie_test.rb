@@ -22,7 +22,7 @@ module Aws
         expect(Aws.config[:logger]).to eq ::Rails.logger
       end
 
-      describe 'rails encrypted credentials' do
+      describe '.use_rails_encrypted_credentials' do
         let(:rails_creds) { ::Rails.application.credentials.aws }
         it 'sets aws credentials' do
           expect(Aws.config[:access_key_id]).to eq rails_creds[:access_key_id]

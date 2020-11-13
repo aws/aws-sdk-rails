@@ -2,7 +2,7 @@ require 'test_helper'
 
 module Aws
   module Rails
-    describe 'NotificationsInstrument Plugin' do
+    describe Notifications do
       let(:client) do
         Client = Aws::SES::Client
         Client.add_plugin(Aws::Rails::Notifications)
