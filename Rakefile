@@ -19,3 +19,4 @@ end
 RuboCop::RakeTask.new
 
 task default: :test
+task 'release:test' => :test
