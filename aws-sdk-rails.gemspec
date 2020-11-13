@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.license       = 'Apache-2.0'
 
   spec.require_paths = ['lib']
-  spec.files += Dir['lib/**/*.rb']
+  spec.files += Dir['lib/**/*']
 
   spec.add_dependency('aws-sdk-ses', '~> 1') # for ActionMailer
   spec.add_dependency('aws-sessionstore-dynamodb', '~> 2') # includes dynamo db
