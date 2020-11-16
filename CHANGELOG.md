@@ -1,6 +1,19 @@
 Unreleased Changes
 ------------------
 
+3.2.1 (2020-11-13)
+------------------
+
+* Issue - Include missing files into the gemspec
+
+3.2.0 (2020-11-13)
+------------------
+
+* Feature - Add support for `ActiveSupport::Notifications` for instrumenting
+AWS SDK service calls.
+
+* Feature - Add support for DynamoDB as an `ActiveDispatch::Session`.
+
 3.1.0 (2020-04-06)
 ------------------
 * Issue - Merge only credential related keys from Rails encrypted credentials

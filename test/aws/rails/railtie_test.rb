@@ -1,10 +1,18 @@
 # frozen_string_literal: true
 
-require_relative '../../spec_helper'
+require 'test_helper'
 
 module Aws
-  module Rails
+  # Test services namespaces
+  module Service1
+    Client = Aws::SES::Client.dup
+  end
 
+  module Service2
+    Client = Aws::SES::Client.dup
+  end
+
+  module Rails
     describe 'Railtie' do
       it 'adds action mailer delivery method' do
         expect(ActionMailer::Base.delivery_methods[:ses]).to eq Aws::Rails::Mailer
@@ -14,7 +22,7 @@ module Aws
         expect(Aws.config[:logger]).to eq ::Rails.logger
       end
 
-      context 'rails encrypted credentials' do
+      describe '.use_rails_encrypted_credentials' do
         let(:rails_creds) { ::Rails.application.credentials.aws }
         it 'sets aws credentials' do
           expect(Aws.config[:access_key_id]).to eq rails_creds[:access_key_id]
@@ -24,6 +32,18 @@ module Aws
         it 'does not load non credential keys into aws config' do
           expect(rails_creds[:non_credential_key]).not_to be_nil
           expect(Aws.config[:non_credential_key]).to be_nil
+        end
+      end
+
+      describe '.instrument_sdk_operations' do
+        it 'adds the Notifications plugin to sdk clients' do
+          expect(Aws::Service1::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
+          expect(Aws::Service2::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
+
+          # Ensure other Clients don't get plugin added
+          allow_any_instance_of(Class).to receive(:add_plugin)
+
+          Aws::Rails.instrument_sdk_operations
         end
       end
 

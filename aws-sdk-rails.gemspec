@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.license       = 'Apache-2.0'
 
   spec.require_paths = ['lib']
-  spec.files += Dir['lib/**/*.rb', 'bin/*']
+  spec.files += Dir['lib/**/*', 'bin/*']
   spec.executables = ['aws_sqs_job_poll']
 
   spec.add_dependency('aws-sdk-ses', '~> 1') # for ActionMailer

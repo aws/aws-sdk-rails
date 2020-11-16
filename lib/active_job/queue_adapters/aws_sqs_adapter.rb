@@ -12,14 +12,17 @@ module ActiveJob
 
     class AwsSqsAdapter
       def initialize(**executor_options)
-        puts "MY INIT: #{executor_options}"
-        @client = Aws::SQS::Client.new
-        @scheduler = Scheduler.new(**executor_options)
+        @client = Aws::Rails::SqsJob.config.client
+
+        # config.active_job.queue_name_prefix
+        # config.active_job.queue_name_delimiter
       end
 
       def enqueue(job)
-      body = job.serialize
-      @client.send_message(queue_url: 'https://sqs.us-west-2.amazonaws.com/655347895545/TestQueue', message_body: Aws::Json.dump(body))
+        body = job.serialize
+        queue_url = Aws::Rails::SqsJob.config.queue_url_for(job.queue_name)
+        puts "#{job.queue_name} => #{queue_url}"
+        @client.send_message(queue_url: queue_url, message_body: Aws::Json.dump(body))
       end
 
       def enqueue_at(job, timestamp)
@@ -34,18 +37,6 @@ module ActiveJob
       # TODO: Determine if other shutdown is required. None should be...
       end
 
-      class JobWrapper #:nodoc:
-        def initialize(job)
-          job.provider_job_id = SecureRandom.uuid
-          @job_data = job.serialize
-          puts "Serialized to: #{@job_data}"
-        end
-
-        def perform
-          puts "Wrapper perform!"
-          Base.execute @job_data
-        end
-      end
 
       class Scheduler #:nodoc:
         DEFAULT_EXECUTOR_OPTIONS = {
