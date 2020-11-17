@@ -2,21 +2,20 @@
 
 require 'aws-sdk-sqs'
 require 'optparse'
-require 'concurrent'
-require 'concurrent-edge'
 
 module Aws
   module Rails
     module SqsJob
       # CLI runner for polling for SQS ActiveJobs
-      class Poller
 
-        BACKPRESSURE = 3
+      class Interrupt < Exception; end
+      class Poller
 
         DEFAULT_OPTS = {
           threads: Concurrent.processor_count,
           max_messages: 10,
-          visibility_timeout: 60
+          visibility_timeout: 60,
+          shutdown_timeout: 15
         }
 
         def initialize(args = ARGV)
@@ -35,18 +34,20 @@ module Aws
           # exit 0
           boot_rails
 
-          Signal.trap('INT') { shutdown; exit }
-          Signal.trap('TERM') { shutdown; exit }
+          Signal.trap('INT') { raise Interrupt }
+          # Signal.trap('TERM') { shutdown; exit }
           @executor = Executor.new(max_threads: @options[:threads])
 
           poll
+        rescue Interrupt
+          puts 'Process Interrupted or killed - attempting to shutdown cleanly.'
+          shutdown
+          exit
         end
 
         def shutdown
-          # TODO: Allow config for a max shutdown time
-          puts "Shutting down gracefully..."
-          @executor.shutdown
-          puts "All threads are finished.  Life is good."
+          @executor.shutdown(@options[:shutdown_timeout])
+          puts 'Jobs have completed cleanly. Shutdown complete.'
         end
 
         def poll
@@ -95,6 +96,7 @@ module Aws
             opts.on "-t", "--threads [INTEGER]", "Number of worker threads"
             opts.on "-m", "--max_messages [INTEGER]", "Max number of messages to receive at once."
             opts.on "-V", "--visibility_timeout [INTEGER]", "Visibility timeout"
+            opts.on "-s", "--shutdown_timeout [INTEGER]", "Shutdown timeout"
             opts.on "-v", "--[no-]verbose", "Print more verbose output"
           }
 
