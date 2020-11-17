@@ -32,8 +32,6 @@ module Aws
             file_options(options).merge(options.deep_symbolize_keys)
           )
           set_attributes(@options)
-          @queue_urls = {}
-          @queue_urls_mutex = Mutex.new
         end
 
         def client
@@ -41,27 +39,17 @@ module Aws
         end
 
 
-        # TODO: This is threadsafe, but could be improved
+        # Return the queue_url for a given job_queue name
+        # Queues in Config can be defined as either a url, arn or just name.
+        # For ARNs and names, an additional service call is required to
+        # lookup the queue url.
+        # This method is syncronized to ensure multiple client calls are not
+        # made to look up the same queue url.
         def queue_url_for(job_queue)
           job_queue = job_queue.to_sym
-          @queue_urls_mutex.synchronize do
-            return @queue_urls[job_queue] if @queue_urls.key? job_queue
+          raise ArgumentError, "No queue defined for #{job_queue}" unless queues.key? job_queue
 
-            # can be a name, url, or arn
-            queue_def = queues[job_queue.to_sym]
-
-            raise ArgumentError, "No queue defined for #{job_queue}" unless queue_def
-
-            if queue_def.include?('://')
-              @queue_urls[job_queue] = queue_def
-              return queue_def
-            elsif queue_def.start_with?('arn:')
-              raise NotImplementedError, 'TODO: Support me!'
-            else
-              @queue_urls[job_queue] = client.get_queue_url(queue_name: queue_def).queue_url
-              return @queue_urls[job_queue]
-            end
-          end
+          queues[job_queue.to_sym]
         end
 
         private

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/aws/rails/sqs_job/poll_cli'
+require_relative '../lib/aws/rails/sqs_job/poller'
 
-cli = Aws::Rails::SqsJob::PollCli.new
-cli.run
+poller = Aws::Rails::SqsJob::Poller.new
+poller.run

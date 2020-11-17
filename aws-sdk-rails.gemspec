@@ -15,12 +15,14 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ['lib']
   spec.files += Dir['lib/**/*', 'bin/*']
+  spec.files << 'VERSION'
   spec.executables = ['aws_sqs_job_poll']
 
   spec.add_dependency('aws-sdk-ses', '~> 1') # for ActionMailer
   spec.add_dependency('aws-sdk-sqs', '~> 1') # for ActiveJob
   spec.add_dependency('aws-sessionstore-dynamodb', '~> 2') # includes dynamo db
   spec.add_dependency('railties', '>= 5.2.0') # encrypted credentials
-
+  spec.add_dependency('concurrent-ruby', '~> 1') # Utilities for concurrent processing
+  spec.add_dependency('concurrent-ruby-edge', '~> 0.6') # for Channels
   spec.add_development_dependency('rails')
 end

@@ -13,28 +13,27 @@ module ActiveJob
     class AwsSqsAdapter
       def initialize(**executor_options)
         @client = Aws::Rails::SqsJob.config.client
-
-        # config.active_job.queue_name_prefix
-        # config.active_job.queue_name_delimiter
       end
 
       def enqueue(job)
-        body = job.serialize
-        queue_url = Aws::Rails::SqsJob.config.queue_url_for(job.queue_name)
-        puts "#{job.queue_name} => #{queue_url}"
-        @client.send_message(queue_url: queue_url, message_body: Aws::Json.dump(body))
+        _enqueue(job)
       end
 
       def enqueue_at(job, timestamp)
-        # TODO: Check for max timeout.
+        delay = (timestamp - Time.now.to_f).floor
+        raise 'Unable to queue a job with a delay great than 15 minutes' if delay > 15.minutes
+        _enqueue(job, delay_seconds: delay)
       end
 
-      # Gracefully stop processing jobs. Finishes in-progress work and handles
-      # any new jobs following the executor's fallback policy (`caller_runs`).
-      # Waits for termination by default. Pass `wait: false` to continue.
-      def shutdown(wait: true)
-      puts "MY SHUTDOWN"
-      # TODO: Determine if other shutdown is required. None should be...
+      private
+
+      def _enqueue(job, send_message_opts = {})
+        body = job.serialize
+        queue_url = Aws::Rails::SqsJob.config.queue_url_for(job.queue_name)
+        puts "#{job.queue_name} => #{queue_url}"
+        send_message_opts[:queue_url] = queue_url
+        send_message_opts[:message_body] = Aws::Json.dump(body)
+        @client.send_message(send_message_opts)
       end
 
 
