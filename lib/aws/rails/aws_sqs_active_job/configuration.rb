@@ -2,7 +2,7 @@
 
 module Aws
   module Rails
-    module SqsJob
+    module SqsActiveJob
 
       def self.config
         @config ||= Configuration.new
@@ -23,7 +23,10 @@ module Aws
         # TODO: docs...
         attr_accessor :queues
 
-        # @option options [Array[Hash[Symbol, String]]] :queues
+        # @return [Hash] Configuration options for poller
+        attr_accessor :poller_config
+
+        # @option options [Hash[Symbol, String]] :queues
         # @option options [String] :config_file
         # @option options [SQS::Client] :client
         def initialize(options = {})
@@ -31,7 +34,10 @@ module Aws
           @options = default_options.merge(
             file_options(options).merge(options.deep_symbolize_keys)
           )
+          @queues = {}
+          @poller_config = {}
           set_attributes(@options)
+          @poller_config[:logger] ||= ::Rails.logger
         end
 
         def client
@@ -76,8 +82,8 @@ module Aws
         end
 
         def config_file
-          file = ::Rails.root.join("config/sqs_job/#{::Rails.env}.yml")
-          file = ::Rails.root.join('config/sqs_job.yml') unless file.exist?
+          file = ::Rails.root.join("config/aws_sqs_active_job/#{::Rails.env}.yml")
+          file = ::Rails.root.join('config/aws_sqs_active_job.yml') unless file.exist?
           file
         end
 

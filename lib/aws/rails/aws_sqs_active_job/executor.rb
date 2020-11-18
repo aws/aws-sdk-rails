@@ -4,7 +4,7 @@ require 'concurrent'
 
 module Aws
   module Rails
-    module SqsJob
+    module SqsActiveJob
       # CLI runner for polling for SQS ActiveJobs
       class Executor
 
@@ -19,22 +19,31 @@ module Aws
 
         def initialize(options = {})
           @executor = Concurrent::ThreadPoolExecutor.new(DEFAULT_EXECUTOR_OPTIONS.merge(options))
+          @logger = options[:logger] || ActiveSupport::Logger.new(STDOUT)
         end
 
         # Push processing
         # TODO: Consider catching the exception and sleeping instead of using :caller_runs
         def push(message)
           @executor.post(message) do |message|
-            JobWrapper.new(message).perform
+            JobRunner.new(message).perform
             message.delete
           rescue StandardError => e
-            puts "Error processing job: #{e}"
+            @logger.info "Error processing job: #{e}"
           end
         end
 
         def shutdown(timeout=nil)
           @executor.shutdown
-          @executor.wait_for_termination(timeout)
+          clean_shutdown = @executor.wait_for_termination(timeout)
+          if clean_shutdown
+            @logger.info 'Clean shutdown complete.  All executing jobs finished.'
+          else
+            @logger.info "Timeout (#{timeout}) exceeded.  Some jobs may not have"\
+              " finished cleanly.  Unfinished jobs will not be removed from"\
+              " the queue and can be ru-run once their visibility timeout"\
+              " passes."
+          end
         end
       end
     end

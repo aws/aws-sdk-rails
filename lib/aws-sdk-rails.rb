@@ -5,9 +5,9 @@ require_relative 'aws/rails/railtie'
 require_relative 'aws/rails/notifications'
 require_relative 'action_dispatch/session/dynamodb_store'
 require_relative 'active_job/queue_adapters/aws_sqs_adapter'
-require_relative 'aws/rails/sqs_job/configuration'
-require_relative 'aws/rails/sqs_job/executor'
-require_relative 'aws/rails/sqs_job/job_wrapper'
+require_relative 'aws/rails/aws_sqs_active_job/configuration'
+require_relative 'aws/rails/aws_sqs_active_job/executor'
+require_relative 'aws/rails/aws_sqs_active_job/job_runner'
 
 
 

@@ -12,7 +12,7 @@ module ActiveJob
 
     class AwsSqsAdapter
       def initialize(**executor_options)
-        @client = Aws::Rails::SqsJob.config.client
+        @client = Aws::Rails::SqsActiveJob.config.client
       end
 
       def enqueue(job)
@@ -29,7 +29,7 @@ module ActiveJob
 
       def _enqueue(job, send_message_opts = {})
         body = job.serialize
-        queue_url = Aws::Rails::SqsJob.config.queue_url_for(job.queue_name)
+        queue_url = Aws::Rails::SqsActiveJob.config.queue_url_for(job.queue_name)
         puts "#{job.queue_name} => #{queue_url}"
         send_message_opts[:queue_url] = queue_url
         send_message_opts[:message_body] = Aws::Json.dump(body)

@@ -2,10 +2,11 @@
 
 require 'aws-sdk-sqs'
 require 'optparse'
+require 'concurrent'
 
 module Aws
   module Rails
-    module SqsJob
+    module SqsActiveJob
       # CLI runner for polling for SQS ActiveJobs
 
       class Interrupt < Exception; end
@@ -15,14 +16,12 @@ module Aws
           threads: Concurrent.processor_count,
           max_messages: 10,
           visibility_timeout: 60,
-          shutdown_timeout: 15
+          shutdown_timeout: 15,
         }
 
         def initialize(args = ARGV)
-          # parse arguments and merge config, ect
           @options = parse_args(args)
-          validate_config
-          puts "Parsed options to: #{@options}"
+          # Set_environment must be run before we boot_rails
           set_environment
         end
 
@@ -34,26 +33,36 @@ module Aws
           # exit 0
           boot_rails
 
+          # cannot load config (from file or initializers) until after
+          # rails has been booted.
+          @options = DEFAULT_OPTS
+                     .merge(Aws::Rails::SqsActiveJob.config.poller_config)
+                     .merge(@options)
+          validate_config
+          # ensure we have a logger configured
+          @logger = @options[:logger] || ActiveSupport::Logger.new(STDOUT)
+          @logger.info("Starting Poller with options=#{@options}")
+
+
           Signal.trap('INT') { raise Interrupt }
-          # Signal.trap('TERM') { shutdown; exit }
-          @executor = Executor.new(max_threads: @options[:threads])
+          Signal.trap('TERM') { raise Interrupt }
+          @executor = Executor.new(max_threads: @options[:threads], logger: @logger)
 
           poll
         rescue Interrupt
-          puts 'Process Interrupted or killed - attempting to shutdown cleanly.'
+          @logger.info 'Process Interrupted or killed - attempting to shutdown cleanly.'
           shutdown
           exit
         end
 
         def shutdown
           @executor.shutdown(@options[:shutdown_timeout])
-          puts 'Jobs have completed cleanly. Shutdown complete.'
         end
 
         def poll
-          queue_url = Aws::Rails::SqsJob.config.queue_url_for(@options[:queue])
-          puts "Polling on: #{@options[:queue]} => #{queue_url}"
-          client = Aws::Rails::SqsJob.config.client
+          queue_url = Aws::Rails::SqsActiveJob.config.queue_url_for(@options[:queue])
+          @logger.info "Polling on: #{@options[:queue]} => #{queue_url}"
+          client = Aws::Rails::SqsActiveJob.config.client
           @poller = Aws::SQS::QueuePoller.new(queue_url, client: client)
           single_message = @options[:max_messages] == 1
           poller_options = {
@@ -63,7 +72,7 @@ module Aws
           }
           @poller.poll(poller_options) do |msgs|
             msgs = [msgs] if single_message
-            puts "Processing batch of #{msgs.length} messages"
+            @logger.info "Processing batch of #{msgs.length} messages"
             msgs.each do |msg|
               @executor.push(Aws::SQS::Message.new(
                 queue_url: queue_url,
@@ -83,7 +92,7 @@ module Aws
         end
 
         def parse_args(argv)
-          opts = DEFAULT_OPTS.dup
+          opts = {}
           @parser = option_parser
           @parser.parse!(argv, into: opts)
           opts
@@ -102,7 +111,7 @@ module Aws
 
           parser.banner = "aws_sdk_job_poll [options]"
           parser.on_tail "-h", "--help", "Show help" do
-            puts parser
+            @logger.info parser
             exit 1
           end
 

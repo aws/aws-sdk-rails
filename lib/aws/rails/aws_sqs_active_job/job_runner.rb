@@ -2,9 +2,9 @@
 
 module Aws
   module Rails
-    module SqsJob
+    module SqsActiveJob
 
-      class JobWrapper
+      class JobRunner
         def initialize(message)
           body = Aws::Json.load(message.data.body)
           job_class = body["job_class"].constantize
