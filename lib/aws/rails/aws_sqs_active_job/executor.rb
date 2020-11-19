@@ -26,10 +26,12 @@ module Aws
         # TODO: Consider catching the exception and sleeping instead of using :caller_runs
         def push(message)
           @executor.post(message) do |message|
-            JobRunner.new(message).perform
-            message.delete
-          rescue StandardError => e
-            @logger.info "Error processing job: #{e}"
+            begin
+              JobRunner.new(message).perform
+              message.delete
+            rescue StandardError => e
+              @logger.info "Error processing job: #{e}"
+            end
           end
         end
 
