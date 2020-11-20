@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/aws/rails/aws_sqs_active_job/poller'
+require 'aws/rails/aws_sqs_active_job/poller'
 
-poller = Aws::Rails::SqsActiveJob::Poller.new
-poller.run
+Aws::Rails::SqsActiveJob::Poller.new.run
