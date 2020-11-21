@@ -36,7 +36,7 @@ module Aws
           # cannot load config (from file or initializers) until after
           # rails has been booted.
           @options = DEFAULT_OPTS
-                     .merge(Aws::Rails::SqsActiveJob.config.poller_config)
+                     .merge(Aws::Rails::SqsActiveJob.config.to_h)
                      .merge(@options)
           validate_config
           # ensure we have a logger configured
@@ -106,10 +106,9 @@ module Aws
             opts.on "-m", "--max_messages [INTEGER]", "Max number of messages to receive at once."
             opts.on "-V", "--visibility_timeout [INTEGER]", "Visibility timeout"
             opts.on "-s", "--shutdown_timeout [INTEGER]", "Shutdown timeout"
-            opts.on "-v", "--[no-]verbose", "Print more verbose output"
           }
 
-          parser.banner = "aws_sdk_job_poll [options]"
+          parser.banner = "aws_sqs_active_job [options]"
           parser.on_tail "-h", "--help", "Show help" do
             @logger.info parser
             exit 1

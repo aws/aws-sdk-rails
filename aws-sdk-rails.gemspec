@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   spec.files += Dir['lib/**/*', 'bin/*']
   spec.files << 'VERSION'
-  spec.executables = ['aws_sqs_job_poll']
+  spec.executables = ['aws_sqs_active_job']
 
   spec.add_dependency('aws-sdk-ses', '~> 1') # for ActionMailer
   spec.add_dependency('aws-sdk-sqs', '~> 1') # for ActiveJob

@@ -14,7 +14,7 @@ module Aws
            auto_terminate:  true,
            idletime:        60, # 1 minute
            max_queue:       2,
-           fallback_policy: :caller_runs # slow down the produced thread
+           fallback_policy: :caller_runs # slow down the producer thread
         }.freeze
 
         def initialize(options = {})
