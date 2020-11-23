@@ -1,14 +1,8 @@
 require 'test_helper'
+require_relative '../../aws/rails/sqs_active_job/test_job'
 
 module ActiveJob
   module QueueAdapters
-
-    class TestJob < ActiveJob::Base
-      queue_as :default
-
-      def perform(a1); end
-    end
-
     describe AwsSqsAdapter do
 
       # the dummy/application config must have:

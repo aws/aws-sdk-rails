@@ -8,7 +8,7 @@ module Aws
       # CLI runner for polling for SQS ActiveJobs
       class Executor
 
-        DEFAULT_EXECUTOR_OPTIONS = {
+        DEFAULTS = {
            min_threads:     0,
            max_threads:     Concurrent.processor_count,
            auto_terminate:  true,
@@ -18,18 +18,18 @@ module Aws
         }.freeze
 
         def initialize(options = {})
-          @executor = Concurrent::ThreadPoolExecutor.new(DEFAULT_EXECUTOR_OPTIONS.merge(options))
+          @executor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options))
           @logger = options[:logger] || ActiveSupport::Logger.new(STDOUT)
         end
 
-        # Push processing
         # TODO: Consider catching the exception and sleeping instead of using :caller_runs
-        def push(message)
+        def execute(message)
           @executor.post(message) do |message|
             begin
-              JobRunner.new(message).perform
+              JobRunner.new(message).run
               message.delete
             rescue StandardError => e
+              # message will not be deleted and will be retried
               @logger.info "Error processing job: #{e}"
             end
           end

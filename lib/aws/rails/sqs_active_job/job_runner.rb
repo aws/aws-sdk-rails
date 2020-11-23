@@ -12,7 +12,7 @@ module Aws
           @arguments = body["arguments"]
         end
 
-        def perform
+        def run
           @job.perform(*@arguments)
         end
       end

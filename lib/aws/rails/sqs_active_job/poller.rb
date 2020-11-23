@@ -46,7 +46,7 @@ module Aws
 
           Signal.trap('INT') { raise Interrupt }
           Signal.trap('TERM') { raise Interrupt }
-          @executor = Executor.new(max_threads: @options[:threads], logger: @logger)
+          @executor = Executor.new(max_threads: @options[:threads], logger: @logger, max_queue: @options[:backpressure])
 
           poll
         rescue Interrupt
@@ -74,7 +74,7 @@ module Aws
             msgs = [msgs] if single_message
             @logger.info "Processing batch of #{msgs.length} messages"
             msgs.each do |msg|
-              @executor.push(Aws::SQS::Message.new(
+              @executor.execute(Aws::SQS::Message.new(
                 queue_url: queue_url,
                 receipt_handle: msg.receipt_handle,
                 data: msg,
@@ -85,6 +85,7 @@ module Aws
         end
 
         private
+
         def boot_rails
           ENV["RACK_ENV"] = ENV["RAILS_ENV"] = @environment
           require "rails"
@@ -103,6 +104,7 @@ module Aws
             opts.on "-e", "--environment ENV", "Rails environment"
             opts.on "-q", "--queue QUEUE", "[Required] Queue to poll"
             opts.on "-t", "--threads [INTEGER]", "Number of worker threads"
+            opts.on "-b", "--backpressure [INTEGER]", "The maximum number of messages to have waiting in the Executor queue. "
             opts.on "-m", "--max_messages [INTEGER]", "Max number of messages to receive at once."
             opts.on "-V", "--visibility_timeout [INTEGER]", "Visibility timeout"
             opts.on "-s", "--shutdown_timeout [INTEGER]", "Shutdown timeout"
@@ -120,7 +122,6 @@ module Aws
         def validate_config
           raise ArgumentError, 'You must specify the name of the queue to process jobs from' unless @options[:queue]
         end
-
       end
     end
   end
