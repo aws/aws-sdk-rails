@@ -37,6 +37,10 @@ module Aws
         # See the (SQS Visibility Timeout Documentation)[https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html]
         attr_accessor :visibility_timeout
 
+        # @return [Integer] Shutdown_timeout - the amount of time to wait
+        # for a clean shutdown.
+        attr_accessor :shutdown_timeout
+
         # @return [Aws::SQS::Client] SQS Client
         attr_accessor :client
 
@@ -48,9 +52,9 @@ module Aws
         # @option options [SQS::Client] :client
         def initialize(options = {})
           options[:config_file] ||= config_file if config_file.exist?
-          options = DEFAULTS.merge(
-            file_options(options).merge(options.deep_symbolize_keys)
-          )
+          options = DEFAULTS
+             .merge(file_options(options))
+             .merge(options)
           set_attributes(options)
         end
 
@@ -75,7 +79,7 @@ module Aws
           self.instance_variables.each do |v|
             v_sym = v.to_s.gsub('@', '').to_sym
             val = self.instance_variable_get(v)
-            h[v_sym] = val if val
+            h[v_sym] = val
           end
           h
         end

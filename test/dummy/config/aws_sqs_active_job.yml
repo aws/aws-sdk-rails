@@ -1,0 +1,3 @@
+max_messages: 5
+queues:
+  default: 'https://queue-url'
