@@ -6,9 +6,7 @@ module ActiveJob
     class TestJob < ActiveJob::Base
       queue_as :default
 
-      def perform(a1)
-
-      end
+      def perform(a1); end
     end
 
     describe AwsSqsAdapter do
