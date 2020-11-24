@@ -1,5 +1,3 @@
-require 'generators/aws_record/base'
-
 module AwsRecord
   module Generators
     class ModelGenerator < Base

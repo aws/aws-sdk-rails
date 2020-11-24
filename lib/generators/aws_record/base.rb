@@ -1,6 +1,4 @@
-require 'rails/generators/named_base'
-require_relative 'generated_attribute'
-require_relative 'secondary_index'
+require 'rails/generators'
 
 module AwsRecord
     module Generators
