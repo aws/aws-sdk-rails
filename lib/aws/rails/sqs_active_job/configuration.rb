@@ -4,14 +4,18 @@ module Aws
   module Rails
     module SqsActiveJob
 
+      # @return [Configuration] the (singleton) Configuration
       def self.config
         @config ||= Configuration.new
       end
 
+      # @yield Configuration
       def self.configure
         yield(config)
       end
 
+      # Holds configuration for AWS SQS ActiveJob
+      # Use the Aws::Rails::SqsActiveJob.config to access.
       class Configuration
 
         # Default configuration options
@@ -23,33 +27,39 @@ module Aws
           logger: ::Rails.logger
         }
 
-        # @return [Hash[Symbol, String]] Queues - A mapping between the
-        # active job queue name and the SQS Queue URL. Note: multiple active
-        # job queues can map to the same SQS Queue URL.
-        attr_accessor :queues
+        attr_accessor :queues, :max_messages, :visibility_timeout,
+                      :shutdown_timeout, :client, :logger
 
-        # @return [Integer] The max number of messages to poll for in a batch.
-        attr_accessor :max_messages
-
-        # @return [Integer] The visibility timeout is the number of seconds
-        # that a message will not be processable by any other consumers.
-        # You should set this value to be longer than your expected job runtime.
-        # See the (SQS Visibility Timeout Documentation)[https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html]
-        attr_accessor :visibility_timeout
-
-        # @return [Integer] Shutdown_timeout - the amount of time to wait
-        # for a clean shutdown.
-        attr_accessor :shutdown_timeout
-
-        # @return [Aws::SQS::Client] SQS Client
-        attr_accessor :client
-
-        # @return [ActiveSupport::Logger] logger
-        attr_accessor :logger
-
-        # @option options [Hash[Symbol, String]] :queues
-        # @option options [String] :config_file
-        # @option options [SQS::Client] :client
+        # @param [Hash] options
+        # @option options [Hash[Symbol, String]] :queues - A mapping between the
+        #   active job queue name and the SQS Queue URL. Note: multiple active
+        #   job queues can map to the same SQS Queue URL.
+        #
+        # @option options  [Integer] :max_messages -
+        #    The max number of messages to poll for in a batch.
+        #
+        # @option options [Integer] :visibility_timeout -
+        #   The visibility timeout is the number of seconds
+        #   that a message will not be processable by any other consumers.
+        #   You should set this value to be longer than your expected job runtime
+        #   to prevent other processes from picking up an running job.
+        #   See the (SQS Visibility Timeout Documentation)[https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html]
+        #
+        # @option options [Integer] :shutdown_timeout -
+        #   the amount of time to wait
+        #   for a clean shutdown.  Jobs that are unable to complete in this time
+        #   will not be deleted from the SQS queue and will be retryable after
+        #   the visibility timeout.
+        #
+        # @option options [ActiveSupport::Logger] :logger - Logger to use
+        #   for the poller.
+        #
+        # @option options [String] :config_file -
+        #   Override file to load configuration from.  If not specified will
+        #   attempt to load from config/aws_sqs_active_job.yml.
+        #
+        # @option options [SQS::Client] :client - SQS Client to use.  A default
+        #   client will be created if none is provided.
         def initialize(options = {})
           options[:config_file] ||= config_file if config_file.exist?
           options = DEFAULTS

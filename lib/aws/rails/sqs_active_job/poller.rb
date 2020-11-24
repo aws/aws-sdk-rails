@@ -11,6 +11,7 @@ module Aws
       class Interrupt < Exception; end
 
       # CLI runner for polling for SQS ActiveJobs
+      # Use `aws_sqs_active_job --help` for detailed usage
       class Poller
 
         DEFAULT_OPTS = {
@@ -102,18 +103,18 @@ module Aws
 
         def option_parser
           parser = ::OptionParser.new { |opts|
-            opts.on "-e", "--environment ENV", "Rails environment"
-            opts.on "-q", "--queue QUEUE", "[Required] Queue to poll"
-            opts.on "-t", "--threads INTEGER", Integer, "Number of worker threads"
-            opts.on "-b", "--backpressure INTEGER", Integer, "The maximum number of messages to have waiting in the Executor queue. "
-            opts.on "-m", "--max_messages INTEGER", Integer, "Max number of messages to receive at once."
-            opts.on "-V", "--visibility_timeout INTEGER", Integer, "Visibility timeout"
-            opts.on "-s", "--shutdown_timeout INTEGER", Integer, "Shutdown timeout"
+            opts.on "-q", "--queue STRING", "[Required] Queue to poll"
+            opts.on "-e", "--environment STRING", "Rails environment (defaults to development). You can also use the APP_ENV or RAILS_ENV environment variables to specify the environment."
+            opts.on "-t", "--threads INTEGER", Integer, "The maximum number of worker threads to create.  Defaults to the number of processors available on this system."
+            opts.on "-b", "--backpressure INTEGER", Integer, "The maximum number of messages to have waiting in the Executor queue. This should be a low, but non zero number.  Messages in the Executor queue cannot be picked up by other processes and will slow down shutdown."
+            opts.on "-m", "--max_messages INTEGER", Integer, "Max number of messages to receive in a batch from SQS."
+            opts.on "-v", "--visibility_timeout INTEGER", Integer, "The visibility timeout is the number of seconds that a message will not be processable by any other consumers. You should set this value to be longer than your expected job runtime to prevent other processes from picking up an running job.  See the SQS Visibility Timeout Documentation at https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html."
+            opts.on "-s", "--shutdown_timeout INTEGER", Integer, "The amount of time to wait for a clean shutdown.  Jobs that are unable to complete in this time will not be deleted from the SQS queue and will be retryable after the visibility timeout."
           }
 
           parser.banner = "aws_sqs_active_job [options]"
           parser.on_tail "-h", "--help", "Show help" do
-            @logger.info parser
+            puts parser
             exit 1
           end
 

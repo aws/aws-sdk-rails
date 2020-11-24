@@ -14,12 +14,12 @@ module Aws
 
         before do
           allow(ActiveSupport::Logger).to receive(:new).and_return(logger)
-          allow(Aws::SQS::Client).to receive(:new).and_return(sqs_client)
+          Aws::Rails::SqsActiveJob.config.client = sqs_client
         end
 
         describe '#initialize' do
           it 'parses args' do
-            poller = Poller.new(['--queue', 'default', '-V', '360'])
+            poller = Poller.new(['--queue', 'default', '-v', '360'])
             parsed = poller.instance_variable_get(:@options)
             expect(parsed[:queue]).to eq 'default'
             expect(parsed[:visibility_timeout]).to eq 360
@@ -27,7 +27,7 @@ module Aws
         end
 
         describe '#run' do
-          let(:poller) { Poller.new(['--queue', 'default', '-V', '360']) }
+          let(:poller) { Poller.new(['--queue', 'default', '-v', '360']) }
 
           it 'boots rails' do
             expect(poller).to receive(:require).with('rails')

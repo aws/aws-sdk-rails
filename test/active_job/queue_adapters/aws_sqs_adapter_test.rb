@@ -9,9 +9,11 @@ module ActiveJob
       # config.active_job.queue_adapter = :aws_sqs
       let(:client) { double('Client') }
       before do
-        Aws::Rails::SqsActiveJob.configure do |c|
-          c.client = client
-        end
+        Aws::Rails::SqsActiveJob.config.client = client
+      end
+
+      after do
+        Aws::Rails::SqsActiveJob.config.client = nil
       end
 
       it 'enqueues jobs' do
