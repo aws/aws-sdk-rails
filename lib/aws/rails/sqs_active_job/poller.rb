@@ -7,9 +7,10 @@ require 'concurrent'
 module Aws
   module Rails
     module SqsActiveJob
-      # CLI runner for polling for SQS ActiveJobs
 
       class Interrupt < Exception; end
+
+      # CLI runner for polling for SQS ActiveJobs
       class Poller
 
         DEFAULT_OPTS = {
@@ -55,6 +56,8 @@ module Aws
           exit
         end
 
+        private
+
         def shutdown
           @executor.shutdown(@options[:shutdown_timeout])
         end
@@ -84,10 +87,8 @@ module Aws
           end
         end
 
-        private
-
         def boot_rails
-          ENV["RACK_ENV"] = ENV["RAILS_ENV"] = @environment
+          ENV['RACK_ENV'] = ENV['RAILS_ENV'] = @environment
           require "rails"
           require File.expand_path("config/environment.rb")
         end
@@ -103,11 +104,11 @@ module Aws
           parser = ::OptionParser.new { |opts|
             opts.on "-e", "--environment ENV", "Rails environment"
             opts.on "-q", "--queue QUEUE", "[Required] Queue to poll"
-            opts.on "-t", "--threads [INTEGER]", "Number of worker threads"
-            opts.on "-b", "--backpressure [INTEGER]", "The maximum number of messages to have waiting in the Executor queue. "
-            opts.on "-m", "--max_messages [INTEGER]", "Max number of messages to receive at once."
-            opts.on "-V", "--visibility_timeout [INTEGER]", "Visibility timeout"
-            opts.on "-s", "--shutdown_timeout [INTEGER]", "Shutdown timeout"
+            opts.on "-t", "--threads INTEGER", Integer, "Number of worker threads"
+            opts.on "-b", "--backpressure INTEGER", Integer, "The maximum number of messages to have waiting in the Executor queue. "
+            opts.on "-m", "--max_messages INTEGER", Integer, "Max number of messages to receive at once."
+            opts.on "-V", "--visibility_timeout INTEGER", Integer, "Visibility timeout"
+            opts.on "-s", "--shutdown_timeout INTEGER", Integer, "Shutdown timeout"
           }
 
           parser.banner = "aws_sqs_active_job [options]"
