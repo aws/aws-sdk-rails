@@ -5,15 +5,16 @@ module Aws
     module SqsActiveJob
 
       class JobRunner
+        attr_reader :id, :class_name
+
         def initialize(message)
-          body = Aws::Json.load(message.data.body)
-          job_class = body["job_class"].constantize
-          @job = job_class.new
-          @arguments = body["arguments"]
+          @job_data = Aws::Json.load(message.data.body)
+          @class_name = @job_data['job_class'].constantize
+          @id = @job_data['job_id']
         end
 
         def run
-          @job.perform(*@arguments)
+          ActiveJob::Base.execute @job_data
         end
       end
     end

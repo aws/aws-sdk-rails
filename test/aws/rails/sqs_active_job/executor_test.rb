@@ -7,7 +7,7 @@ module Aws
 
       describe Executor do
 
-        let(:logger) { double(info: nil) }
+        let(:logger) { double(info: nil, debug: nil) }
 
         before do
           allow(ActiveSupport::Logger).to receive(:new).and_return(logger)
@@ -24,7 +24,7 @@ module Aws
           # message is a reserved minitest name
           let(:msg) { double(data: double(body: body)) }
           let(:executor) { Executor.new }
-          let(:runner) { double('runner') }
+          let(:runner) { double('runner', id: 'jobid', class_name: 'jobclass') }
 
           it 'executes the job and deletes the message' do
             expect(JobRunner).to receive(:new).and_return(runner)

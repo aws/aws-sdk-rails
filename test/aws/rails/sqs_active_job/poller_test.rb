@@ -10,9 +10,11 @@ module Aws
         let(:queue_poller) { double(Aws::SQS::QueuePoller) }
         let(:msg) { double('SQSMessage', receipt_handle: '1234') }
         let(:logger) { double(info: nil) }
+        let(:sqs_client) { Aws::SQS::Client.new(stub_responses: true) }
 
         before do
           allow(ActiveSupport::Logger).to receive(:new).and_return(logger)
+          allow(Aws::SQS::Client).to receive(:new).and_return(sqs_client)
         end
 
         describe '#initialize' do
