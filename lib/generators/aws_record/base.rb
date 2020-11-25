@@ -1,4 +1,6 @@
 require 'rails/generators'
+require_relative 'generated_attribute'
+require_relative 'secondary_index'
 
 module AwsRecord
     module Generators
@@ -13,7 +15,7 @@ module AwsRecord
         class_option :table_name, type: :string, banner: "model_table_name"
         class_option :password_digest, type: :boolean, desc: "Whether to add a password_digest field to the model"
 
-        class_option :required, type: :array, default: [], banner: "field1...", desc: "A list of attributes that are required for an instance of the model"
+        class_option :required, type: :string, banner: "field1...", desc: "A list of attributes that are required for an instance of the model"
         class_option :length_validations, type: :hash, default: {}, banner: "field1:MIN-MAX...", desc: "Validations on the length of attributes in a model"
         class_option :scaffold, type: :boolean, desc: "Adds helper methods that scaffolding uses"
 
@@ -198,7 +200,7 @@ module AwsRecord
         end
 
         def parse_validations!
-          @required_attrs = options['required']
+          @required_attrs = options['required'] ? options['required'].split(',') : []
           @required_attrs.each do |val_attr|
             @parse_errors << ArgumentError.new("No such field #{val_attr} in required validations") if !self.attributes.any? { |attr| attr.name == val_attr }
           end

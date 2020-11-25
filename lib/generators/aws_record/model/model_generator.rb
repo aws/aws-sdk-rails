@@ -1,3 +1,5 @@
+require_relative '../base'
+
 module AwsRecord
   module Generators
     class ModelGenerator < Base
