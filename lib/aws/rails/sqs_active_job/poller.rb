@@ -39,7 +39,7 @@ module Aws
           # rails has been booted.
           @options = DEFAULT_OPTS
                      .merge(Aws::Rails::SqsActiveJob.config.to_h)
-                     .merge(@options)
+                     .merge(@options.to_h)
           validate_config
           # ensure we have a logger configured
           @logger = @options[:logger] || ActiveSupport::Logger.new(STDOUT)
@@ -95,21 +95,15 @@ module Aws
         end
 
         def parse_args(argv)
-          opts = {}
-          @parser = option_parser
-          @parser.parse!(argv, into: opts)
-          opts
-        end
-
-        def option_parser
+          out = {}
           parser = ::OptionParser.new { |opts|
-            opts.on "-q", "--queue STRING", "[Required] Queue to poll"
-            opts.on "-e", "--environment STRING", "Rails environment (defaults to development). You can also use the APP_ENV or RAILS_ENV environment variables to specify the environment."
-            opts.on "-t", "--threads INTEGER", Integer, "The maximum number of worker threads to create.  Defaults to the number of processors available on this system."
-            opts.on "-b", "--backpressure INTEGER", Integer, "The maximum number of messages to have waiting in the Executor queue. This should be a low, but non zero number.  Messages in the Executor queue cannot be picked up by other processes and will slow down shutdown."
-            opts.on "-m", "--max_messages INTEGER", Integer, "Max number of messages to receive in a batch from SQS."
-            opts.on "-v", "--visibility_timeout INTEGER", Integer, "The visibility timeout is the number of seconds that a message will not be processable by any other consumers. You should set this value to be longer than your expected job runtime to prevent other processes from picking up an running job.  See the SQS Visibility Timeout Documentation at https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html."
-            opts.on "-s", "--shutdown_timeout INTEGER", Integer, "The amount of time to wait for a clean shutdown.  Jobs that are unable to complete in this time will not be deleted from the SQS queue and will be retryable after the visibility timeout."
+            opts.on("-q", "--queue STRING", "[Required] Queue to poll") { |a| out[:queue] = a }
+            opts.on("-e", "--environment STRING", "Rails environment (defaults to development). You can also use the APP_ENV or RAILS_ENV environment variables to specify the environment.") { |a| out[:environment] = a }
+            opts.on("-t", "--threads INTEGER", Integer, "The maximum number of worker threads to create.  Defaults to the number of processors available on this system.") { |a| out[:threads] = a }
+            opts.on("-b", "--backpressure INTEGER", Integer, "The maximum number of messages to have waiting in the Executor queue. This should be a low, but non zero number.  Messages in the Executor queue cannot be picked up by other processes and will slow down shutdown.") { |a| out[:backpressure] = a }
+            opts.on("-m", "--max_messages INTEGER", Integer, "Max number of messages to receive in a batch from SQS.") { |a| out[:max_messages] = a }
+            opts.on("-v", "--visibility_timeout INTEGER", Integer, "The visibility timeout is the number of seconds that a message will not be processable by any other consumers. You should set this value to be longer than your expected job runtime to prevent other processes from picking up an running job.  See the SQS Visibility Timeout Documentation at https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html.") { |a| out[:visibility_timeout] = a }
+            opts.on("-s", "--shutdown_timeout INTEGER", Integer, "The amount of time to wait for a clean shutdown.  Jobs that are unable to complete in this time will not be deleted from the SQS queue and will be retryable after the visibility timeout.") { |a| out[:shutdown_timeout] = a }
           }
 
           parser.banner = "aws_sqs_active_job [options]"
@@ -118,7 +112,8 @@ module Aws
             exit 1
           end
 
-          parser
+          parser.parse(argv)
+          out
         end
 
         def validate_config

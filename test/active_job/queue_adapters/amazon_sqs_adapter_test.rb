@@ -3,10 +3,10 @@ require_relative '../../aws/rails/sqs_active_job/test_job'
 
 module ActiveJob
   module QueueAdapters
-    describe AwsSqsAdapter do
+    describe AmazonSqsAdapter do
 
       # the dummy/application config must have:
-      # config.active_job.queue_adapter = :aws_sqs
+      # config.active_job.queue_adapter = :amazon
       let(:client) { double('Client') }
       before do
         Aws::Rails::SqsActiveJob.config.client = client

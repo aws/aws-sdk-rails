@@ -9,6 +9,6 @@ module Dummy
     config.eager_load = false
     config.require_master_key = true
 
-    config.active_job.queue_adapter = :aws_sqs
+    config.active_job.queue_adapter = :amazon
   end
 end

@@ -5,7 +5,7 @@ require 'aws-sdk-sqs'
 module ActiveJob
   module QueueAdapters
 
-    class AwsSqsAdapter
+    class AmazonSqsAdapter
 
       def enqueue(job)
         _enqueue(job)
@@ -41,5 +41,9 @@ module ActiveJob
         }
       end
     end
+
+    # create an alias to allow `:amazon` to be used as the adapter name
+    # `:amazon` is the convention used for ActionMailer and ActiveStorage
+    AmazonAdapter = AmazonSqsAdapter
   end
 end
