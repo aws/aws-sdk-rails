@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Feature - Add AWS SQS ActiveJob - A lightweight, SQS backend for ActiveJob.
+
 3.2.1 (2020-11-13)
 ------------------
 
