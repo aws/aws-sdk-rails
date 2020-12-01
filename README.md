@@ -229,6 +229,97 @@ ActiveSupport::Notifications.subscribe(/s3[.]aws/) do |name, start, finish, id, 
   # process event
 end
 ```
+
+## AWS SQS Active Job
+This package provides a lightweight, SQS backend
+for [ActiveJob](https://guides.rubyonrails.org/active_job_basics.html).  
+
+To use AWS SQS ActiveJob as your queuing backend, simply set the `active_job.queue_adapter`
+to `:amazon` or `:amazon_sqs` (note, `:amazon` has been used for a number of
+ other Amazon rails adapters such as ActiveStorage, so has been
+ carried forward as convention here).  For details on setting the
+ queuing backend see:
+[ActiveJob: Setting the Backend](https://guides.rubyonrails.org/active_job_basics.html#setting-the-backend).
+
+```ruby
+# config/application.rb
+module YourApp
+  class Application < Rails::Application
+    config.active_job.queue_adapter = :amazon_sqs # note: can use either :amazon or :amazon_sqs
+  end
+end
+
+# Or to set the adapter for a single job:
+class YourJob < ApplicationJob
+  self.queue_adapter = :amazon_sqs
+  #....
+end
+```
+
+You also need to configure a mapping of ActiveJob queue name to SQS Queue URL. For more details, see the configuration section below.
+
+```ruby
+# config/aws_sqs_active_job.yml
+queues:
+  default: 'https://my-queue-url.amazon.aws'
+```
+
+To queue a job, you can just use standard ActiveJob methods:
+```ruby
+# To queue for immediate processing
+YourJob.perform_later(args)
+
+# or to schedule a job for a future time:
+YourJob.set(wait: 1.minute).perform_later(args)
+```
+
+Note: Due to limitations in SQS, you cannot schedule jobs for
+later than 15 minutes in the future.
+
+### Running works - polling for jobs
+To start processing jobs, you need to start a separate process
+(in additional to your Rails app) with `bin/aws_sqs_active_job`
+(an executable script provided with this gem).  You need to specify the queue to
+process jobs from:
+```sh
+RAILS_ENV=development bundle exec aws_sqs_active_job --queue default
+```
+
+To see a complete list of arguments use `--help`.  
+
+You can kill the process at any time with `CTRL+C` - the processor will attempt
+to shutdown cleanly and will wait up to `:shutdown_timeout` seconds for all
+actively running jobs to finish before killing them.
+
+
+
+Note: When running in production, its recommended that use a process
+supervisor such as [foreman](https://github.com/ddollar/foreman), systemd,
+upstart, daemontools, launchd, runit, ect.  
+
+### Configuration
+
+For a complete list of configuration options see the
+`Aws::Rails::SqsActiveJob::Configuration` documentation.
+
+You can configure AWS SQS Active Job either through the yml file or
+through code in your config/<env>.rb or initializers.  
+
+For file based configuration, you can use either:
+1. config/aws_sqs_active_job/<RAILS_ENV>.yml
+2. config/aws_sqs_active_job.yml
+
+The yml file supports ERB.  
+
+To configure in code:
+```ruby
+Aws::Rails::SqsActiveJob.configure do |config|
+  config.logger = ActiveSupport::Logger.new(STDOUT)
+  config.max_messages = 5
+  config.client = Aws::SQS::Client.new(region: 'us-east-1')
+end
+```
+
 ## AWS Record Generators
 
 This package also pulls in the [`aws-record` gem](https://github.com/aws/aws-sdk-ruby-record)
@@ -396,6 +487,5 @@ Command Option Names | Purpose
   [--table-name=name] | Sets the name of the table in DynamoDB, if different than the model name
   [--skip-table-config] | Doesn't generate a table config for the model
   [--password-digest] | Adds a password field (note that you must have bcrypt has a dependency) that automatically hashes and manages the model password
-  [--scaffold] | Adds helpers methods that are used by the scaffolding
 
 The included rake task `aws_record:migrate` will run all of the migrations in `app/db/table_config`
