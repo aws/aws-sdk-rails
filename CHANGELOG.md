@@ -1,12 +1,14 @@
 Unreleased Changes
 ------------------
 
+* Feature - Add `aws-record` as a dependency, a rails generator for `aws-record` models, and a rake task for table migrations. 
+
 * Feature - Add AWS SQS ActiveJob - A lightweight, SQS backend for ActiveJob.
 
 3.2.1 (2020-11-13)
 ------------------
 
-* Issue - Include missing files into the gemspec
+* Issue - Include missing files into the gemspec.
 
 3.2.0 (2020-11-13)
 ------------------
