@@ -17,7 +17,6 @@ module AwsRecord
 
         class_option :required, type: :string, banner: "field1...", desc: "A list of attributes that are required for an instance of the model"
         class_option :length_validations, type: :hash, default: {}, banner: "field1:MIN-MAX...", desc: "Validations on the length of attributes in a model"
-        class_option :scaffold, type: :boolean, desc: "Adds helper methods that scaffolding uses"
 
         attr_accessor :primary_read_units, :primary_write_units, :gsi_rw_units, :gsis, :required_attrs, :length_validations
 

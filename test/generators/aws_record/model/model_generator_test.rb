@@ -151,15 +151,6 @@ module AwsRecord
         )
       end
 
-      def test_scaffold_helpers
-        run_generator ["TestScaffoldHelpers", "--table_config=primary:5-2", "--scaffold", "-f"]
-        assert_file 'app/models/test_scaffold_helpers.rb'
-        assert_file_fixture(
-          'test/fixtures/models/test_scaffold_helpers.rb',
-          'test/dummy/app/models/test_scaffold_helpers.rb'
-        )
-      end
-
       def test_validations
         run_generator ["TestValidations", "title", "body", "--required=title,body", "--length-validations=title:5-10", "body:100-250", "--table_config=primary:5-2", "-f"]
         assert_file 'app/models/test_validations.rb'
