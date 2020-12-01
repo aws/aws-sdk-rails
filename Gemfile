@@ -11,6 +11,7 @@ end
 group :test do
   gem 'rspec-expectations'
   gem 'rspec-mocks'
+  gem 'bcrypt'
 end
 
 group :docs do
