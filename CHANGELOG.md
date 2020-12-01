@@ -1,4 +1,4 @@
-Unreleased Changes
+3.3.0 (2020-12-01)
 ------------------
 
 * Feature - Add `aws-record` as a dependency, a rails generator for `aws-record` models, and a rake task for table migrations. 
