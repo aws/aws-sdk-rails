@@ -14,11 +14,12 @@ module Aws
         yield(config)
       end
 
-      # Holds configuration for AWS SQS ActiveJob
-      # Use the Aws::Rails::SqsActiveJob.config to access.
+      # Configuration for AWS SQS ActiveJob.
+      # Use +Aws::Rails::SqsActiveJob.config+ to access the singleton config instance.
       class Configuration
 
         # Default configuration options
+        # @api private
         DEFAULTS = {
           max_messages:  10,
           visibility_timeout: 120,
@@ -27,38 +28,42 @@ module Aws
           logger: ::Rails.logger
         }
 
+        # @api private
         attr_accessor :queues, :max_messages, :visibility_timeout,
                       :shutdown_timeout, :client, :logger
 
+        # Don't use this method directly: Confugration is a singleton class, use
+        # +Aws::Rails::SqsActiveJob.config+ to access the singleton config.
+        #
         # @param [Hash] options
-        # @option options [Hash[Symbol, String]] :queues - A mapping between the
+        # @option options [Hash[Symbol, String]] :queues A mapping between the
         #   active job queue name and the SQS Queue URL. Note: multiple active
         #   job queues can map to the same SQS Queue URL.
         #
-        # @option options  [Integer] :max_messages -
+        # @option options  [Integer] :max_messages
         #    The max number of messages to poll for in a batch.
         #
-        # @option options [Integer] :visibility_timeout -
+        # @option options [Integer] :visibility_timeout
         #   The visibility timeout is the number of seconds
         #   that a message will not be processable by any other consumers.
         #   You should set this value to be longer than your expected job runtime
         #   to prevent other processes from picking up an running job.
         #   See the (SQS Visibility Timeout Documentation)[https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html]
         #
-        # @option options [Integer] :shutdown_timeout -
+        # @option options [Integer] :shutdown_timeout
         #   the amount of time to wait
         #   for a clean shutdown.  Jobs that are unable to complete in this time
         #   will not be deleted from the SQS queue and will be retryable after
         #   the visibility timeout.
         #
-        # @option options [ActiveSupport::Logger] :logger - Logger to use
+        # @option options [ActiveSupport::Logger] :logger Logger to use
         #   for the poller.
         #
-        # @option options [String] :config_file -
+        # @option options [String] :config_file
         #   Override file to load configuration from.  If not specified will
         #   attempt to load from config/aws_sqs_active_job.yml.
         #
-        # @option options [SQS::Client] :client - SQS Client to use.  A default
+        # @option options [SQS::Client] :client SQS Client to use.  A default
         #   client will be created if none is provided.
         def initialize(options = {})
           options[:config_file] ||= config_file if config_file.exist?
@@ -80,10 +85,12 @@ module Aws
           queues[job_queue.to_sym]
         end
 
+        # @api private
         def to_s
           to_h.to_s
         end
 
+        # @api private
         def to_h
           h = {}
           self.instance_variables.each do |v|

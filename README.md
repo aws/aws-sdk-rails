@@ -300,7 +300,8 @@ upstart, daemontools, launchd, runit, ect.
 ### Configuration
 
 For a complete list of configuration options see the
-`Aws::Rails::SqsActiveJob::Configuration` documentation.
+[Aws::Rails::SqsActiveJob::Configuration](https://docs.aws.amazon.com/sdk-for-ruby/aws-sdk-rails/api/Aws/Rails/SqsActiveJob/Configuration.html)
+documentation.
 
 You can configure AWS SQS Active Job either through the yml file or
 through code in your config/<env>.rb or initializers.  
