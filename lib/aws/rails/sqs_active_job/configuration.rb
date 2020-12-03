@@ -30,7 +30,7 @@ module Aws
 
         # @api private
         attr_accessor :queues, :max_messages, :visibility_timeout,
-                      :shutdown_timeout, :client, :logger
+                      :shutdown_timeout, :client, :logger, :async_queue_error_handler
 
         # Don't use this method directly: Confugration is a singleton class, use
         # +Aws::Rails::SqsActiveJob.config+ to access the singleton config.
@@ -62,6 +62,12 @@ module Aws
         # @option options [String] :config_file
         #   Override file to load configuration from.  If not specified will
         #   attempt to load from config/aws_sqs_active_job.yml.
+        #
+        # @option options [Callable] :async_queue_error_handler An error handler
+        #   to be called when the async active job adapter experiances an error
+        #   queueing a job.  Only applies when
+        #   +active_job.queue_adapter = :amazon_sqs_async+.  Called with:
+        #   [error, job, job_options]
         #
         # @option options [SQS::Client] :client SQS Client to use.  A default
         #   client will be created if none is provided.

@@ -13,7 +13,6 @@ module Aws
            max_threads:     Concurrent.processor_count,
            auto_terminate:  true,
            idletime:        60, # 1 minute
-           max_queue:       2,
            fallback_policy: :caller_runs # slow down the producer thread
         }.freeze
 
