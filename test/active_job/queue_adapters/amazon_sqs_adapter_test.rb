@@ -4,8 +4,6 @@ module ActiveJob
   module QueueAdapters
     describe AmazonSqsAdapter do
 
-      # the dummy/application config must have:
-      # config.active_job.queue_adapter = :amazon
       let(:client) { double('Client') }
       before do
         Aws::Rails::SqsActiveJob.config.client = client
@@ -29,16 +27,13 @@ module ActiveJob
         t1 = Time.now
         allow(Time).to receive(:now).and_return t1
 
-        # expect(client).to receive(:send_message)
-        #   .with(
-        #     queue_url: 'https://queue-url',
-        #     delay_seconds: 60,
-        #     message_body: instance_of(String),
-        #     message_attributes: instance_of(Hash)
-        #   )
-        expect(client).to receive(:send_message) do |args|
-          puts "\nclient.send_message got: #{args}"
-        end
+        expect(client).to receive(:send_message)
+          .with(
+            queue_url: 'https://queue-url',
+            delay_seconds: 60,
+            message_body: instance_of(String),
+            message_attributes: instance_of(Hash)
+          )
         TestJob.set(wait: 1.minute).perform_later('test')
       end
 
