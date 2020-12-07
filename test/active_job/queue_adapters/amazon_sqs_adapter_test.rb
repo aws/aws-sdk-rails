@@ -1,4 +1,3 @@
-require 'test_helper'
 require_relative '../../aws/rails/sqs_active_job/test_job'
 
 module ActiveJob
@@ -30,13 +29,16 @@ module ActiveJob
         t1 = Time.now
         allow(Time).to receive(:now).and_return t1
 
-        expect(client).to receive(:send_message)
-          .with(
-            queue_url: 'https://queue-url',
-            delay_seconds: 60,
-            message_body: instance_of(String),
-            message_attributes: instance_of(Hash)
-          )
+        # expect(client).to receive(:send_message)
+        #   .with(
+        #     queue_url: 'https://queue-url',
+        #     delay_seconds: 60,
+        #     message_body: instance_of(String),
+        #     message_attributes: instance_of(Hash)
+        #   )
+        expect(client).to receive(:send_message) do |args|
+          puts "\nclient.send_message got: #{args}"
+        end
         TestJob.set(wait: 1.minute).perform_later('test')
       end
 

@@ -1,7 +1,9 @@
 Unreleased Changes
 ------------------
 
-* Feature - Add a non-blocking async ActiveJob adapter: `:amazon_sqs_async`.  
+* Feature - Add a non-blocking async ActiveJob adapter: `:amazon_sqs_async`.
+
+* Feature - Add a lambda handler for processing active jobs from an SQS trigger.
 
 * Issue - Fix bug in default for backpressure config.
 
