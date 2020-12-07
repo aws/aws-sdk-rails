@@ -231,7 +231,7 @@ end
 ```
 
 ## AWS SQS Active Job
-This package provides a lightweight, SQS backend
+This package provides a lightweight, high performance SQS backend
 for [ActiveJob](https://guides.rubyonrails.org/active_job_basics.html).  
 
 To use AWS SQS ActiveJob as your queuing backend, simply set the `active_job.queue_adapter`
@@ -240,12 +240,21 @@ to `:amazon` or `:amazon_sqs` (note, `:amazon` has been used for a number of
  carried forward as convention here).  For details on setting the
  queuing backend see:
 [ActiveJob: Setting the Backend](https://guides.rubyonrails.org/active_job_basics.html#setting-the-backend).
+To use the non-blocking (async) adapter set `active_job.queue_adapter` to `:amazon_sqs_async`.  If you have
+a lot of jobs to queue or you need to avoid the extra latency from an SQS call in your request then consider
+using the async adapter.  However, you may also want to configure a `async_queue_error_handler` to
+handle errors that may occur when queuing jobs.  See the
+[Aws::Rails::SqsActiveJob::Configuration](https://docs.aws.amazon.com/sdk-for-ruby/aws-sdk-rails/api/Aws/Rails/SqsActiveJob/Configuration.html)
+for documentation.
+
 
 ```ruby
 # config/application.rb
 module YourApp
   class Application < Rails::Application
     config.active_job.queue_adapter = :amazon_sqs # note: can use either :amazon or :amazon_sqs
+    # To use the non-blocking async adapter:
+    # config.active_job.queue_adapter = :amazon_sqs_async
   end
 end
 
@@ -276,6 +285,13 @@ YourJob.set(wait: 1.minute).perform_later(args)
 Note: Due to limitations in SQS, you cannot schedule jobs for
 later than 15 minutes in the future.
 
+### Performance
+AWS SQS ActiveJob is a lightweight and performant queueing backend.  Benchmark performed using: Ruby MRI 2.6.5,  
+shoryuken 5.0.5, aws-sdk-rails 3.3.1 and aws-sdk-sqs 1.34.0 on a 2015 Macbook Pro dual-core i7 with 16GB ram.
+
+*AWS SQS ActiveJob* (default settings): Throughput 119.1 jobs/sec
+*Shoryuken* (default settings): Throughput 76.8 jobs/sec
+
 ### Running workers - polling for jobs
 To start processing jobs, you need to start a separate process
 (in additional to your Rails app) with `bin/aws_sqs_active_job`
@@ -292,10 +308,50 @@ to shutdown cleanly and will wait up to `:shutdown_timeout` seconds for all
 actively running jobs to finish before killing them.
 
 
-
 Note: When running in production, its recommended that use a process
 supervisor such as [foreman](https://github.com/ddollar/foreman), systemd,
 upstart, daemontools, launchd, runit, ect.  
+
+### Serverless workers: processing activejobs using AWS Lambda
+Rather than managing the worker processes yourself, you can use Lambda with an SQS Trigger.
+With [Lambda Container Image Support](https://aws.amazon.com/blogs/aws/new-for-aws-lambda-container-image-support/)
+and the lambda handler provided with `aws-sdk-rails` its easy to use lambda to run ActiveJobs for your dockerized
+rails app (see below for some tips).  All you need to do is:
+1. include the [aws_lambda_ric gem](https://github.com/aws/aws-lambda-ruby-runtime-interface-client)
+2. Push your image to ecr
+3. Create a lambda function from your image (see the lambda docs for details).
+4. Add an SQS Trigger for the queue(s) you want to process jobs from.
+5. Set the ENTRYPOINT to `/usr/local/bundle/bin/aws_lambda_ric` and the CMD
+to `config/environment.Aws::Rails::SqsActiveJob.lambda_job_handler` - this will load Rails and
+then use the lambda handler provided by `aws-sdk-rails.` You can do this either as function config
+or in your Dockerfile.
+
+There are a few
+[limitations/requirements](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html#images-reqs)
+for lambda container images: the default lambda user must be able
+to read all the files and the image must be able to run on a read only file system.
+You may need to disable bootsnap, set a HOME env variable and
+set the logger to STDOUT (which lambda will record to cloudwatch for you).
+
+You can use the RAILS_ENV to control environment.  If you need to execute
+specific configuration in the lambda, you can create a ruby file and use it
+as your entrypoint:
+
+```ruby
+# app.rb
+# some custom config
+
+require_relative 'config/environment' # load rails
+
+# Rails.config.custom....
+# Aws::Rails::SqsActiveJob.config....
+
+# no need to write a handler yourself here, as long as
+# aws-sdk-rails is loaded, you can still use the
+# Aws::Rails::SqsActiveJob.lambda_job_handler
+
+# To use this file, set CMD:  app.Aws::Rails::SqsActiveJob.lambda_job_handler
+```
 
 ### Configuration
 

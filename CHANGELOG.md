@@ -1,10 +1,16 @@
 Unreleased Changes
 ------------------
 
+* Feature - Add a non-blocking async ActiveJob adapter: `:amazon_sqs_async`.
+
+* Feature - Add a lambda handler for processing active jobs from an SQS trigger.
+
+* Issue - Fix bug in default for backpressure config.
+
 3.3.0 (2020-12-01)
 ------------------
 
-* Feature - Add `aws-record` as a dependency, a rails generator for `aws-record` models, and a rake task for table migrations. 
+* Feature - Add `aws-record` as a dependency, a rails generator for `aws-record` models, and a rake task for table migrations.
 
 * Feature - Add AWS SQS ActiveJob - A lightweight, SQS backend for ActiveJob.
 

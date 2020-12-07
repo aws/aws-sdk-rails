@@ -1,19 +1,12 @@
-require 'test_helper'
 require_relative '../../aws/rails/sqs_active_job/test_job'
 
 module ActiveJob
   module QueueAdapters
     describe AmazonSqsAdapter do
 
-      # the dummy/application config must have:
-      # config.active_job.queue_adapter = :amazon
       let(:client) { double('Client') }
       before do
-        Aws::Rails::SqsActiveJob.config.client = client
-      end
-
-      after do
-        Aws::Rails::SqsActiveJob.config.client = nil
+        allow(Aws::Rails::SqsActiveJob.config).to receive(:client).and_return(client)
       end
 
       it 'enqueues jobs' do
@@ -24,6 +17,7 @@ module ActiveJob
             message_attributes: instance_of(Hash)
           )
         TestJob.perform_later('test')
+        sleep(0.1)
       end
 
       it 'enqueues delayed jobs' do
@@ -38,6 +32,7 @@ module ActiveJob
             message_attributes: instance_of(Hash)
           )
         TestJob.set(wait: 1.minute).perform_later('test')
+        sleep(0.1)
       end
 
       it 'raises an error when job delay is great than SQS support' do

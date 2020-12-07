@@ -15,10 +15,11 @@ module Aws
       class Poller
 
         DEFAULT_OPTS = {
-          threads: Concurrent.processor_count,
+          threads: 2*Concurrent.processor_count,
           max_messages: 10,
           visibility_timeout: 60,
           shutdown_timeout: 15,
+          backpressure: 10
         }
 
         def initialize(args = ARGV)
@@ -99,7 +100,7 @@ module Aws
           parser = ::OptionParser.new { |opts|
             opts.on("-q", "--queue STRING", "[Required] Queue to poll") { |a| out[:queue] = a }
             opts.on("-e", "--environment STRING", "Rails environment (defaults to development). You can also use the APP_ENV or RAILS_ENV environment variables to specify the environment.") { |a| out[:environment] = a }
-            opts.on("-t", "--threads INTEGER", Integer, "The maximum number of worker threads to create.  Defaults to the number of processors available on this system.") { |a| out[:threads] = a }
+            opts.on("-t", "--threads INTEGER", Integer, "The maximum number of worker threads to create.  Defaults to 2x the number of processors available on this system.") { |a| out[:threads] = a }
             opts.on("-b", "--backpressure INTEGER", Integer, "The maximum number of messages to have waiting in the Executor queue. This should be a low, but non zero number.  Messages in the Executor queue cannot be picked up by other processes and will slow down shutdown.") { |a| out[:backpressure] = a }
             opts.on("-m", "--max_messages INTEGER", Integer, "Max number of messages to receive in a batch from SQS.") { |a| out[:max_messages] = a }
             opts.on("-v", "--visibility_timeout INTEGER", Integer, "The visibility timeout is the number of seconds that a message will not be processable by any other consumers. You should set this value to be longer than your expected job runtime to prevent other processes from picking up an running job.  See the SQS Visibility Timeout Documentation at https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html.") { |a| out[:visibility_timeout] = a }
