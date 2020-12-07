@@ -1,4 +1,4 @@
-Unreleased Changes
+3.4.0 (2020-12-07)
 ------------------
 
 * Feature - Add a non-blocking async ActiveJob adapter: `:amazon_sqs_async`.
