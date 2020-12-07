@@ -308,7 +308,6 @@ to shutdown cleanly and will wait up to `:shutdown_timeout` seconds for all
 actively running jobs to finish before killing them.
 
 
-
 Note: When running in production, its recommended that use a process
 supervisor such as [foreman](https://github.com/ddollar/foreman), systemd,
 upstart, daemontools, launchd, runit, ect.  

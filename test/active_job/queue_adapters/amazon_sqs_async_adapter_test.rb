@@ -14,12 +14,7 @@ module ActiveJob
 
       let(:client) { double('Client') }
       before do
-        Aws::Rails::SqsActiveJob.config.client = client
-      end
-
-      after do
-        Aws::Rails::SqsActiveJob.config.client = nil
-        Aws::Rails::SqsActiveJob.config.async_queue_error_handler = nil
+        allow(Aws::Rails::SqsActiveJob.config).to receive(:client).and_return(client)
       end
 
       it 'enqueues jobs without blocking' do
@@ -37,7 +32,9 @@ module ActiveJob
 
       it 'calls the custom error handler when set' do
         expect(client).to receive(:send_message).and_raise("error")
-        Aws::Rails::SqsActiveJob.config.async_queue_error_handler = proc { @error_handled = true }
+        allow(Aws::Rails::SqsActiveJob.config)
+          .to receive(:async_queue_error_handler)
+          .and_return(proc { @error_handled = true })
 
         TestJob.perform_later('test')
         sleep(0.1)
