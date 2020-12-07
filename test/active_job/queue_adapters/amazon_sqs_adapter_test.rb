@@ -17,6 +17,7 @@ module ActiveJob
             message_attributes: instance_of(Hash)
           )
         TestJob.perform_later('test')
+        sleep(0.1)
       end
 
       it 'enqueues delayed jobs' do
@@ -31,6 +32,7 @@ module ActiveJob
             message_attributes: instance_of(Hash)
           )
         TestJob.set(wait: 1.minute).perform_later('test')
+        sleep(0.1)
       end
 
       it 'raises an error when job delay is great than SQS support' do
