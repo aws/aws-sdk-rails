@@ -6,11 +6,7 @@ module ActiveJob
 
       let(:client) { double('Client') }
       before do
-        Aws::Rails::SqsActiveJob.config.client = client
-      end
-
-      after do
-        Aws::Rails::SqsActiveJob.config.client = nil
+        allow(Aws::Rails::SqsActiveJob.config).to receive(:client).and_return(client)
       end
 
       it 'enqueues jobs' do
