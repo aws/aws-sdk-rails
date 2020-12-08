@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!master'
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [2.3, 2.4, jruby-9.1]
+        gemfile: [gemfiles/rails-5.2.gemfile, gemfiles/rails-6.0.gemfile, emfiles/rails-master.gemfile]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - uses: actions/checkout@v2
+      - name: Install gems
+        run: bundle install --without docs release --gemfile=${{ matrix.gemfile }}
+
+      - name: Test
+        run: bundle exec rake
