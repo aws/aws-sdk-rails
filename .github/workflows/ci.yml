@@ -19,9 +19,13 @@ jobs:
         gemfile: [gemfiles/rails-5.2.gemfile, gemfiles/rails-6.0.gemfile, emfiles/rails-master.gemfile]
         exclude:
           gemfile: gemfiles/rails-master.gemfile
-            ruby: [2.3, 2.4]
+            ruby: 2.3
+          gemfile: gemfiles/rails-master.gemfile
+            ruby: 2.4
           gemfile: gemfiles/rails-6.0.gemfile
-            ruby: [2.3, 2.4]
+            ruby: 2.3
+          gemfile: gemfiles/rails-6.0.gemfile
+            ruby: 2.4
 
     steps:
       - name: Setup Ruby
