@@ -22,10 +22,14 @@ jobs:
             ruby: 2.3
           - gemfile: gemfiles/rails-master.gemfile
             ruby: 2.4
+          - gemfile: gemfiles/rails-master.gemfile
+            ruby: jruby-9.1
           - gemfile: gemfiles/rails-6.0.gemfile
             ruby: 2.3
           - gemfile: gemfiles/rails-6.0.gemfile
             ruby: 2.4
+          - gemfile: gemfiles/rails-6.0.gemfile
+            ruby: jruby-9.1 
 
     steps:
       - name: Setup Ruby
@@ -38,4 +42,4 @@ jobs:
         run: bundle install --gemfile=${{ matrix.gemfile }}
 
       - name: Test
-        run: bundle exec rake
+        run: BUNDLE_GEMFILE=${{ matrix.gemfile }} bundle exec rake
