@@ -1,24 +1,41 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
+Sample app using `aws-sdk-rails` features. Used for development and testing.
 
 * Ruby version
 
-* System dependencies
-
-* Configuration
+2.6.6
 
 * Database creation
 
-* Database initialization
+`rails db:migrate`
 
-* How to run the test suite
+## ActiveStorage
 
-* Services (job queues, cache servers, search engines, etc.)
+Upload an `:avatar` using the `/users` route.
 
-* Deployment instructions
+## Rails Encrypted Credentials
 
-* ...
+Add credentials under `:aws` key after running:
+
+`EDITOR=nano rails credentials:edit`
+
+## SES
+
+TODO
+
+## DynamoDB Session Store
+
+TODO
+
+## ActiveSupport Notifications
+
+TODO
+
+## SQS ActiveJob
+
+TODO
+
+## AWS Record Generators
+
+TODO
