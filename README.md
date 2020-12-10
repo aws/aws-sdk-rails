@@ -213,19 +213,21 @@ Aws::Rails.instrument_sdk_operations
 
 Events are published for each client operation call with the following event
 name: <operation>.<serviceId>.aws.  For example, S3's put_object has an event
-name of: `put_object.S3.aws`.  The payload of the event is the
+name of: `put_object.S3.aws`.  The service name will always match the
+namespace of the service client (eg Aws::S3::Client => 'S3'). 
+The payload of the event is the
 [request context](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Seahorse/Client/RequestContext.html).
 
 You can subscribe to these events as you would other
  `ActiveSupport::Notifications`:
 
  ```ruby
-ActiveSupport::Notifications.subscribe('put_object.s3.aws') do |name, start, finish, id, payload|
+ActiveSupport::Notifications.subscribe('put_object.S3.aws') do |name, start, finish, id, payload|
   # process event
 end
 
 # Or use a regex to subscribe to all service notifications
-ActiveSupport::Notifications.subscribe(/s3[.]aws/) do |name, start, finish, id, payload|
+ActiveSupport::Notifications.subscribe(/S3[.]aws/) do |name, start, finish, id, payload|
   # process event
 end
 ```
