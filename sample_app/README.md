@@ -12,6 +12,8 @@ Sample app using `aws-sdk-rails` features. Used for development and testing.
 
 ## ActiveStorage
 
+Start rails with `ACTIVE_STORAGE_BUCKET=my_bucket rails server`
+
 Upload an `:avatar` using the `/users` route.
 
 ## Rails Encrypted Credentials

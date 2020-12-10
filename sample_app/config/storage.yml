@@ -12,7 +12,7 @@ amazon:
   # access_key_id: <%= Rails.application.credentials.dig(:aws, :access_key_id) %>
   # secret_access_key: <%= Rails.application.credentials.dig(:aws, :secret_access_key) %>
   region: us-west-2
-  bucket: mamuller-us-west-2
+  bucket: <%= ENV['ACTIVE_STORAGE_BUCKET'] %>
   http_wire_trace: true
   upload:
     multipart_threshold: <%= 10.megabytes %>
