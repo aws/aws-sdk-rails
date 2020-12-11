@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  # for SES ActionMailer
+  get 'email/index'
+  post '/send_email', to: 'email#send_email', as: 'send_email'
+
+  # for ActiveStorage
   resources :users
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+
+  # for SQS ActiveJob
+  get '/test-job', to: 'application#test_job'
 end
