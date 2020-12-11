@@ -24,7 +24,11 @@ Add credentials under `:aws` key after running:
 
 ## SES
 
-TODO
+Start rails with `ACTION_MAILER_EMAIL=my@email.com rails server`
+
+Send an email using the `/emails/index` route.
+
+Make sure your email address is verified in SES.
 
 ## DynamoDB Session Store
 
