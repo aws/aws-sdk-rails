@@ -32,11 +32,18 @@ TODO
 
 ## ActiveSupport Notifications
 
-TODO
+ActiveSupport notifications for AWS clients are configured in
+`config/initializers/instrument_aws_sdk/rb` to log an event
+whenever an AWS client makes any service calls.  To demo, follow
+any one of the ActiveStorage, SES or SQS ActiveJob and the
+AWS calls should be logged with:
+`Recieved an ActiveSupport::Notification for: send_message.SQS.aws event`
 
 ## SQS ActiveJob
 
-TODO
+* Start rails with `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url rails server`
+* Visit/curl `http://127.0.0.1:3000/test-job?name=my_name` - This will queue a job up
+* Poll for and process jobs with: `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url bundle exec aws_sqs_active_job --queue default`
 
 ## AWS Record Generators
 
