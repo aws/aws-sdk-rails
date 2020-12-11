@@ -18,5 +18,11 @@ module SampleApp
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Use the :amazon_sqs_async (non blocking)
+    # adapter from the aws-sdk-rails package
+    # To poll for and run jobs you'll need to start a worker process:
+    # bundle exec aws_sqs_active_job --queue default
+    config.active_job.queue_adapter = :amazon_sqs_async
   end
 end
