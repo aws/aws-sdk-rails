@@ -32,7 +32,11 @@ Make sure your email address is verified in SES.
 
 ## DynamoDB Session Store
 
-TODO
+This should already be configured following the README.
+
+Running `rails db:migrate` will create the session table in DynamoDB.
+
+To override changes, change this app's Gemfile to use the local dependency.
 
 ## ActiveSupport Notifications
 
@@ -51,4 +55,6 @@ AWS calls should be logged with:
 
 ## AWS Record Generators
 
-TODO
+Run `rails g aws_record:model Forum --table-config primary:10-5`
+
+To migrate run `rails aws_record:migrate`

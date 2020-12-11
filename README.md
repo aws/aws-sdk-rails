@@ -90,7 +90,7 @@ options can be changed prior to running the migration and are documented in the
 To create the table, run migrations as normal with:
 
 ```bash
-rake db:migrate
+rails db:migrate
 ```
 
 Next, configure the Rails session store to be `:dynamodb_store` by editing
