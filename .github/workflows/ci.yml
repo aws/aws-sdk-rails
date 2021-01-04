@@ -24,6 +24,9 @@ jobs:
             ruby: 2.4
           - gemfile: gemfiles/rails-5.2.gemfile
             ruby: jruby-9.1
+        exclude:
+          - gemfile: gemfiles/rails-5.2.gemfile
+            ruby: '3.0'
 
     steps:
       - name: Setup Ruby
