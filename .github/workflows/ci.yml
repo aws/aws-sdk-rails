@@ -15,21 +15,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.3, 2.4, 2.5, 2.6, 2.7, jruby-9.1, jruby-9.2]
-        gemfile: [gemfiles/rails-5.2.gemfile, gemfiles/rails-6.0.gemfile, gemfiles/rails-master.gemfile]
-        exclude:
-          - gemfile: gemfiles/rails-master.gemfile
+        ruby: [2.5, 2.6, 2.7, '3.0', jruby-9.2]
+        gemfile: [gemfiles/rails-5.2.gemfile, gemfiles/rails-6.0.gemfile, gemfiles/rails-6.1.gemfile, gemfiles/rails-master.gemfile]
+        include:
+          - gemfile: gemfiles/rails-5.2.gemfile
             ruby: 2.3
-          - gemfile: gemfiles/rails-master.gemfile
+          - gemfile: gemfiles/rails-5.2.gemfile
             ruby: 2.4
-          - gemfile: gemfiles/rails-master.gemfile
+          - gemfile: gemfiles/rails-5.2.gemfile
             ruby: jruby-9.1
-          - gemfile: gemfiles/rails-6.0.gemfile
-            ruby: 2.3
-          - gemfile: gemfiles/rails-6.0.gemfile
-            ruby: 2.4
-          - gemfile: gemfiles/rails-6.0.gemfile
-            ruby: jruby-9.1 
+        exclude:
+          - gemfile: gemfiles/rails-5.2.gemfile
+            ruby: '3.0'
 
     steps:
       - name: Setup Ruby
