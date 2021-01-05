@@ -69,8 +69,9 @@ module Aws
         #   Override file to load configuration from.  If not specified will
         #   attempt to load from config/aws_sqs_active_job.yml.
         #
-        # @option options [String] :message_group_id (FIFO queues only)
-        #  The message_group_id to use for queueing messages on a fifo queue.
+        # @option options [String] :message_group_id (SqsActiveJobGroup)
+        #  The message_group_id to use for queueing messages on a fifo queues.
+        #  Applies only to jobs queued on FIFO queues.
         #  See the (SQS FIFO Documentation)[https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues.html]
         #
         # @option options [Callable] :async_queue_error_handler An error handler

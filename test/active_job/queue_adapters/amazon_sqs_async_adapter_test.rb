@@ -41,6 +41,15 @@ module ActiveJob
 
         expect(@error_handled).to be true
       end
+
+      it 'queues jobs to fifo queues synchronously' do
+        allow(Aws::Rails::SqsActiveJob.config).to receive(:queue_url_for).and_return('https://queue-url.fifo')
+        expect(Concurrent::Promise).not_to receive(:execute)
+        expect(client).to receive(:send_message)
+
+        TestJob.perform_later('test')
+        sleep(0.1)
+      end
     end
   end
 end
