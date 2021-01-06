@@ -77,6 +77,21 @@ module Aws
             poller.run
           end
 
+          it 'sets max_number_of_messages to 1 for fifo queues' do
+            allow(poller).to receive(:boot_rails) # no-op the boot
+
+            allow(Aws::Rails::SqsActiveJob.config).to receive(:queue_url_for).and_return('https://queue-url.fifo')
+            expect(Aws::SQS::QueuePoller).to receive(:new).and_return(queue_poller)
+
+            expect(queue_poller).to receive(:poll).with(
+              skip_delete: true,
+              max_number_of_messages: 1,
+              visibility_timeout: 360
+            )
+
+            poller.run
+          end
+
           it 'polls for messages and executes them' do
             allow(poller).to receive(:boot_rails) # no-op the boot
 

@@ -20,6 +20,20 @@ module ActiveJob
         sleep(0.1)
       end
 
+      it 'adds message_deduplication_id and message_group_id to fifo queues' do
+        allow(Aws::Rails::SqsActiveJob.config).to receive(:queue_url_for).and_return('https://queue-url.fifo')
+        expect(client).to receive(:send_message)
+          .with(
+            queue_url: 'https://queue-url.fifo',
+            message_body: instance_of(String),
+            message_attributes: instance_of(Hash),
+            message_group_id: instance_of(String),
+            message_deduplication_id: instance_of(String)
+          )
+        TestJob.perform_later('test')
+        sleep(0.1)
+      end
+
       it 'enqueues delayed jobs' do
         t1 = Time.now
         allow(Time).to receive(:now).and_return t1

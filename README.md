@@ -214,7 +214,7 @@ Aws::Rails.instrument_sdk_operations
 Events are published for each client operation call with the following event
 name: <operation>.<serviceId>.aws.  For example, S3's put_object has an event
 name of: `put_object.S3.aws`.  The service name will always match the
-namespace of the service client (eg Aws::S3::Client => 'S3'). 
+namespace of the service client (eg Aws::S3::Client => 'S3').
 The payload of the event is the
 [request context](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Seahorse/Client/RequestContext.html).
 
@@ -378,6 +378,20 @@ Aws::Rails::SqsActiveJob.configure do |config|
   config.client = Aws::SQS::Client.new(region: 'us-east-1')
 end
 ```
+
+### Using FIFO queues
+
+If the order in which your jobs executes is important, consider using a
+[FIFO Queue](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues.html).
+A FIFO queue ensures that messages are processed in the order they were sent
+(First-In-First-Out) and exactly-once processing (ensuring duplicates are never
+introduced into the queue).  To use a fifo queue, simply set the queue url (which will end in ".fifo")
+in your config.  You can also configure a `custom message_group_id` that
+will be used by all jobs.
+
+When using FIFO queues, jobs will NOT be processed concurrently by the poller
+to ensure the correct ordering.  Additionally, all jobs on a FIFO queue will be queued
+synchronously, even if you have configured the `amazon_sqs_async` adapter.
 
 ## AWS Record Generators
 

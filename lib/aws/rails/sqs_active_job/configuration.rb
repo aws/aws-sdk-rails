@@ -14,6 +14,10 @@ module Aws
         yield(config)
       end
 
+      def self.fifo?(queue_url)
+        queue_url.ends_with? '.fifo'
+      end
+
       # Configuration for AWS SQS ActiveJob.
       # Use +Aws::Rails::SqsActiveJob.config+ to access the singleton config instance.
       class Configuration
@@ -25,12 +29,14 @@ module Aws
           visibility_timeout: 120,
           shutdown_timeout: 15,
           queues: {},
-          logger: ::Rails.logger
+          logger: ::Rails.logger,
+          message_group_id: 'SqsActiveJobGroup'
         }
 
         # @api private
         attr_accessor :queues, :max_messages, :visibility_timeout,
-                      :shutdown_timeout, :client, :logger, :async_queue_error_handler
+                      :shutdown_timeout, :client, :logger,
+                      :async_queue_error_handler, :message_group_id
 
         # Don't use this method directly: Confugration is a singleton class, use
         # +Aws::Rails::SqsActiveJob.config+ to access the singleton config.
@@ -62,6 +68,11 @@ module Aws
         # @option options [String] :config_file
         #   Override file to load configuration from.  If not specified will
         #   attempt to load from config/aws_sqs_active_job.yml.
+        #
+        # @option options [String] :message_group_id (SqsActiveJobGroup)
+        #  The message_group_id to use for queueing messages on a fifo queues.
+        #  Applies only to jobs queued on FIFO queues.
+        #  See the (SQS FIFO Documentation)[https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues.html]
         #
         # @option options [Callable] :async_queue_error_handler An error handler
         #   to be called when the async active job adapter experiances an error
