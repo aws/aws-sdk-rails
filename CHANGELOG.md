@@ -1,4 +1,4 @@
-Unreleased Changes
+3.5.0 (2021-01-06)
 ------------------
 
 * Feature - Add support for FIFO Queues to AWS SQS ActiveJob.
