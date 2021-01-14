@@ -13,6 +13,10 @@ module Aws
         Aws::Rails.log_to_rails_logger
       end
 
+      initializer 'aws-sdk-rails.insert_middleware' do |app|
+        Aws::Rails.add_sqsd_listener_middleware(app)
+      end
+
       rake_tasks do
         load 'tasks/dynamo_db/session_store.rake'
         load 'tasks/aws_record/migrate.rake'
@@ -61,6 +65,22 @@ module Aws
         if m.is_a?(Module) && m.const_defined?(:Client) &&
            m.const_get(:Client).superclass == Seahorse::Client::Base
           m.const_get(:Client).add_plugin(Aws::Rails::Notifications)
+        end
+      end
+    end
+
+    # Register a middleware that will handle requests from the Elastic Beanstalk worker SQS Daemon.
+    # This will only be added in the presence of the AWS_PROCESS_BEANSTALK_WORKER_REQUESTS environment variable.
+    # The expectation is this variable should only be set on EB worker environments.
+    def self.add_sqsd_listener_middleware(app)
+      is_eb_worker_hosted = ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS']
+
+      if !is_eb_worker_hosted.nil? && is_eb_worker_hosted.downcase == 'true'
+        if app.config.force_ssl
+          # SQS Daemon sends requests over HTTP - allow and process them before enforcing SSL.
+          app.config.middleware.insert_before(ActionDispatch::SSL, Aws::Rails::ElasticBeanstalkWorkerListener)
+        else
+          app.config.middleware.use(Aws::Rails::ElasticBeanstalkWorkerListener)
         end
       end
     end
