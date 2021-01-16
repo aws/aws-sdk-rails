@@ -14,7 +14,7 @@ module Aws
       end
 
       initializer 'aws-sdk-rails.insert_middleware' do |app|
-        Aws::Rails.add_sqsd_listener_middleware(app)
+        Aws::Rails.add_sqsd_middleware(app)
       end
 
       rake_tasks do
@@ -72,16 +72,16 @@ module Aws
     # Register a middleware that will handle requests from the Elastic Beanstalk worker SQS Daemon.
     # This will only be added in the presence of the AWS_PROCESS_BEANSTALK_WORKER_REQUESTS environment variable.
     # The expectation is this variable should only be set on EB worker environments.
-    def self.add_sqsd_listener_middleware(app)
-      is_eb_worker_hosted = ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS']
+    def self.add_sqsd_middleware(app)
+      is_eb_worker_hosted = Aws::Util.str_2_bool(ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS'])
 
-      if !is_eb_worker_hosted.nil? && is_eb_worker_hosted.downcase == 'true'
-        if app.config.force_ssl
-          # SQS Daemon sends requests over HTTP - allow and process them before enforcing SSL.
-          app.config.middleware.insert_before(ActionDispatch::SSL, Aws::Rails::ElasticBeanstalkWorkerListener)
-        else
-          app.config.middleware.use(Aws::Rails::ElasticBeanstalkWorkerListener)
-        end
+      return unless is_eb_worker_hosted
+
+      if app.config.force_ssl
+        # SQS Daemon sends requests over HTTP - allow and process them before enforcing SSL.
+        app.config.middleware.insert_before(ActionDispatch::SSL, Aws::Rails::EbsSqsActiveJobMiddleware)
+      else
+        app.config.middleware.use(Aws::Rails::EbsSqsActiveJobMiddleware)
       end
     end
   end

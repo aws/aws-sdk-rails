@@ -4,7 +4,7 @@ require_relative 'elastic_beanstalk_periodic_task'
 
 module Aws
   module Rails
-    describe ElasticBeanstalkWorkerListener do
+    describe EbsSqsActiveJobMiddleware do
       # Simple mock Rack app that always returns 200
       let(:mock_rack_app) { ->(_) { [200, { 'Content-Type' => 'text/plain' }, ['OK']] } }
 
@@ -13,7 +13,7 @@ module Aws
       it 'passes request through if user-agent is not SQS Daemon' do
         mock_rack_env = create_mock_env('127.0.0.1', 'not-aws-sqsd')
 
-        test_middleware = ElasticBeanstalkWorkerListener.new(mock_rack_app)
+        test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
         response = test_middleware.call(mock_rack_env)
 
         expect(response[0]).to eq(200)
@@ -23,7 +23,7 @@ module Aws
       it 'returns forbidden when called from untrusted source' do
         mock_rack_env = create_mock_env('1.2.3.4', 'aws-sqsd/1.1')
 
-        test_middleware = ElasticBeanstalkWorkerListener.new(mock_rack_app)
+        test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
         response = test_middleware.call(mock_rack_env)
 
         expect(response[0]).to eq(403)
@@ -31,10 +31,10 @@ module Aws
 
       it 'successfully invokes job when passed through request body' do
         # Stub execute call to avoid invoking Active Job callbacks
-        allow(ActiveJob::Base).to receive(:execute).and_return(nil)
+        expect(ActiveJob::Base).to receive(:execute).and_return(nil)
         mock_rack_env = create_mock_env('::1', 'aws-sqsd/1.1')
 
-        test_middleware = ElasticBeanstalkWorkerListener.new(mock_rack_app)
+        test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
         response = test_middleware.call(mock_rack_env)
 
         expect(response[0]).to eq(200)
@@ -48,7 +48,7 @@ module Aws
         allow(ActiveJob::Base).to receive(:execute).and_raise(NameError)
         mock_rack_env = create_mock_env('::1', 'aws-sqsd/1.1')
 
-        test_middleware = ElasticBeanstalkWorkerListener.new(mock_rack_app)
+        test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
         response = test_middleware.call(mock_rack_env)
 
         expect(response[0]).to eq(500)
@@ -56,8 +56,9 @@ module Aws
 
       it 'successfully invokes periodic task when passed through custom header' do
         mock_rack_env = create_mock_env('127.0.0.1', 'aws-sqsd/1.1', true)
+        test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
 
-        test_middleware = ElasticBeanstalkWorkerListener.new(mock_rack_app)
+        expect_any_instance_of(ElasticBeanstalkPeriodicTask).to receive(:perform_now)
         response = test_middleware.call(mock_rack_env)
 
         expect(response[0]).to eq(200)
@@ -69,7 +70,7 @@ module Aws
         mock_rack_env = create_mock_env('127.0.0.1', 'aws-sqsd/1.1', true)
         mock_rack_env['HTTP_X_AWS_SQSD_TASKNAME'] = 'NonExistentTask'
 
-        test_middleware = ElasticBeanstalkWorkerListener.new(mock_rack_app)
+        test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
         response = test_middleware.call(mock_rack_env)
 
         expect(response[0]).to eq(500)

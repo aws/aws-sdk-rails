@@ -47,7 +47,11 @@ module Aws
         end
       end
 
-      describe '.add_sqsd_listener_middleware' do
+      describe '.add_sqsd_middleware' do
+        after(:each) do
+          ENV.delete('AWS_PROCESS_BEANSTALK_WORKER_REQUESTS')
+        end
+
         it 'adds middleware when AWS_PROCESS_BEANSTALK_WORKER_REQUESTS is set to true' do
           ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS'] = 'True'
           mock_rails_app = double
@@ -58,12 +62,10 @@ module Aws
           end
           allow(mock_rails_app).to receive_message_chain(:config, :force_ssl).and_return(false)
 
-          Aws::Rails.add_sqsd_listener_middleware(mock_rails_app)
-
-          ENV.delete('AWS_PROCESS_BEANSTALK_WORKER_REQUESTS')
+          Aws::Rails.add_sqsd_middleware(mock_rails_app)
 
           expect(mock_middleware_stack.count).to eq(1)
-          expect(mock_middleware_stack[0].inspect).to eq('Aws::Rails::ElasticBeanstalkWorkerListener')
+          expect(mock_middleware_stack[0].inspect).to eq('Aws::Rails::EbsSqsActiveJobMiddleware')
         end
         it 'does not add middleware when AWS_PROCESS_BEANSTALK_WORKER_REQUESTS is not true' do
           ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS'] = 'False'
@@ -75,9 +77,7 @@ module Aws
           end
           allow(mock_rails_app).to receive_message_chain(:config, :force_ssl).and_return(false)
 
-          Aws::Rails.add_sqsd_listener_middleware(mock_rails_app)
-
-          ENV.delete('AWS_PROCESS_BEANSTALK_WORKER_REQUESTS')
+          Aws::Rails.add_sqsd_middleware(mock_rails_app)
 
           expect(mock_middleware_stack.count).to eq(0)
         end
@@ -91,7 +91,7 @@ module Aws
           end
           allow(mock_rails_app).to receive_message_chain(:config, :force_ssl).and_return(false)
 
-          Aws::Rails.add_sqsd_listener_middleware(mock_rails_app)
+          Aws::Rails.add_sqsd_middleware(mock_rails_app)
 
           expect(mock_middleware_stack.count).to eq(0)
         end

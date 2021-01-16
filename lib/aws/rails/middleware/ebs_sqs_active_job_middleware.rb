@@ -3,7 +3,7 @@
 module Aws
   module Rails
     # Middleware to handle requests from the SQS Daemon present on Elastic Beanstalk worker environments.
-    class ElasticBeanstalkWorkerListener
+    class EbsSqsActiveJobMiddleware
       INTERNAL_ERROR_MESSAGE = 'Failed to execute job - see Rails log for more details.'
       INTERNAL_ERROR_RESPONSE = [500, { 'Content-Type' => 'text/plain' }, [INTERNAL_ERROR_MESSAGE]].freeze
       FORBIDDEN_MESSAGE = 'Request with aws-sqsd user agent was made from untrusted address.'
@@ -15,34 +15,36 @@ module Aws
       end
 
       def call(env)
-        request = ActionDispatch::Request.new env
-        if from_sqs_daemon?(request)
-          @logger.debug 'aws-rails-sdk middleware detected call from Elastic Beanstalk SQS Daemon.'
+        request = ActionDispatch::Request.new(env)
 
-          # Only accept requests from this user agent if it is from localhost or a docker host in case of forgery.
-          if request.local? || sent_from_docker_host?(request)
-            return periodic_task?(request) ? execute_periodic_task(request) : execute_job(request)
-          else
-            @logger.warn "SQSD request detected from untrusted address #{request.remote_ip}; returning 403 forbidden."
-            return FORBIDDEN_RESPONSE
-          end
+        # Pass through unless user agent is the SQS Daemon
+        return @app.call(env) unless from_sqs_daemon?(request)
+
+        @logger.debug('aws-rails-sdk middleware detected call from Elastic Beanstalk SQS Daemon.')
+
+        # Only accept requests from this user agent if it is from localhost or a docker host in case of forgery.
+        unless request.local? || sent_from_docker_host?(request)
+          @logger.warn("SQSD request detected from untrusted address #{request.remote_ip}; returning 403 forbidden.")
+          return FORBIDDEN_RESPONSE
         end
-        @app.call(env)
+
+        # Execute job or periodic task based on HTTP request context
+        periodic_task?(request) ? execute_periodic_task(request) : execute_job(request)
       end
 
       private
 
       def execute_job(request)
         # Jobs queued from the Active Job SQS adapter contain the JSON message in the request body.
-        job = JSON.parse(request.body.string)
+        job = Aws::Json.load(request.body.string)
         job_name = job['job_class']
-        @logger.debug "Executing job: #{job_name}"
+        @logger.debug("Executing job: #{job_name}")
 
         begin
           ActiveJob::Base.execute(job)
         rescue NoMethodError, NameError => e
-          @logger.error "Job #{job_name} could not resolve to a class that inherits from Active Job."
-          @logger.error "Error: #{e}"
+          @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
+          @logger.error("Error: #{e}")
           return INTERNAL_ERROR_RESPONSE
         end
 
@@ -52,14 +54,14 @@ module Aws
       def execute_periodic_task(request)
         # The beanstalk worker SQS Daemon will add the 'X-Aws-Sqsd-Taskname' for periodic tasks set in cron.yaml.
         job_name = request.headers['X-Aws-Sqsd-Taskname']
-        @logger.debug "Creating and executing periodic task: #{job_name}"
+        @logger.debug("Creating and executing periodic task: #{job_name}")
 
         begin
           job = job_name.constantize.new
           job.perform_now
         rescue NoMethodError, NameError => e
-          @logger.error "Periodic task #{job_name} could not resolve to an Active Job class - check the spelling in cron.yaml."
-          @logger.error "Error: #{e}."
+          @logger.error("Periodic task #{job_name} could not resolve to an Active Job class - check the spelling in cron.yaml.")
+          @logger.error("Error: #{e}.")
           return INTERNAL_ERROR_RESPONSE
         end
 
