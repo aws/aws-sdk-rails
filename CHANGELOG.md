@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Feature - Support for forwarding Elastic Beanstalk SQS Daemon requests to Active Job.
+
 3.5.0 (2021-01-06)
 ------------------
 
