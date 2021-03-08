@@ -31,7 +31,7 @@ incredibly useful:
 Contributions via pull requests are much appreciated. Before sending us a pull
 request, please ensure that:
 
-1. You are working against the latest source on the *master* branch.
+1. You are working against the latest source on the *main* branch.
 2. You check existing open, and recently merged, pull requests to make sure
 someone else hasn't addressed the problem already.
 3. You open an issue to discuss any significant work - we would hate for your
@@ -78,7 +78,7 @@ page](http://aws.amazon.com/security/vulnerability-reporting/). Please do
 
 ## Licensing
 
-See the [LICENSE](https://github.com/aws/aws-sdk-rails/blob/master/LICENSE) file
+See the [LICENSE](https://github.com/aws/aws-sdk-rails/blob/main/LICENSE) file
 for our project's licensing. We will ask you to confirm the licensing of your
 contribution.
 

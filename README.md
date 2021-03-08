@@ -1,6 +1,6 @@
 # AWS SDK for Ruby Rails Plugin
 
-[![Gem Version](https://badge.fury.io/rb/aws-sdk-rails.svg)](https://badge.fury.io/rb/aws-sdk-rails) [![Build Status](https://travis-ci.com/aws/aws-sdk-rails.svg?branch=master)](https://travis-ci.com/aws/aws-sdk-rails) [![Github forks](https://img.shields.io/github/forks/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/network)
+[![Gem Version](https://badge.fury.io/rb/aws-sdk-rails.svg)](https://badge.fury.io/rb/aws-sdk-rails) [![Build Status](https://travis-ci.com/aws/aws-sdk-rails.svg?branch=main)](https://travis-ci.com/aws/aws-sdk-rails) [![Github forks](https://img.shields.io/github/forks/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/network)
 [![Github stars](https://img.shields.io/github/stars/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/stargazers)
 [![Gitter](https://badges.gitter.im/aws/aws-sdk-rails.svg)](https://gitter.im/aws/aws-sdk-rails?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
