@@ -27,6 +27,13 @@ jobs:
         exclude:
           - gemfile: gemfiles/rails-5.2.gemfile
             ruby: '3.0'
+          - gemfile: gemfiles/rails-master.gemfile
+            ruby: 2.5
+          - gemfile: gemfiles/rails-master.gemfile
+            ruby: 2.6
+          - gemfile: gemfiles/rails-master.gemfile
+            ruby: jruby-9.2
+            
 
     steps:
       - name: Setup Ruby
