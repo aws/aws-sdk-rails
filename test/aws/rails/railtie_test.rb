@@ -25,6 +25,8 @@ module Aws
       describe '.use_rails_encrypted_credentials' do
         let(:rails_creds) { ::Rails.application.credentials.aws }
         it 'sets aws credentials' do
+          puts "Aws config: #{Aws.config}"
+          puts "Rails creds: #{rails_creds}"
           expect(Aws.config[:access_key_id]).to eq rails_creds[:access_key_id]
           expect(Aws.config[:secret_access_key]).to eq rails_creds[:secret_access_key]
         end
