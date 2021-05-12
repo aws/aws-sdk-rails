@@ -113,7 +113,8 @@ initializer like so:
 # config/initializers/session_store.rb
 Rails.application.config.session_store :dynamodb_store,
   key: '_your_app_session',
-  table_name: 'foo'
+  table_name: 'foo',
+  dynamo_db_client: my_ddb_client
 ```
 
 Alternatively, you can use the generated YAML configuration file
