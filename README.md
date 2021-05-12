@@ -1,6 +1,8 @@
 # AWS SDK for Ruby Rails Plugin
 
-[![Gem Version](https://badge.fury.io/rb/aws-sdk-rails.svg)](https://badge.fury.io/rb/aws-sdk-rails) [![Build Status](https://travis-ci.com/aws/aws-sdk-rails.svg?branch=master)](https://travis-ci.com/aws/aws-sdk-rails) [![Github forks](https://img.shields.io/github/forks/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/network)
+[![Gem Version](https://badge.fury.io/rb/aws-sdk-rails.svg)](https://badge.fury.io/rb/aws-sdk-rails)
+[![Build Status](https://github.com/aws/aws-sdk-rails/workflows/CI/badge.svg)](https://github.com/aws/aws-sdk-rails/actions)
+ [![Github forks](https://img.shields.io/github/forks/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/network)
 [![Github stars](https://img.shields.io/github/stars/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/stargazers)
 [![Gitter](https://badges.gitter.im/aws/aws-sdk-rails.svg)](https://gitter.im/aws/aws-sdk-rails?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
@@ -355,6 +357,32 @@ require_relative 'config/environment' # load rails
 
 # To use this file, set CMD:  app.Aws::Rails::SqsActiveJob.lambda_job_handler
 ```
+
+### Elastic Beanstalk workers: processing activejobs using worker environments
+
+Another option for processing jobs without managing the worker process is hosting the application in a scalable 
+[Elastic Beanstalk worker environment](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html). 
+This SDK includes Rack middleware that can be added conditionally and which will process requests from the 
+SQS Daemon provided with each worker instance. The middleware will forward each request and parameters to their appropriate jobs.
+
+To add the middleware on application startup, set the ```AWS_PROCESS_BEANSTALK_WORKER_REQUESTS``` environment variable to true
+in the worker environment configuration.
+
+To protect against forgeries, daemon requests will only be processed if they originate from localhost or the Docker host.
+
+Periodic (scheduled) jobs are also supported with this approach without requiring any additional dependencies.
+Elastic Beanstalk workers support the addition of a ```cron.yaml``` file in the application root to configure this.
+
+Example:
+```yml
+version: 1
+cron:
+ - name: "MyApplicationJob"
+   url: "/"
+   schedule: "0 */12 * * *"
+```
+
+Where 'name' must be the case-sensitive class name of the job. 
 
 ### Configuration
 
