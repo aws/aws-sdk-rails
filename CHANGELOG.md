@@ -1,4 +1,4 @@
-Unreleased Changes
+3.6.1 (2021-06-08)
 ------------------
 
 * Issue - Fix credential loading to work with Rails 7.
