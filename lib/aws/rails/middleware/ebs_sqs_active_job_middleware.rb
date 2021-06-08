@@ -11,7 +11,7 @@ module Aws
 
       def initialize(app)
         @app = app
-        @logger = ActiveSupport::Logger.new(STDOUT)
+        @logger = ::Rails.logger
       end
 
       def call(env)
@@ -20,7 +20,7 @@ module Aws
         # Pass through unless user agent is the SQS Daemon
         return @app.call(env) unless from_sqs_daemon?(request)
 
-        @logger.debug('aws-rails-sdk middleware detected call from Elastic Beanstalk SQS Daemon.')
+        @logger.debug('aws-sdk-rails middleware detected call from Elastic Beanstalk SQS Daemon.')
 
         # Only accept requests from this user agent if it is from localhost or a docker host in case of forgery.
         unless request.local? || sent_from_docker_host?(request)
