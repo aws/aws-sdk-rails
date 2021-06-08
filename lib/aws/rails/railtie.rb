@@ -48,10 +48,7 @@ module Aws
       aws_credential_keys = %i[access_key_id secret_access_key session_token]
 
       Aws.config.merge!(
-        ::Rails.application
-          .try(:credentials)
-          .try(:aws)
-          .to_h.slice(*aws_credential_keys)
+        ::Rails.application.credentials[:aws].to_h.slice(*aws_credential_keys)
       )
     end
 
