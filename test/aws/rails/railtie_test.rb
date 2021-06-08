@@ -47,6 +47,55 @@ module Aws
         end
       end
 
+      describe '.add_sqsd_middleware' do
+        after(:each) do
+          ENV.delete('AWS_PROCESS_BEANSTALK_WORKER_REQUESTS')
+        end
+
+        it 'adds middleware when AWS_PROCESS_BEANSTALK_WORKER_REQUESTS is set to true' do
+          ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS'] = 'True'
+          mock_rails_app = double
+          mock_middleware_stack = []
+
+          allow(mock_rails_app).to receive_message_chain(:config, :middleware, :use) do |middleware|
+            mock_middleware_stack.push(middleware)
+          end
+          allow(mock_rails_app).to receive_message_chain(:config, :force_ssl).and_return(false)
+
+          Aws::Rails.add_sqsd_middleware(mock_rails_app)
+
+          expect(mock_middleware_stack.count).to eq(1)
+          expect(mock_middleware_stack[0].inspect).to eq('Aws::Rails::EbsSqsActiveJobMiddleware')
+        end
+        it 'does not add middleware when AWS_PROCESS_BEANSTALK_WORKER_REQUESTS is not true' do
+          ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS'] = 'False'
+          mock_rails_app = double
+          mock_middleware_stack = []
+
+          allow(mock_rails_app).to receive_message_chain(:config, :middleware, :use) do |middleware|
+            mock_middleware_stack.push(middleware)
+          end
+          allow(mock_rails_app).to receive_message_chain(:config, :force_ssl).and_return(false)
+
+          Aws::Rails.add_sqsd_middleware(mock_rails_app)
+
+          expect(mock_middleware_stack.count).to eq(0)
+        end
+
+        it 'does not add middleware when AWS_PROCESS_BEANSTALK_WORKER_REQUESTS is missing' do
+          mock_rails_app = double
+          mock_middleware_stack = []
+
+          allow(mock_rails_app).to receive_message_chain(:config, :middleware, :use) do |middleware|
+            mock_middleware_stack.push(middleware)
+          end
+          allow(mock_rails_app).to receive_message_chain(:config, :force_ssl).and_return(false)
+
+          Aws::Rails.add_sqsd_middleware(mock_rails_app)
+
+          expect(mock_middleware_stack.count).to eq(0)
+        end
+      end
     end
   end
 end
