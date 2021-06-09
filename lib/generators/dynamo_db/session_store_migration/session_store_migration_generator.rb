@@ -18,7 +18,7 @@ module DynamoDb
       #   of a DynamoDB session table.
       def generate_migration_file
         migration_template(
-          'session_store_migration.rb',
+          'session_store_migration.erb',
           "db/migrate/#{name.underscore}.rb"
         )
       end

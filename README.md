@@ -360,9 +360,9 @@ require_relative 'config/environment' # load rails
 
 ### Elastic Beanstalk workers: processing activejobs using worker environments
 
-Another option for processing jobs without managing the worker process is hosting the application in a scalable 
-[Elastic Beanstalk worker environment](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html). 
-This SDK includes Rack middleware that can be added conditionally and which will process requests from the 
+Another option for processing jobs without managing the worker process is hosting the application in a scalable
+[Elastic Beanstalk worker environment](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html).
+This SDK includes Rack middleware that can be added conditionally and which will process requests from the
 SQS Daemon provided with each worker instance. The middleware will forward each request and parameters to their appropriate jobs.
 
 To add the middleware on application startup, set the ```AWS_PROCESS_BEANSTALK_WORKER_REQUESTS``` environment variable to true
@@ -382,7 +382,7 @@ cron:
    schedule: "0 */12 * * *"
 ```
 
-Where 'name' must be the case-sensitive class name of the job. 
+Where 'name' must be the case-sensitive class name of the job.
 
 ### Configuration
 
@@ -583,7 +583,7 @@ Command Option Names | Purpose
   [--disable-mutation-tracking], [--no-disable-mutation-tracking]                       | Disables dirty tracking
   [--timestamps], [--no-timestamps]                                                     | Adds created, updated timestamps to the model
   --table-config=primary:R-W [SecondaryIndex1:R-W]...                                   | Declares the r/w units for the model as well as any secondary indexes
-  [--gsi=name:hkey{field_name}[,rkey{field_name},proj_type{ALL\|KEYS_ONLY\|INCLUDE}]...]  | Allows for the declaration of secondary indexes
+  [--gsi=name:hkey{ field_name }[,rkey{ field_name },proj_type{ ALL\|KEYS_ONLY\|INCLUDE }]...]  | Allows for the declaration of secondary indexes
   [--required=field1...]                                                                | A list of attributes that are required for an instance of the model
   [--length-validations=field1:MIN-MAX...]                                              | Validations on the length of attributes in a model
   [--table-name=name] | Sets the name of the table in DynamoDB, if different than the model name

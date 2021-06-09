@@ -9,7 +9,7 @@ module ActionDispatch
     # This class will use the Rails secret_key_base unless otherwise provided.
     #
     # Configuration can also be provided in YAML files from Rails config, either
-    # in "config/session_store.yml" or "config/session_store/#{Rails.env}.yml".
+    # in "config/session_store.yml" or "config/session_store/#\\{Rails.env}.yml".
     # Configuration files that are environment-specific will take precedence.
     #
     # @see https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html
