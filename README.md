@@ -16,8 +16,14 @@ Add this gem to your Rails project's Gemfile:
 gem 'aws-sdk-rails'
 ```
 
-This gem also brings in the `aws-sdk-core` and `aws-sdk-ses` gems. If you want
-to use other services (such as S3), you will still need to add them to your
+This gem also brings in the following AWS gems:
+
+* `aws-sdk-ses`
+* `aws-sdk-sqs`
+* `aws-record`
+* `aws-sessionstore-dynamodb`
+
+If you want to use other services (such as S3), you will still need to add them to your
 Gemfile:
 
 ```ruby
