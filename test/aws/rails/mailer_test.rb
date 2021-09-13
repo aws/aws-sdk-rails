@@ -19,7 +19,7 @@ end
 
 module Aws
   module Rails
-    describe Mailer do
+    describe SesMailer do
       let(:client_options) do
         {
           stub_responses: {
@@ -30,7 +30,7 @@ module Aws
         }
       end
 
-      let(:mailer) { Mailer.new(client_options) }
+      let(:mailer) { SesMailer.new(client_options) }
 
       let(:sample_message) do
         TestMailer.deliverable(
@@ -46,7 +46,7 @@ module Aws
       end
 
       before do
-        ActionMailer::Base.add_delivery_method(:ses, Mailer, client_options)
+        ActionMailer::Base.add_delivery_method(:ses, SesMailer, client_options)
       end
 
       describe '#settings' do
