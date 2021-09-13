@@ -42,9 +42,7 @@ module Aws
 
         if (list_management_options = message.headers.delete("X-SES-LIST-MANAGEMENT-OPTIONS"))
           contact_list_name, topic_name = list_management_options.sub('topic=', '').split(';')
-          send_opts[:list_management_options] = {}
-          send_opts[:list_management_options][:contact_list_name] = list
-          send_opts[:list_management_options][:topic_name] = topic_name
+          send_opts[:list_management_options] = {contact_list_name: contact_list_name, topic_name: topic_name}.compact
         end
 
         @client.send_email(send_opts).tap do |response|
