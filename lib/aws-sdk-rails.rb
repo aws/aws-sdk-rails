@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'aws/rails/mailer'
+require_relative 'aws/rails/ses_mailer'
+require_relative 'aws/rails/sesv2_mailer'
 require_relative 'aws/rails/railtie'
 require_relative 'aws/rails/notifications'
 require_relative 'aws/rails/sqs_active_job/configuration'

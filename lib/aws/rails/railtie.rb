@@ -32,7 +32,8 @@ module Aws
     #   Aws::SES::Client initialization method.
     def self.add_action_mailer_delivery_method(name = :ses, options = {})
       ActiveSupport.on_load(:action_mailer) do
-        add_delivery_method(name, Aws::Rails::Mailer, options)
+        add_delivery_method(name, Aws::Rails::SesMailer, options)
+        add_delivery_method(:sesv2, Aws::Rails::Sesv2Mailer, options)
       end
     end
 

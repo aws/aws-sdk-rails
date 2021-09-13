@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency('aws-record', '~> 2') # for Aws::Record integration
   spec.add_dependency('aws-sdk-ses', '~> 1') # for ActionMailer
+  spec.add_dependency('aws-sdk-sesv2', '~> 1') # for ActionMailer
   spec.add_dependency('aws-sdk-sqs', '~> 1') # for ActiveJob
   spec.add_dependency('aws-sessionstore-dynamodb', '~> 2') # includes DynamoDB
   spec.add_dependency('railties', '>= 5.2.0') # encrypted credentials
