@@ -41,7 +41,7 @@ module Aws
         end
 
         send_opts[:list_management_options] = message.header['X-SES-LIST-MANAGEMENT-OPTIONS']&.yield_self do |field|
-          contact_list_name, topic_name = message.header.fields.delete(field).value.sub("topic=", "").split(";")
+          contact_list_name, topic_name = message.header.fields.delete(field).value.sub("topic=", "").split(";").map(&:strip)
           {contact_list_name: contact_list_name, topic_name: topic_name}.compact
         end
 
