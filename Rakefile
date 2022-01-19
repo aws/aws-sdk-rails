@@ -11,7 +11,6 @@ Dir.glob('**/*.rake').each do |task_file|
 end
 
 Rake::TestTask.new do |t|
-  ENV['DATABASE_URL'] = 'sqlite3::memory:'
   t.libs << 'test'
   t.pattern = 'test/**/*_test.rb'
   t.warning = false
