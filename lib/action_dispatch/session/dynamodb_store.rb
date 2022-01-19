@@ -15,7 +15,6 @@ module ActionDispatch
     #
     # @see https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html
     class DynamodbStore < Aws::SessionStore::DynamoDB::RackMiddleware
-      include Compatibility
       include StaleSessionCheck
       include SessionObject
 
