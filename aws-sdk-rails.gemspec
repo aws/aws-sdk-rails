@@ -25,5 +25,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency('railties', '>= 5.2.0') # encrypted credentials
   spec.add_dependency('concurrent-ruby', '~> 1') # Utilities for concurrent processing
   spec.add_development_dependency('rails')
-  spec.add_development_dependency('sqlite3')
 end

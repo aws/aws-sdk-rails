@@ -12,6 +12,11 @@ group :test do
   gem 'rspec-expectations'
   gem 'rspec-mocks'
   gem 'bcrypt'
+  if defined?(JRUBY_VERSION)
+    gem 'activerecord-jdbcsqlite3-adapter'
+  else
+    gem 'sqlite3'
+  end
 end
 
 group :docs do
