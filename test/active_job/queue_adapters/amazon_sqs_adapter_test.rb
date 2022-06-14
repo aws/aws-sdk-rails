@@ -23,20 +23,64 @@ module ActiveJob
         sleep(0.1)
       end
 
-      it 'adds message_deduplication_id and message_group_id to fifo queues' do
-        allow(Aws::Rails::SqsActiveJob.config).to receive(:queue_url_for).and_return('https://queue-url.fifo')
-        expect(client).to receive(:send_message).with(
-          {
-            queue_url: 'https://queue-url.fifo',
-            message_body: instance_of(String),
-            message_attributes: instance_of(Hash),
-            message_group_id: instance_of(String),
-            message_deduplication_id: instance_of(String)
-          }
-        )
+      describe 'fifo queues' do
+        before do
+          allow(Aws::Rails::SqsActiveJob.config).to receive(:queue_url_for).and_return('https://queue-url.fifo')
+        end
 
-        TestJob.perform_later('test')
-        sleep(0.1)
+        it 'adds message_deduplication_id and default message_group_id if job does not override it' do
+          expect(client).to receive(:send_message)
+                              .with(
+                                {
+                                  queue_url: 'https://queue-url.fifo',
+                                  message_body: instance_of(String),
+                                  message_attributes: instance_of(Hash),
+                                  message_group_id: Aws::Rails::SqsActiveJob.config.message_group_id,
+                                  message_deduplication_id: instance_of(String)
+                                }
+                              )
+          TestJob.perform_later('test')
+          sleep(0.1)
+        end
+
+        describe 'when job has #message_group_id defined' do
+          it 'adds message_deduplication_id and default message_group_id if job does not return a value' do
+            expect(client).to receive(:send_message).with(
+              {
+                queue_url: 'https://queue-url.fifo',
+                message_body: instance_of(String),
+                message_attributes: instance_of(Hash),
+                message_group_id: Aws::Rails::SqsActiveJob.config.message_group_id,
+                message_deduplication_id: instance_of(String)
+              }
+            )
+
+            TestJobWithMessageGroupID.perform_later('test')
+            sleep(0.1)
+          end
+
+          it 'adds message_deduplication_id and given message_group_id if job returns a value' do
+            arg = 'test'
+            dbl = TestJobWithMessageGroupID.new(arg)
+            message_group_id = "mgi_#{rand(0..100)}"
+
+            expect(client).to receive(:send_message).with(
+              {
+                queue_url: 'https://queue-url.fifo',
+                message_body: instance_of(String),
+                message_attributes: instance_of(Hash),
+                message_group_id: message_group_id,
+                message_deduplication_id: instance_of(String)
+              }
+            )
+
+            expect(TestJobWithMessageGroupID).to receive(:new).with(arg).and_return(dbl)
+            expect(dbl).to receive(:message_group_id).and_return(message_group_id)
+
+            TestJobWithMessageGroupID.perform_later(arg)
+            sleep(0.1)
+          end
+        end
       end
 
       it 'enqueues delayed jobs' do

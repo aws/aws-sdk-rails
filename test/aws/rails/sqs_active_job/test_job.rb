@@ -5,3 +5,7 @@ class TestJob < ActiveJob::Base
   def perform(a1, a2)
   end
 end
+
+class TestJobWithMessageGroupID < TestJob
+  def message_group_id; end
+end
