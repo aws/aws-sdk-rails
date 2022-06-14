@@ -1,3 +1,4 @@
+require 'test_helper'
 require_relative '../../aws/rails/sqs_active_job/test_job'
 
 module ActiveJob
@@ -12,9 +13,11 @@ module ActiveJob
       it 'enqueues jobs' do
         expect(client).to receive(:send_message)
           .with(
-            queue_url: 'https://queue-url',
-            message_body: instance_of(String),
-            message_attributes: instance_of(Hash)
+            {
+              queue_url: 'https://queue-url',
+              message_body: instance_of(String),
+              message_attributes: instance_of(Hash)
+            }
           )
         TestJob.perform_later('test')
         sleep(0.1)
@@ -22,14 +25,16 @@ module ActiveJob
 
       it 'adds message_deduplication_id and message_group_id to fifo queues' do
         allow(Aws::Rails::SqsActiveJob.config).to receive(:queue_url_for).and_return('https://queue-url.fifo')
-        expect(client).to receive(:send_message)
-          .with(
+        expect(client).to receive(:send_message).with(
+          {
             queue_url: 'https://queue-url.fifo',
             message_body: instance_of(String),
             message_attributes: instance_of(Hash),
             message_group_id: instance_of(String),
             message_deduplication_id: instance_of(String)
-          )
+          }
+        )
+
         TestJob.perform_later('test')
         sleep(0.1)
       end
@@ -38,13 +43,15 @@ module ActiveJob
         t1 = Time.now
         allow(Time).to receive(:now).and_return t1
 
-        expect(client).to receive(:send_message)
-          .with(
+        expect(client).to receive(:send_message).with(
+          {
             queue_url: 'https://queue-url',
             delay_seconds: 60,
             message_body: instance_of(String),
             message_attributes: instance_of(Hash)
-          )
+          }
+        )
+
         TestJob.set(wait: 1.minute).perform_later('test')
         sleep(0.1)
       end
