@@ -1,4 +1,4 @@
-Unreleased Changes
+3.6.2 (2022-06-16)
 ------------------
 
 * Issue - Fix DynamoDB session store to work with Rails 7.
