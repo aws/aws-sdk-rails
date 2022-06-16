@@ -2,6 +2,7 @@ Unreleased Changes
 ------------------
 
 * Issue - Fix DynamoDB session store to work with Rails 7.
+* Issue - Allow for dynamic message group ids in FIFO Queues.
 
 3.6.1 (2021-06-08)
 ------------------
