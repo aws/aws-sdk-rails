@@ -420,12 +420,18 @@ If the order in which your jobs executes is important, consider using a
 A FIFO queue ensures that messages are processed in the order they were sent
 (First-In-First-Out) and exactly-once processing (ensuring duplicates are never
 introduced into the queue).  To use a fifo queue, simply set the queue url (which will end in ".fifo")
-in your config.  You can also configure a `custom message_group_id` that
-will be used by all jobs.
+in your config.
 
 When using FIFO queues, jobs will NOT be processed concurrently by the poller
 to ensure the correct ordering.  Additionally, all jobs on a FIFO queue will be queued
 synchronously, even if you have configured the `amazon_sqs_async` adapter.
+
+#### Message Group IDs
+
+FIFO queues require a message group id to be provided for the job. It is determined by:
+1. Calling `message_group_id` on the job if it is defined
+2. If `message_group_id` is not defined or the result is `nil`, the default value will be used.
+You can optionally specify a custom value in your config as the default that will be used by all jobs.
 
 ## AWS Record Generators
 
