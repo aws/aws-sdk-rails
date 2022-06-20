@@ -18,12 +18,13 @@ module ActiveJob
       end
 
       it 'enqueues jobs without blocking' do
-        expect(client).to receive(:send_message)
-          .with(
+        expect(client).to receive(:send_message).with(
+          {
             queue_url: 'https://queue-url',
             message_body: instance_of(String),
             message_attributes: instance_of(Hash)
-          )
+          }
+        )
         expect(Concurrent::Promise).to receive(:execute).and_call_original
 
         TestJob.perform_later('test')

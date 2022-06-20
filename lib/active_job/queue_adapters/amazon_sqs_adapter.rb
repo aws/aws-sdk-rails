@@ -30,13 +30,15 @@ module ActiveJob
           # job_id is unique per initialization of job
           # Remove it from message dup id to ensure run-once behavior
           # with ActiveJob retries
-           send_message_opts[:message_deduplication_id] =
-             Digest::SHA256.hexdigest(
-               Aws::Json.dump(body.except('job_id'))
-             )
+          send_message_opts[:message_deduplication_id] =
+            Digest::SHA256.hexdigest(Aws::Json.dump(body.except('job_id')))
 
-           send_message_opts[:message_group_id] = Aws::Rails::SqsActiveJob.config.message_group_id
+          message_group_id = job.message_group_id if job.respond_to?(:message_group_id)
+          message_group_id ||= Aws::Rails::SqsActiveJob.config.message_group_id
+
+          send_message_opts[:message_group_id] = message_group_id
         end
+
         Aws::Rails::SqsActiveJob.config.client.send_message(send_message_opts)
       end
 

@@ -69,9 +69,11 @@ module Aws
             expect(Aws::SQS::QueuePoller).to receive(:new).and_return(queue_poller)
 
             expect(queue_poller).to receive(:poll).with(
-              skip_delete: true,
-              max_number_of_messages: 5,
-              visibility_timeout: 360
+              {
+                skip_delete: true,
+                max_number_of_messages: 5,
+                visibility_timeout: 360
+              }
             )
 
             poller.run
@@ -84,9 +86,11 @@ module Aws
             expect(Aws::SQS::QueuePoller).to receive(:new).and_return(queue_poller)
 
             expect(queue_poller).to receive(:poll).with(
-              skip_delete: true,
-              max_number_of_messages: 1,
-              visibility_timeout: 360
+              {
+                skip_delete: true,
+                max_number_of_messages: 1,
+                visibility_timeout: 360
+              }
             )
 
             poller.run
