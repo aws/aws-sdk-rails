@@ -99,7 +99,7 @@ module Aws
           job_queue = job_queue.to_sym
           raise ArgumentError, "No queue defined for #{job_queue}" unless queues.key? job_queue
 
-          queues[job_queue.to_sym]
+          queues[job_queue]
         end
 
         # @api private

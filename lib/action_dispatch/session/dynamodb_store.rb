@@ -1,4 +1,5 @@
 require 'aws-sessionstore-dynamodb'
+require 'action_dispatch/middleware/session/abstract_store'
 
 module ActionDispatch
   module Session
@@ -14,6 +15,9 @@ module ActionDispatch
     #
     # @see https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html
     class DynamodbStore < Aws::SessionStore::DynamoDB::RackMiddleware
+      include StaleSessionCheck
+      include SessionObject
+
       def initialize(app, options = {})
         options[:config_file] ||= config_file if config_file.exist?
         options[:secret_key] ||= Rails.application.secret_key_base

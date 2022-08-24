@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-require 'rails/all'
+require 'rails'
+require 'active_job/railtie'
+require 'action_controller/railtie'
+require 'action_mailer/railtie'
 require 'aws-sdk-rails'
 
 module Dummy
