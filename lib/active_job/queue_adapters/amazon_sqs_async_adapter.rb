@@ -24,9 +24,16 @@ module ActiveJob
         if Aws::Rails::SqsActiveJob.fifo?(queue_url)
           super(job, send_message_opts)
         else
-          Concurrent::Promise
-          .execute { super(job, send_message_opts) }
-          .on_error do |e|
+          locale = I18n.locale if defined?(I18n)
+          Concurrent::Promises.future(locale) do |locale|
+            if locale
+              I18n.with_locale(locale) do
+                super(job, send_message_opts)
+              end
+            else
+              super(job, send_message_opts)
+            end
+          end.rescue do |e|
             Rails.logger.error "Failed to queue job #{job}.  Reason: #{e}"
             error_handler = Aws::Rails::SqsActiveJob.config.async_queue_error_handler
             error_handler.call(e, job, send_message_opts) if error_handler

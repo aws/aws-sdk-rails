@@ -25,7 +25,7 @@ module ActiveJob
             message_attributes: instance_of(Hash)
           }
         )
-        expect(Concurrent::Promise).to receive(:execute).and_call_original
+        expect(Concurrent::Promises).to receive(:future).and_call_original
 
         TestJob.perform_later('test')
         sleep(0.1)
@@ -45,7 +45,7 @@ module ActiveJob
 
       it 'queues jobs to fifo queues synchronously' do
         allow(Aws::Rails::SqsActiveJob.config).to receive(:queue_url_for).and_return('https://queue-url.fifo')
-        expect(Concurrent::Promise).not_to receive(:execute)
+        expect(Concurrent::Promises).not_to receive(:future)
         expect(client).to receive(:send_message)
 
         TestJob.perform_later('test')
