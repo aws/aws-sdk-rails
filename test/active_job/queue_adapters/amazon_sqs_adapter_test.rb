@@ -20,7 +20,7 @@ module ActiveJob
             }
           )
         TestJob.perform_later('test')
-        sleep(0.1)
+        sleep(0.2)
       end
 
       describe 'fifo queues' do
@@ -40,7 +40,7 @@ module ActiveJob
                                 }
                               )
           TestJob.perform_later('test')
-          sleep(0.1)
+          sleep(0.2)
         end
 
         describe 'when job has #message_group_id defined' do
@@ -56,7 +56,7 @@ module ActiveJob
             )
 
             TestJobWithMessageGroupID.perform_later('test')
-            sleep(0.1)
+            sleep(0.2)
           end
 
           it 'adds message_deduplication_id and given message_group_id if job returns a value' do
@@ -78,7 +78,7 @@ module ActiveJob
             expect(dbl).to receive(:message_group_id).and_return(message_group_id)
 
             TestJobWithMessageGroupID.perform_later(arg)
-            sleep(0.1)
+            sleep(0.2)
           end
         end
       end
@@ -97,7 +97,7 @@ module ActiveJob
         )
 
         TestJob.set(wait: 1.minute).perform_later('test')
-        sleep(0.1)
+        sleep(0.2)
       end
 
       it 'raises an error when job delay is great than SQS support' do
