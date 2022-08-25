@@ -4,7 +4,7 @@ class TestJob < ActiveJob::Base
   self.queue_adapter = :amazon_sqs_async
   queue_as :default
 
-  def perform(a1, a2)
+  def perform(*args)
   end
 end
 
@@ -21,8 +21,8 @@ module ActiveJob
         expect(client).to receive(:send_message).with(
           {
             queue_url: 'https://queue-url',
-            message_body: instance_of(String),
-            message_attributes: instance_of(Hash)
+            message_attributes: instance_of(Hash),
+            message_body: include("\"locale\":\"#{I18n.locale}\"")
           }
         )
       end
@@ -51,26 +51,18 @@ module ActiveJob
         expect(@error_handled).to be true
       end
 
-      it 'passes the I18n locale to promises' do
-        mock_send_message
-        mock_async
-        expect(I18n).to receive(:with_locale)
-          .with(I18n.locale).and_call_original
+      it 'passes the serialized I18n locale to promises' do
+        I18n.available_locales = %i[en de] # necessary, defaults empty
 
-        TestJob.perform_later('test')
-        sleep(0.2)
-      end
+        I18n.with_locale(:de) do
+          mock_async
+          mock_send_message
 
-      it 'does not pass I18n locale if not defined' do
-        mock_send_message
-        mock_async
-        # I18n comes in Rails by default - but remove it for the test
-        expect_any_instance_of(AmazonSqsAsyncAdapter)
-          .to receive(:i18n_locale).and_return(nil)
-        expect(I18n).not_to receive(:with_locale)
+          TestJob.perform_later('test')
+          sleep(0.2)
+        end
 
-        TestJob.perform_later('test')
-        sleep(0.2)
+        I18n.available_locales = []
       end
 
       it 'queues jobs to fifo queues synchronously' do

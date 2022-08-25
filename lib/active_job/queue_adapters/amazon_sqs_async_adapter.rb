@@ -18,30 +18,23 @@ module ActiveJob
 
       private
 
-      def _enqueue(job, send_message_opts = {})
+      def _enqueue(job, body = nil, send_message_opts = {})
         # FIFO jobs must be queued in order, so do not queue async
         queue_url = Aws::Rails::SqsActiveJob.config.queue_url_for(job.queue_name)
         if Aws::Rails::SqsActiveJob.fifo?(queue_url)
-          super(job, send_message_opts)
+          super(job, body, send_message_opts)
         else
-          Concurrent::Promises.future(i18n_locale) do |locale|
-            if locale
-              I18n.with_locale(locale) do
-                super(job, send_message_opts)
-              end
-            else
-              super(job, send_message_opts)
+          # Serialize is called here because the job’s locale needs to be
+          # determined in this thread and not in some other thread.
+          body = job.serialize
+          Concurrent::Promises
+            .future { super(job, body, send_message_opts) }
+            .rescue do |e|
+              Rails.logger.error "Failed to queue job #{job}. Reason: #{e}"
+              error_handler = Aws::Rails::SqsActiveJob.config.async_queue_error_handler
+              error_handler&.call(e, job, send_message_opts)
             end
-          end.rescue do |e|
-            Rails.logger.error "Failed to queue job #{job}.  Reason: #{e}"
-            error_handler = Aws::Rails::SqsActiveJob.config.async_queue_error_handler
-            error_handler.call(e, job, send_message_opts) if error_handler
-          end
         end
-      end
-
-      def i18n_locale
-        I18n.locale if defined?(I18n)
       end
     end
   end
