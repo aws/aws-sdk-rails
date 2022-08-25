@@ -36,7 +36,7 @@ module ActiveJob
         mock_async
 
         TestJob.perform_later('test')
-        sleep(0.1)
+        sleep(0.2)
       end
 
       it 'calls the custom error handler when set' do
@@ -46,7 +46,7 @@ module ActiveJob
           .and_return(proc { @error_handled = true })
 
         TestJob.perform_later('test')
-        sleep(0.1)
+        sleep(0.2)
 
         expect(@error_handled).to be true
       end
@@ -58,7 +58,7 @@ module ActiveJob
           .with(I18n.locale).and_call_original
 
         TestJob.perform_later('test')
-        sleep(0.1)
+        sleep(0.2)
       end
 
       it 'does not pass I18n locale if not defined' do
@@ -70,7 +70,7 @@ module ActiveJob
         expect(I18n).not_to receive(:with_locale)
 
         TestJob.perform_later('test')
-        sleep(0.1)
+        sleep(0.2)
       end
 
       it 'queues jobs to fifo queues synchronously' do
@@ -80,7 +80,7 @@ module ActiveJob
         expect(client).to receive(:send_message)
 
         TestJob.perform_later('test')
-        sleep(0.1)
+        sleep(0.2)
       end
     end
   end
