@@ -24,8 +24,7 @@ module ActiveJob
         if Aws::Rails::SqsActiveJob.fifo?(queue_url)
           super(job, send_message_opts)
         else
-          locale = I18n.locale if defined?(I18n)
-          Concurrent::Promises.future(locale) do |locale|
+          Concurrent::Promises.future(i18n_locale) do |locale|
             if locale
               I18n.with_locale(locale) do
                 super(job, send_message_opts)
@@ -39,6 +38,10 @@ module ActiveJob
             error_handler.call(e, job, send_message_opts) if error_handler
           end
         end
+      end
+
+      def i18n_locale
+        I18n.locale if defined?(I18n)
       end
     end
   end
