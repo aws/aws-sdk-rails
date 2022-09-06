@@ -1,4 +1,4 @@
-Unreleased Changes
+3.6.3 (2022-09-06)
 ------------------
 
 * Issue - Remove defaults for `visibility_timeout`: fallback to value configured on queue.
