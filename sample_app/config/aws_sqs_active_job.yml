@@ -1,4 +1,3 @@
 queues:
   default: 'https://sqs.us-east-1.amazonaws.com/655347895545/ActiveJobDefault'
 shutdown_timeout: 10
-visibility_timeout: 60

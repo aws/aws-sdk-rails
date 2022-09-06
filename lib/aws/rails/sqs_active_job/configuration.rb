@@ -26,7 +26,6 @@ module Aws
         # @api private
         DEFAULTS = {
           max_messages:  10,
-          visibility_timeout: 120,
           shutdown_timeout: 15,
           queues: {},
           logger: ::Rails.logger,
@@ -50,6 +49,8 @@ module Aws
         #    The max number of messages to poll for in a batch.
         #
         # @option options [Integer] :visibility_timeout
+        #   If unset, the visibility timeout configured on the
+        #   SQS queue will be used.
         #   The visibility timeout is the number of seconds
         #   that a message will not be processable by any other consumers.
         #   You should set this value to be longer than your expected job runtime

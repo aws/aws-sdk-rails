@@ -1,6 +1,7 @@
 Unreleased Changes
 ------------------
 
+* Issue - Remove defaults for `visibility_timeout`: fallback to value configured on queue.
 * Issue - Fix I18n localization bug in SQS adapters.
 
 3.6.2 (2022-06-16)
