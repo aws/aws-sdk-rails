@@ -52,7 +52,7 @@ module Aws
             max_threads: @options[:threads],
             logger: @logger,
             max_queue: @options[:backpressure]
-          }, refresh_visibility=@options[:refresh_visibility])
+          }, refresh_timeout = @options[:refresh_timeout])
 
           poll
         rescue Interrupt
@@ -116,7 +116,7 @@ module Aws
             opts.on("-t", "--threads INTEGER", Integer, "The maximum number of worker threads to create.  Defaults to 2x the number of processors available on this system.") { |a| out[:threads] = a }
             opts.on("-b", "--backpressure INTEGER", Integer, "The maximum number of messages to have waiting in the Executor queue. This should be a low, but non zero number.  Messages in the Executor queue cannot be picked up by other processes and will slow down shutdown.") { |a| out[:backpressure] = a }
             opts.on("-m", "--max_messages INTEGER", Integer, "Max number of messages to receive in a batch from SQS.") { |a| out[:max_messages] = a }
-            opts.on("-r", "--refresh_visibility", Integer, "Enables message visibility refresh, Value is timeout in seconds.") { |a| out[:refresh_visibility] = a }
+            opts.on("-r", "--refresh_timeout", Integer, "Enables message visibility refresh, Refresh timeout is in seconds.") { |a| out[:refresh_timeout] = a }
             opts.on("-v", "--visibility_timeout INTEGER", Integer, "The visibility timeout is the number of seconds that a message will not be processable by any other consumers. You should set this value to be longer than your expected job runtime to prevent other processes from picking up an running job.  See the SQS Visibility Timeout Documentation at https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html.") { |a| out[:visibility_timeout] = a }
             opts.on("-s", "--shutdown_timeout INTEGER", Integer, "The amount of time to wait for a clean shutdown.  Jobs that are unable to complete in this time will not be deleted from the SQS queue and will be retryable after the visibility timeout.") { |a| out[:shutdown_timeout] = a }
           }

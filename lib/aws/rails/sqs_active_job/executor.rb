@@ -16,11 +16,11 @@ module Aws
            fallback_policy: :caller_runs # slow down the producer thread
         }.freeze
 
-        def initialize(options = {}, refresh_visibility=nil)
+        def initialize(options = {}, refresh_timeout = nil)
           @executor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options))
           # Monitor threads used to refresh visiblity
-          @refresh_visibility=refresh_visibility
-          @monitor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options)) if refresh_visibility
+          @refresh_timeout = refresh_timeout
+          @monitor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options)) if refresh_timeout
           @logger = options[:logger] || ActiveSupport::Logger.new(STDOUT)
         end
 
@@ -52,7 +52,7 @@ module Aws
                 # Extend the visibility timeout by one minute
                 message.change_visibility({ visibility_timeout: 1.minute })
                 # Wait 30 seconds, and repeat
-                sleep(@refresh_visibility / 2)
+                sleep(@refresh_timeout / 2)
               rescue => e
                 # If anything goes wrong, we want to handle it. We don't care what.
                 @logger.error("Monitor process failed for message: #{message.id}. Error: #{e}")
