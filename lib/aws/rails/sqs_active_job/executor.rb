@@ -49,9 +49,9 @@ module Aws
           @monitor.post(message) do |message|
             while poison_pill
               begin
-                # Extend the visibility timeout by one minute
-                message.change_visibility({ visibility_timeout: 1.minute })
-                # Wait 30 seconds, and repeat
+                # Extend the visibility timeout to the provided refresh timeout
+                message.change_visibility({ visibility_timeout: @refresh_timeout })
+                # Wait half the refresh timeout, and repeat
                 sleep(@refresh_timeout / 2)
               rescue => e
                 # If anything goes wrong, we want to handle it. We don't care what.
