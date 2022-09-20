@@ -16,13 +16,18 @@ module Aws
            fallback_policy: :caller_runs # slow down the producer thread
         }.freeze
 
-        def initialize(options = {})
+        def initialize(options = {}, refresh_visibility=nil)
           @executor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options))
+          # Monitor threads used to refresh visiblity
+          @refresh_visibility=refresh_visibility
+          @monitor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options)) if refresh_visibility
           @logger = options[:logger] || ActiveSupport::Logger.new(STDOUT)
         end
 
         # TODO: Consider catching the exception and sleeping instead of using :caller_runs
         def execute(message)
+          # Used to tell the visibilty refresh thread to give up
+          poison_pill = false
           @executor.post(message) do |message|
             begin
               job = JobRunner.new(message)
@@ -36,8 +41,24 @@ module Aws
               job_msg = job ? "#{job.id}[#{job.class_name}]" : 'unknown job'
               @logger.info "Error processing job #{job_msg}: #{e}"
               @logger.debug e.backtrace.join("\n")
+            ensure
+              poison_pill = true
             end
           end
+
+          @monitor.post(message) do |message|
+            while poison_pill
+              begin
+                # Extend the visibility timeout by one minute
+                message.change_visibility({ visibility_timeout: 1.minute })
+                # Wait 30 seconds, and repeat
+                sleep(@refresh_visibility / 2)
+              rescue => e
+                # If anything goes wrong, we want to handle it. We don't care what.
+                @logger.error("Monitor process failed for message: #{message.id}. Error: #{e}")
+              end
+            end
+          end if @monitor
         end
 
         def shutdown(timeout=nil)
