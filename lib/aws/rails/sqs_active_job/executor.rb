@@ -43,7 +43,7 @@ module Aws
               @logger.info "Error processing job #{job_msg}: #{e}"
               @logger.debug e.backtrace.join("\n")
             ensure
-              refresh_visibility = true
+              refresh_visibility = false
             end
           end
 
