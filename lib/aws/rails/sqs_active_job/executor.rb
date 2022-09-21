@@ -56,6 +56,7 @@ module Aws
                 sleep(@refresh_timeout / 2.0)
               rescue Aws::SQS::Errors::MessageNotInflight => e
                 # Message has been deleted or otherwise released. We don't care!
+                break
               rescue => e
                 # If anything else goes wrong, we should log and break the loop.
                 @logger.error("Monitor process failed for message: #{message.id}. Error: #{e}")
