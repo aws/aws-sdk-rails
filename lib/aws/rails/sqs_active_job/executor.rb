@@ -27,7 +27,7 @@ module Aws
         # TODO: Consider catching the exception and sleeping instead of using :caller_runs
         def execute(message)
           # Used to tell the visibilty refresh thread to give up
-          poison_pill = false
+          refresh_visibility = true
           @executor.post(message) do |message|
             begin
               job = JobRunner.new(message)
@@ -42,12 +42,12 @@ module Aws
               @logger.info "Error processing job #{job_msg}: #{e}"
               @logger.debug e.backtrace.join("\n")
             ensure
-              poison_pill = true
+              refresh_visibility = true
             end
           end
 
           @monitor.post(message) do |message|
-            while poison_pill
+            while refresh_visibility
               begin
                 # Extend the visibility timeout to the provided refresh timeout
                 message.change_visibility({ visibility_timeout: @refresh_timeout })
