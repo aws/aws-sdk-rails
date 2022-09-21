@@ -52,10 +52,9 @@ module Aws
                 # Extend the visibility timeout to the provided refresh timeout
                 message.change_visibility({ visibility_timeout: @refresh_timeout })
                 # Wait half the refresh timeout, and repeat
-                sleep(@refresh_timeout / 2)
+                sleep(@refresh_timeout / 2.0)
               rescue => e
                 # If anything goes wrong, we want to handle it. We don't care what.
-                @logger.error("Monitor process failed for message: #{message.id}. Error: #{e}")
               end
             end
           end if @monitor
