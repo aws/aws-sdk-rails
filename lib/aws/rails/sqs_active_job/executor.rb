@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'aws-sdk-sqs'
 require 'concurrent'
 
 module Aws
@@ -53,8 +54,12 @@ module Aws
                 message.change_visibility({ visibility_timeout: @refresh_timeout })
                 # Wait half the refresh timeout, and repeat
                 sleep(@refresh_timeout / 2.0)
+              rescue Aws::SQS::Errors::MessageNotInflight => e
+                # Message has been deleted or otherwise released. We don't care!
               rescue => e
-                # If anything goes wrong, we want to handle it. We don't care what.
+                # If anything else goes wrong, we should log and break the loop.
+                @logger.error("Monitor process failed for message: #{message.id}. Error: #{e}")
+                break
               end
             end
           end if @monitor
