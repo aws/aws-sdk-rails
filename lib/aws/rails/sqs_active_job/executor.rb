@@ -54,8 +54,11 @@ module Aws
                 message.change_visibility({ visibility_timeout: @visibility_refresh })
                 # Wait half the refresh timeout, and repeat
                 sleep(@visibility_refresh / 2.0)
+              rescue Aws::SQS::Errors::ReceiptHandleIsInvalid =>
+                # Message has been deleted. We don't care!
+                break
               rescue Aws::SQS::Errors::MessageNotInflight => e
-                # Message has been deleted or otherwise released. We don't care!
+                # Message has been otherwise released. We don't care!
                 break
               rescue => e
                 # If anything else goes wrong, we should log and break the loop.
