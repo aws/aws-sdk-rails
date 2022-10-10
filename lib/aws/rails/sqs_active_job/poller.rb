@@ -17,7 +17,6 @@ module Aws
         DEFAULT_OPTS = {
           threads: 2*Concurrent.processor_count,
           max_messages: 10,
-          visibility_timeout: 60,
           shutdown_timeout: 15,
           backpressure: 10
         }
