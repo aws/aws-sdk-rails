@@ -1,4 +1,4 @@
-Unreleased Changes
+3.6.4 (2022-10-13)
 ------------------
 
 * Issue - Use `request.ip` in `sent_from_docker_host?`.
