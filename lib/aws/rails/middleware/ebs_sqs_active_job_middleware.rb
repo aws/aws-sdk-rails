@@ -81,7 +81,7 @@ module Aws
       end
 
       def sent_from_docker_host?(request)
-        app_runs_in_docker_container? && request.remote_ip == '172.17.0.1'
+        app_runs_in_docker_container? && request.ip == '172.17.0.1'
       end
 
       def app_runs_in_docker_container?
