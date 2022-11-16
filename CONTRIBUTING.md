@@ -78,7 +78,7 @@ page](http://aws.amazon.com/security/vulnerability-reporting/). Please do
 
 ## Licensing
 
-See the [LICENSE](https://github.com/aws/aws-sdk-rails/blob/main/LICENSE) file
+See the [LICENSE](https://github.com/aws/aws-sdk-rails/blob/main/LICENSE.txt) file
 for our project's licensing. We will ask you to confirm the licensing of your
 contribution.
 
