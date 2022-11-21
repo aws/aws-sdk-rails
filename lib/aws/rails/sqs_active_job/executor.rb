@@ -46,7 +46,10 @@ module Aws
               refresh_monitor = false
             end
           end
+          refresh_monitor(message, refresh_monitor) if @visibility_refresh
+        end
 
+        def refresh_monitor(message, refresh_monitor)
           @monitor.post(message) do |message|
             while refresh_monitor
               begin
@@ -66,7 +69,7 @@ module Aws
                 break
               end
             end
-          end if @visibility_refresh
+          end
         end
 
         def shutdown(timeout=nil)

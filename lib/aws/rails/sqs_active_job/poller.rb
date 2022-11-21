@@ -48,12 +48,12 @@ module Aws
 
           Signal.trap('INT') { raise Interrupt }
           Signal.trap('TERM') { raise Interrupt }
-          @executor = Executor.new({
+          @executor = Executor.new(
             max_threads: @options[:threads],
             logger: @logger,
-            max_queue: @options[:backpressure]
-            visibility_refresh: @options[:visibility_refresh])
-          })
+            max_queue: @options[:backpressure],
+            visibility_refresh: @options[:visibility_refresh]
+          )
 
           poll
         rescue Interrupt
