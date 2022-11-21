@@ -145,8 +145,7 @@ module Aws
 
         # Load options from YAML file
         def load_from_file(file_path)
-          require "erb"
-          opts = YAML.load(ERB.new(File.read(file_path)).result) || {}
+          opts = load_yaml(file_path) || {}
           opts.deep_symbolize_keys
         end
 
@@ -157,6 +156,19 @@ module Aws
 
         def user_agent
           "ft/aws-sdk-rails-activejob/#{Aws::Rails::VERSION}"
+        end
+
+        def load_yaml(file_path)
+          require "erb"
+          source = ERB.new(File.read(file_path)).result
+
+          # Avoid incompatible changes with Psych 4.0.0
+          # https://bugs.ruby-lang.org/issues/17866
+          begin
+            YAML.load(source, aliases: true) || {}
+          rescue ArgumentError
+            YAML.load(source) || {}
+          end
         end
       end
     end
