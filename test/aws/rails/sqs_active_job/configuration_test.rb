@@ -36,6 +36,7 @@ module Aws
           expect(cfg.to_h).to include(expected)
         end
 
+        # For Ruby 3.1+, Psych 4 will normally raise BadAlias error
         it 'accepts YAML config with alias' do
           allow_any_instance_of(ERB).to receive(:result).and_return(<<~YAML)
 common: &common
