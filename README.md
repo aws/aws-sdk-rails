@@ -19,6 +19,7 @@ gem 'aws-sdk-rails'
 This gem also brings in the following AWS gems:
 
 * `aws-sdk-ses`
+* `aws-sdk-sesv2`
 * `aws-sdk-sqs`
 * `aws-record`
 * `aws-sessionstore-dynamodb`
