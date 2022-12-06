@@ -15,7 +15,7 @@ module Aws
   module Rails
     describe 'Railtie' do
       it 'adds action mailer delivery method' do
-        expect(ActionMailer::Base.delivery_methods[:ses]).to eq Aws::Rails::Mailer
+        expect(ActionMailer::Base.delivery_methods[:ses]).to eq Aws::Rails::SesMailer
       end
 
       it 'sets the Aws logger' do

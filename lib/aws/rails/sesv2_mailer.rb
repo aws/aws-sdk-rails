@@ -5,19 +5,19 @@ require 'aws-sdk-sesv2'
 module Aws
   module Rails
     # Provides a delivery method for ActionMailer that uses Amazon Simple Email
-    # Service.
+    # Service V2.
     #
-    # Once you have an SES delivery method you can configure Rails to
+    # Once you have an SESv2 delivery method you can configure Rails to
     # use this for ActionMailer in your environment configuration
     # (e.g. RAILS_ROOT/config/environments/production.rb)
     #
-    #     config.action_mailer.delivery_method = :ses
+    #     config.action_mailer.delivery_method = :sesv2
     #
-    # Uses the AWS SDK for Ruby's credential provider chain when creating an SES
+    # Uses the AWS SDK for Ruby's credential provider chain when creating an SESV2
     # client instance.
     class Sesv2Mailer
       # @param [Hash] options Passes along initialization options to
-      #   [Aws::SES::Client.new](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#initialize-instance_method).
+      #   [Aws::SESV2::Client.new](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SESV2/Client.html#initialize-instance_method).
       def initialize(options = {})
         @client = SESV2::Client.new(options)
       end
@@ -29,7 +29,12 @@ module Aws
         send_opts[:content] = {}
         send_opts[:content][:raw] = { data: message.to_s }
 
-        send_opts[:from_email_address] = message.from_address&.to_s
+        # Check for Rails >=6 compatibility
+        send_opts[:from_email_address] = if message.respond_to?(:from_address)
+                                           message.from_address&.to_s
+                                         else
+                                           Array.wrap(message.from).first&.to_s
+                                         end
 
         send_opts[:destination] = {}
         send_opts[:destination][:to_addresses] = [*message.to]
