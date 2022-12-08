@@ -7,9 +7,7 @@ class TestMailer < ActionMailer::Base
   layout nil
 
   def deliverable(options = {})
-    mail(delivery_method: :ses, body: '').tap do |m|
-      options.each {|k, v| m.send(k, v) }
-    end
+    mail({ delivery_method: :ses }.merge(options))
   end
 end
 
@@ -32,10 +30,8 @@ module Aws
         TestMailer.deliverable(
           body: 'Hallo',
           from: 'sender@example.com',
-          smtp_envelope_from: 'envelope-sender@example.com',
           subject: 'This is a test',
           to: 'recipient@example.com',
-          smtp_envelope_to: 'envelope-recipient@example.com',
         )
       end
 
@@ -59,6 +55,15 @@ module Aws
           raw = mailer_data[:raw_message][:data].to_s
           raw.gsub!("\r\nHallo", "ses-message-id: #{ses_message_id}\r\n\r\nHallo")
           expect(raw).to eq sample_message.to_s
+          expect(mailer_data[:source]).to eq 'sender@example.com'
+          expect(mailer_data[:destinations]).to eq ['recipient@example.com']
+        end
+
+        it 'delivers the message with SMTP envelope sender and recipient' do
+          message = sample_message
+          message.smtp_envelope_from = 'envelope-sender@example.com'
+          message.smtp_envelope_to = 'envelope-recipient@example.com'
+          mailer_data = mailer.deliver!(message).context.params
           expect(mailer_data[:source]).to eq 'envelope-sender@example.com'
           expect(mailer_data[:destinations]).to eq ['envelope-recipient@example.com']
         end
