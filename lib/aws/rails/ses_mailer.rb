@@ -28,10 +28,8 @@ module Aws
         send_opts = {}
         send_opts[:raw_message] = {}
         send_opts[:raw_message][:data] = message.to_s
-
-        if message.respond_to?(:destinations)
-          send_opts[:destinations] = message.destinations
-        end
+        send_opts[:source] = message.smtp_envelope_from
+        send_opts[:destinations] = message.smtp_envelope_to
 
         @client.send_raw_email(send_opts).tap do |response|
           message.header[:ses_message_id] = response.message_id

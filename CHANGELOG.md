@@ -1,6 +1,15 @@
 Unreleased Changes
 ------------------
 
+* Feature - Support smtp_envelope_from and _to in SES Mailer.
+
+* Issue - Fix Ruby 3.1 usage by handling Psych 4 BadAlias error.
+
+3.6.4 (2022-10-13)
+------------------
+
+* Issue - Use `request.ip` in `sent_from_docker_host?`.
+
 3.6.3 (2022-09-06)
 ------------------
 
