@@ -30,15 +30,12 @@ module Aws
     #   register.
     # @param [Hash] client_options The options you wish to pass on to the
     #   Aws::SES[V2]::Client initialization method.
-    def self.add_action_mailer_delivery_method(name = :ses, client_options = {}, mailer = :ses)
+    def self.add_action_mailer_delivery_method(name = :ses, client_options = {})
       ActiveSupport.on_load(:action_mailer) do
-        case mailer
-        when :ses
-          add_delivery_method(name, Aws::Rails::SesMailer, client_options)
-        when :sesv2
+        if name == :sesv2
           add_delivery_method(name, Aws::Rails::Sesv2Mailer, client_options)
         else
-          raise ArgumentError, "Unsupported delivery method #{mailer}. Must be :ses or :sesv2"
+          add_delivery_method(name, Aws::Rails::SesMailer, client_options)
         end
       end
     end
