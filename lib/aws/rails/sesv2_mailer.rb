@@ -74,7 +74,7 @@ module Aws
         # X-SES-LIST-MANAGEMENT-OPTIONS: {contactListName}; topic={topicName}
         message.header['X-SES-LIST-MANAGEMENT-OPTIONS']&.yield_self do |field|
           header_fields = message.header.fields
-          header_value = header_fields.delete(field).value
+          header_value = header_fields.delete(field)&.value
 
           contact_list_name, topic_name = header_value.sub('topic=', '').split(';').map(&:strip)
 

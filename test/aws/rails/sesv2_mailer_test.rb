@@ -7,6 +7,8 @@ class TestMailer < ActionMailer::Base
   layout nil
 
   def deliverable(options = {})
+    headers(options[:headers]) if options[:headers].present?
+
     mail(
       body: options[:body],
       delivery_method: :sesv2,
@@ -34,6 +36,7 @@ module Aws
 
       let(:mailer) { Sesv2Mailer.new(client_options) }
 
+      let(:sample_message_headers) { nil }
       let(:sample_message) do
         TestMailer.deliverable(
           body: 'Hallo',
@@ -41,7 +44,8 @@ module Aws
           subject: 'This is a test',
           to: 'recipient@example.com',
           cc: 'recipient_cc@example.com',
-          bcc: 'recipient_bcc@example.com'
+          bcc: 'recipient_bcc@example.com',
+          headers: sample_message_headers
         )
       end
 
@@ -73,6 +77,27 @@ module Aws
         it 'delivers with action mailer' do
           message = sample_message.deliver_now
           expect(message.header[:ses_message_id].value).to eq ses_message_id
+        end
+
+        describe 'with X-SES-CONFIGURATION-SET header' do
+          let(:sample_message_headers) { { 'X-SES-CONFIGURATION-SET': 'SomeConfigSet' } }
+
+          it 'sets the configuration-set name in the send_email request' do
+            mailer_data = mailer.deliver!(sample_message).context.params
+
+            expect(mailer_data[:configuration_set_name]).to eql 'SomeConfigSet'
+          end
+        end
+
+        describe 'with X-SES-LIST-MANAGEMENT-OPTIONS header' do
+          let(:sample_message_headers) { { 'X-SES-LIST-MANAGEMENT-OPTIONS': 'ExampleContactListName; topic=Sports' } }
+
+          it 'sets the list_management_options in the send_email request' do
+            mailer_data = mailer.deliver!(sample_message).context.params
+
+            expect(mailer_data[:list_management_options][:contact_list_name]).to eql 'ExampleContactListName'
+            expect(mailer_data[:list_management_options][:topic_name]).to eql 'Sports'
+          end
         end
       end
     end
