@@ -3,24 +3,6 @@
 require 'test_helper'
 require 'mail'
 
-class Sesv2TestMailer < ActionMailer::Base
-  layout nil
-
-  def deliverable(options = {})
-    headers(options[:headers]) if options[:headers].present?
-
-    mail(
-      body: options[:body],
-      delivery_method: :sesv2,
-      from: options[:from],
-      subject: options[:subject],
-      to: options[:to],
-      cc: options[:cc],
-      bcc: options[:bcc]
-    )
-  end
-end
-
 module Aws
   module Rails
     describe Sesv2Mailer do
@@ -36,16 +18,19 @@ module Aws
 
       let(:mailer) { Sesv2Mailer.new(client_options) }
 
-      let(:sample_message_headers) { nil }
       let(:sample_message) do
-        Sesv2TestMailer.deliverable(
+        TestMailer.deliverable(
+          delivery_method: :sesv2,
           body: 'Hallo',
           from: 'sender@example.com',
           subject: 'This is a test',
           to: 'recipient@example.com',
           cc: 'recipient_cc@example.com',
           bcc: 'recipient_bcc@example.com',
-          headers: sample_message_headers
+          headers: {
+            'X-SES-CONFIGURATION-SET' => 'TestConfigSet',
+            'X-SES-LIST-MANAGEMENT-OPTIONS' => 'contactListName; topic=topic'
+          }
         )
       end
 
@@ -54,7 +39,7 @@ module Aws
       end
 
       before do
-        ActionMailer::Base.add_delivery_method(:sesv2, Sesv2Mailer, client_options)
+        Aws::Rails.add_action_mailer_delivery_method(:sesv2, client_options)
       end
 
       describe '#settings' do
@@ -63,15 +48,12 @@ module Aws
         end
       end
 
-      describe '#deliver!' do
+      describe '#deliver' do
         it 'delivers the message' do
           mailer_data = mailer.deliver!(sample_message).context.params
           raw = mailer_data[:content][:raw][:data].to_s
           raw.gsub!("\r\nHallo", "ses-message-id: #{ses_message_id}\r\n\r\nHallo")
           expect(raw).to eq sample_message.to_s
-          expect(mailer_data.dig(:destination, :to_addresses)).to eq Array.wrap(sample_message.to)
-          expect(mailer_data.dig(:destination, :cc_addresses)).to eq Array.wrap(sample_message.cc)
-          expect(mailer_data.dig(:destination, :bcc_addresses)).to eq Array.wrap(sample_message.bcc)
         end
 
         it 'delivers with action mailer' do
@@ -79,25 +61,11 @@ module Aws
           expect(message.header[:ses_message_id].value).to eq ses_message_id
         end
 
-        describe 'with X-SES-CONFIGURATION-SET header' do
-          let(:sample_message_headers) { { 'X-SES-CONFIGURATION-SET': 'SomeConfigSet' } }
-
-          it 'sets the configuration-set name in the send_email request' do
-            mailer_data = mailer.deliver!(sample_message).context.params
-
-            expect(mailer_data[:configuration_set_name]).to eql 'SomeConfigSet'
-          end
-        end
-
-        describe 'with X-SES-LIST-MANAGEMENT-OPTIONS header' do
-          let(:sample_message_headers) { { 'X-SES-LIST-MANAGEMENT-OPTIONS': 'ExampleContactListName; topic=Sports' } }
-
-          it 'sets the list_management_options in the send_email request' do
-            mailer_data = mailer.deliver!(sample_message).context.params
-
-            expect(mailer_data[:list_management_options][:contact_list_name]).to eql 'ExampleContactListName'
-            expect(mailer_data[:list_management_options][:topic_name]).to eql 'Sports'
-          end
+        it 'passes through SES headers' do
+          mailer_data = mailer.deliver!(sample_message).context.params
+          raw = mailer_data[:content][:raw][:data].to_s
+          expect(raw).to include('X-SES-CONFIGURATION-SET: TestConfigSet')
+          expect(raw).to include('X-SES-LIST-MANAGEMENT-OPTIONS: contactListName; topic=topic')
         end
       end
     end

@@ -3,14 +3,6 @@
 require 'test_helper'
 require 'mail'
 
-class SesTestMailer < ActionMailer::Base
-  layout nil
-
-  def deliverable(options = {})
-    mail({ delivery_method: :ses }.merge(options))
-  end
-end
-
 module Aws
   module Rails
     describe SesMailer do
@@ -27,11 +19,18 @@ module Aws
       let(:mailer) { SesMailer.new(client_options) }
 
       let(:sample_message) do
-        SesTestMailer.deliverable(
+        TestMailer.deliverable(
+          delivery_method: :ses,
           body: 'Hallo',
           from: 'sender@example.com',
           subject: 'This is a test',
           to: 'recipient@example.com',
+          cc: 'recipient_cc@example.com',
+          bcc: 'recipient_bcc@example.com',
+          headers: {
+            'X-SES-CONFIGURATION-SET' => 'TestConfigSet',
+            'X-SES-LIST-MANAGEMENT-OPTIONS' => 'contactListName; topic=topic'
+          }
         )
       end
 
@@ -40,7 +39,7 @@ module Aws
       end
 
       before do
-        ActionMailer::Base.add_delivery_method(:ses, SesMailer, client_options)
+        Aws::Rails.add_action_mailer_delivery_method(:ses, client_options)
       end
 
       describe '#settings' do
@@ -55,22 +54,18 @@ module Aws
           raw = mailer_data[:raw_message][:data].to_s
           raw.gsub!("\r\nHallo", "ses-message-id: #{ses_message_id}\r\n\r\nHallo")
           expect(raw).to eq sample_message.to_s
-          expect(mailer_data[:source]).to eq 'sender@example.com'
-          expect(mailer_data[:destinations]).to eq ['recipient@example.com']
-        end
-
-        it 'delivers the message with SMTP envelope sender and recipient' do
-          message = sample_message
-          message.smtp_envelope_from = 'envelope-sender@example.com'
-          message.smtp_envelope_to = 'envelope-recipient@example.com'
-          mailer_data = mailer.deliver!(message).context.params
-          expect(mailer_data[:source]).to eq 'envelope-sender@example.com'
-          expect(mailer_data[:destinations]).to eq ['envelope-recipient@example.com']
         end
 
         it 'delivers with action mailer' do
           message = sample_message.deliver_now
           expect(message.header[:ses_message_id].value).to eq ses_message_id
+        end
+
+        it 'passes through SES headers' do
+          mailer_data = mailer.deliver!(sample_message).context.params
+          raw = mailer_data[:raw_message][:data].to_s
+          expect(raw).to include('X-SES-CONFIGURATION-SET: TestConfigSet')
+          expect(raw).to include('X-SES-LIST-MANAGEMENT-OPTIONS: contactListName; topic=topic')
         end
       end
     end
