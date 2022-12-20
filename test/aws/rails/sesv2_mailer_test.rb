@@ -54,7 +54,10 @@ module Aws
       end
 
       before do
-        ActionMailer::Base.add_delivery_method(:sesv2, Sesv2Mailer, client_options)
+        options = client_options
+        ActiveSupport.on_load(:action_mailer) do
+          ActionMailer::Base.add_delivery_method(:sesv2, Sesv2Mailer, options)
+        end
       end
 
       describe '#settings' do
