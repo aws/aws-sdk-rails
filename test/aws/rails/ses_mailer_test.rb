@@ -3,7 +3,7 @@
 require 'test_helper'
 require 'mail'
 
-class TestMailer < ActionMailer::Base
+class SesTestMailer < ActionMailer::Base
   layout nil
 
   def deliverable(options = {})
@@ -27,7 +27,7 @@ module Aws
       let(:mailer) { SesMailer.new(client_options) }
 
       let(:sample_message) do
-        TestMailer.deliverable(
+        SesTestMailer.deliverable(
           body: 'Hallo',
           from: 'sender@example.com',
           subject: 'This is a test',
@@ -40,10 +40,7 @@ module Aws
       end
 
       before do
-        options = client_options
-        ActiveSupport.on_load(:action_mailer) do
-          ActionMailer::Base.add_delivery_method(:ses, SesMailer, options)
-        end
+        ActionMailer::Base.add_delivery_method(:ses, SesMailer, client_options)
       end
 
       describe '#settings' do
