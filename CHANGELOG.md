@@ -1,7 +1,7 @@
 Unreleased Changes
 ------------------
 
-* Feature - Support smtp_envelope_from and _to in SES Mailer.
+* Feature - Add SES v2 Mailer.
 
 * Issue - Fix Ruby 3.1 usage by handling Psych 4 BadAlias error.
 
