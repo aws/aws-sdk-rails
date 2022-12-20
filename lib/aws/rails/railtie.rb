@@ -10,6 +10,7 @@ module Aws
         # Initialization Actions
         Aws::Rails.use_rails_encrypted_credentials
         Aws::Rails.add_action_mailer_delivery_method
+        Aws::Rails.add_action_mailer_delivery_method(:sesv2)
         Aws::Rails.log_to_rails_logger
       end
 
