@@ -25,7 +25,12 @@ module Aws
       # Rails expects this method to exist, and to handle a Mail::Message object
       # correctly. Called during mail delivery.
       def deliver!(message)
-        params = { content: { raw: { data: message.to_s } } }
+        params = {
+          content: { raw: { data: message.to_s } },
+          from_email_address: message.smtp_envelope_from, # defaults to From header
+          # defaults to destinations (To,Cc,Bcc) - stick all on bcc to be delivered anyway
+          destination: { bcc_addresses: message.smtp_envelope_to }
+        }
         @client.send_email(params).tap do |response|
           message.header[:ses_message_id] = response.message_id
         end

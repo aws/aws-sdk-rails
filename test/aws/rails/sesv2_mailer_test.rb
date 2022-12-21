@@ -54,6 +54,21 @@ module Aws
           raw = mailer_data[:content][:raw][:data].to_s
           raw.gsub!("\r\nHallo", "ses-message-id: #{ses_message_id}\r\n\r\nHallo")
           expect(raw).to eq sample_message.to_s
+          expect(mailer_data[:from_email_address]).to eq 'sender@example.com'
+          expect(mailer_data[:destination][:bcc_addresses]).to eq(
+            ['recipient@example.com',
+             'recipient_cc@example.com',
+             'recipient_bcc@example.com']
+          )
+        end
+
+        it 'delivers the message with SMTP envelope sender and recipient' do
+          message = sample_message
+          message.smtp_envelope_from = 'envelope-sender@example.com'
+          message.smtp_envelope_to = 'envelope-recipient@example.com'
+          mailer_data = mailer.deliver!(message).context.params
+          expect(mailer_data[:from_email_address]).to eq 'envelope-sender@example.com'
+          expect(mailer_data[:destination][:bcc_addresses]).to eq ['envelope-recipient@example.com']
         end
 
         it 'delivers with action mailer' do
