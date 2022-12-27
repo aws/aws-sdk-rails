@@ -80,9 +80,9 @@ jobs:
 
           # Rails 7.1 dropped support for older rubygems
           - gemfile: rails-main.gemfile
-            ruby: ruby-2.7
+            ruby: 2.7
           - gemfile: rails-main.gemfile
-            ruby: ruby-3.0
+            ruby: 3.0
 
     steps:
       - name: Setup Ruby
