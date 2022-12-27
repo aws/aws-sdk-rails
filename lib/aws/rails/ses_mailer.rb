@@ -15,7 +15,7 @@ module Aws
     #
     # Uses the AWS SDK for Ruby's credential provider chain when creating an SES
     # client instance.
-    class Mailer
+    class SesMailer
       # @param [Hash] options Passes along initialization options to
       #   [Aws::SES::Client.new](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#initialize-instance_method).
       def initialize(options = {})
@@ -25,13 +25,12 @@ module Aws
       # Rails expects this method to exist, and to handle a Mail::Message object
       # correctly. Called during mail delivery.
       def deliver!(message)
-        send_opts = {}
-        send_opts[:raw_message] = {}
-        send_opts[:raw_message][:data] = message.to_s
-        send_opts[:source] = message.smtp_envelope_from
-        send_opts[:destinations] = message.smtp_envelope_to
-
-        @client.send_raw_email(send_opts).tap do |response|
+        params = {
+          raw_message: { data: message.to_s },
+          source: message.smtp_envelope_from, # defaults to From header
+          destinations: message.smtp_envelope_to # defaults to destinations (To,Cc,Bcc)
+        }
+        @client.send_raw_email(params).tap do |response|
           message.header[:ses_message_id] = response.message_id
         end
       end
@@ -43,3 +42,7 @@ module Aws
     end
   end
 end
+
+# This is for backwards compatibility after introducing support for SESv2.
+# The old mailer is now replaced with the new SES (v1) mailer.
+Aws::Rails::Mailer = Aws::Rails::SesMailer

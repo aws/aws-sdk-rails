@@ -19,6 +19,7 @@ gem 'aws-sdk-rails'
 This gem also brings in the following AWS gems:
 
 * `aws-sdk-ses`
+* `aws-sdk-sesv2`
 * `aws-sdk-sqs`
 * `aws-record`
 * `aws-sessionstore-dynamodb`
@@ -154,18 +155,18 @@ rake dynamo_db:collect_garbage
 
 ## Amazon Simple Email Service (SES) as an ActionMailer Delivery Method
 
-This gem will automatically register SES as an ActionMailer delivery method. You
-simply need to configure Rails to use it in your environment configuration:
+This gem will automatically register SES and SESV2 as ActionMailer delivery methods.
+You simply need to configure Rails to use it in your environment configuration:
 
 ```ruby
 # for e.g.: config/environments/production.rb
-config.action_mailer.delivery_method = :ses
+config.action_mailer.delivery_method = :ses # or :sesv2
 ```
 
-### Manually setting credentials
+### Override credentials or other client options
 
-If you need to provide different credentials for Action Mailer, you can call
-client-creating actions manually. For example, you can create an initializer
+Client options can be overridden by re-registering the mailer with any set of
+SES or SESV2 Client options. You can create a Rails initializer
 `config/initializers/aws.rb` with contents similar to the following:
 
 ```ruby
@@ -181,15 +182,17 @@ secrets = JSON.load(File.read('path/to/aws_secrets.json'))
 creds = Aws::Credentials.new(secrets['AccessKeyId'], secrets['SecretAccessKey'])
 
 Aws::Rails.add_action_mailer_delivery_method(
-  :ses,
+  :ses, # or :sesv2
   credentials: creds,
-  region: 'us-east-1'
+  region: 'us-east-1',
+  # some other config
 )
 ```
 
 ### Using ARNs with SES
 
 This gem uses [`Aws::SES::Client#send_raw_email`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#send_raw_email-instance_method)
+and [`Aws::SESV2::Client#send_email`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SESV2/Client.html#send_email-instance_method)
 to send emails. This operation allows you to specify a cross-account identity
 for the email's Source, From, and Return-Path. To set these ARNs, use any of the
 following headers on your `Mail::Message` object returned by your Mailer class:

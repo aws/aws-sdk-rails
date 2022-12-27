@@ -10,6 +10,7 @@ module Aws
         # Initialization Actions
         Aws::Rails.use_rails_encrypted_credentials
         Aws::Rails.add_action_mailer_delivery_method
+        Aws::Rails.add_action_mailer_delivery_method(:sesv2)
         Aws::Rails.log_to_rails_logger
       end
 
@@ -28,11 +29,15 @@ module Aws
     #
     # @param [Symbol] name The name of the ActionMailer delivery method to
     #   register.
-    # @param [Hash] options The options you wish to pass on to the
-    #   Aws::SES::Client initialization method.
-    def self.add_action_mailer_delivery_method(name = :ses, options = {})
+    # @param [Hash] client_options The options you wish to pass on to the
+    #   Aws::SES[V2]::Client initialization method.
+    def self.add_action_mailer_delivery_method(name = :ses, client_options = {})
       ActiveSupport.on_load(:action_mailer) do
-        add_delivery_method(name, Aws::Rails::Mailer, options)
+        if name == :sesv2
+          add_delivery_method(name, Aws::Rails::Sesv2Mailer, client_options)
+        else
+          add_delivery_method(name, Aws::Rails::SesMailer, client_options)
+        end
       end
     end
 
