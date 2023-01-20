@@ -18,11 +18,12 @@ module Aws
 
       let(:mailer) { Sesv2Mailer.new(client_options) }
 
+      let(:sample_message_from) { 'sender@example.com' }
       let(:sample_message) do
         TestMailer.deliverable(
           delivery_method: :sesv2,
           body: 'Hallo',
-          from: 'sender@example.com',
+          from: sample_message_from,
           subject: 'This is a test',
           to: 'recipient@example.com',
           cc: 'recipient_cc@example.com',
@@ -81,6 +82,32 @@ module Aws
           raw = mailer_data[:content][:raw][:data].to_s
           expect(raw).to include('X-SES-CONFIGURATION-SET: TestConfigSet')
           expect(raw).to include('X-SES-LIST-MANAGEMENT-OPTIONS: contactListName; topic=topic')
+        end
+
+        describe 'when sender includes name+address' do
+          let(:sample_message_from) { 'Some Sender <sender@example.com>' }
+
+          before do
+            allow(sample_message).to receive(:from_address) { sample_message_from }
+          end
+
+          describe 'with SMTP envelope sender matching From header address' do
+            it 'delivers the message with From header' do
+              message = sample_message
+              message.smtp_envelope_from = 'sender@example.com'
+              mailer_data = mailer.deliver!(message).context.params
+              expect(mailer_data[:from_email_address]).to eq 'Some Sender <sender@example.com>'
+            end
+          end
+
+          describe 'with SMTP envelope sender different to From header address' do
+            it 'delivers the message with SMTP envelope sender' do
+              message = sample_message
+              message.smtp_envelope_from = 'envelope-sender@example.com'
+              mailer_data = mailer.deliver!(message).context.params
+              expect(mailer_data[:from_email_address]).to eq 'envelope-sender@example.com'
+            end
+          end
         end
       end
     end
