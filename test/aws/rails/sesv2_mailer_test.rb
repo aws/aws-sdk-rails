@@ -22,11 +22,11 @@ module Aws
         TestMailer.deliverable(
           delivery_method: :sesv2,
           body: 'Hallo',
-          from: 'sender@example.com',
+          from: 'Sender <sender@example.com>',
           subject: 'This is a test',
-          to: 'recipient@example.com',
-          cc: 'recipient_cc@example.com',
-          bcc: 'recipient_bcc@example.com',
+          to: 'Recipient <recipient@example.com>',
+          cc: 'Recipient CC <recipient_cc@example.com>',
+          bcc: 'Recipient BCC <recipient_bcc@example.com>',
           headers: {
             'X-SES-CONFIGURATION-SET' => 'TestConfigSet',
             'X-SES-LIST-MANAGEMENT-OPTIONS' => 'contactListName; topic=topic'
@@ -54,21 +54,25 @@ module Aws
           raw = mailer_data[:content][:raw][:data].to_s
           raw.gsub!("\r\nHallo", "ses-message-id: #{ses_message_id}\r\n\r\nHallo")
           expect(raw).to eq sample_message.to_s
-          expect(mailer_data[:from_email_address]).to eq 'sender@example.com'
-          expect(mailer_data[:destination][:bcc_addresses]).to eq(
-            ['recipient@example.com',
-             'recipient_cc@example.com',
-             'recipient_bcc@example.com']
+          expect(mailer_data[:from_email_address]).to eq nil # Optional for raw messages
+          expect(mailer_data[:destination]).to eq(
+            to_addresses: ['recipient@example.com'], # Default to To header
+            cc_addresses: ['recipient_cc@example.com'],
+            bcc_addresses: ['recipient_bcc@example.com']
           )
         end
 
         it 'delivers the message with SMTP envelope sender and recipient' do
-          message = sample_message
+          message = sample_message.message
           message.smtp_envelope_from = 'envelope-sender@example.com'
           message.smtp_envelope_to = 'envelope-recipient@example.com'
           mailer_data = mailer.deliver!(message).context.params
           expect(mailer_data[:from_email_address]).to eq 'envelope-sender@example.com'
-          expect(mailer_data[:destination][:bcc_addresses]).to eq ['envelope-recipient@example.com']
+          expect(mailer_data[:destination]).to eq(
+            to_addresses: ['envelope-recipient@example.com'],
+            cc_addresses: ['recipient_cc@example.com'],
+            bcc_addresses: ['recipient_bcc@example.com']
+          )
         end
 
         it 'delivers with action mailer' do

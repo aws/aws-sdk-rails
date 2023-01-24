@@ -22,11 +22,11 @@ module Aws
         TestMailer.deliverable(
           delivery_method: :ses,
           body: 'Hallo',
-          from: 'sender@example.com',
+          from: 'Sender <sender@example.com>',
           subject: 'This is a test',
-          to: 'recipient@example.com',
-          cc: 'recipient_cc@example.com',
-          bcc: 'recipient_bcc@example.com',
+          to: 'Recipient <recipient@example.com>',
+          cc: 'Recipient CC <recipient_cc@example.com>',
+          bcc: 'Recipient BCC <recipient_bcc@example.com>',
           headers: {
             'X-SES-CONFIGURATION-SET' => 'TestConfigSet',
             'X-SES-LIST-MANAGEMENT-OPTIONS' => 'contactListName; topic=topic'
@@ -63,7 +63,7 @@ module Aws
         end
 
         it 'delivers the message with SMTP envelope sender and recipient' do
-          message = sample_message
+          message = sample_message.message
           message.smtp_envelope_from = 'envelope-sender@example.com'
           message.smtp_envelope_to = 'envelope-recipient@example.com'
           mailer_data = mailer.deliver!(message).context.params
