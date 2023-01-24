@@ -1,6 +1,9 @@
 Unreleased Changes
 ------------------
 
+3.7.0 (2023-01-24)
+------------------
+
 * Feature - Add SES v2 Mailer.
 
 * Feature - Support smtp_envelope_from and _to in SES Mailer.
