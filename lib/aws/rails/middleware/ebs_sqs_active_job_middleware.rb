@@ -94,6 +94,8 @@ module Aws
         if File.exist?('/proc/net/route')
           open('/proc/net/route').each_line do |line|
             fields = line.strip.split
+            next if fields.size != 11
+
             # Destination == 0.0.0.0 and Flags & RTF_GATEWAY != 0
             if fields[1] == '00000000' && (fields[3].hex & 0x2) != 0
               default_gw_ips << IPAddr.new_ntoh([fields[2].hex].pack('L')).to_s
