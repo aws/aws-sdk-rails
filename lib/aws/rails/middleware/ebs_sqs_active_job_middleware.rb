@@ -89,7 +89,7 @@ module Aws
       end
 
       def default_gw_ips
-        default_gw_ips = []
+        default_gw_ips = ['172.17.0.1']
 
         if File.exist?('/proc/net/route')
           open('/proc/net/route').each_line do |line|
