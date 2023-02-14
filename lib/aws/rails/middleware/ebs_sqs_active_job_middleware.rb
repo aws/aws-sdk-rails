@@ -92,7 +92,7 @@ module Aws
         default_gw_ips = ['172.17.0.1']
 
         if File.exist?('/proc/net/route')
-          open('/proc/net/route').each_line do |line|
+          File.open('/proc/net/route').each_line do |line|
             fields = line.strip.split
             next if fields.size != 11
 
