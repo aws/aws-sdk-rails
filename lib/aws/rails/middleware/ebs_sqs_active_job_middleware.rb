@@ -81,11 +81,29 @@ module Aws
       end
 
       def sent_from_docker_host?(request)
-        app_runs_in_docker_container? && request.ip == '172.17.0.1'
+        app_runs_in_docker_container? && default_gw_ips.include?(request.ip)
       end
 
       def app_runs_in_docker_container?
         @app_runs_in_docker_container ||= `[ -f /proc/1/cgroup ] && cat /proc/1/cgroup` =~ /docker/
+      end
+
+      def default_gw_ips
+        default_gw_ips = ['172.17.0.1']
+
+        if File.exist?('/proc/net/route')
+          File.open('/proc/net/route').each_line do |line|
+            fields = line.strip.split
+            next if fields.size != 11
+
+            # Destination == 0.0.0.0 and Flags & RTF_GATEWAY != 0
+            if fields[1] == '00000000' && (fields[3].hex & 0x2) != 0
+              default_gw_ips << IPAddr.new_ntoh([fields[2].hex].pack('L')).to_s
+            end
+          end
+        end
+
+        default_gw_ips
       end
     end
   end
