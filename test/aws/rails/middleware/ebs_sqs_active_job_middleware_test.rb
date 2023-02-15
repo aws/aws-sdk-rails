@@ -100,7 +100,7 @@ module Aws
         expect(response[2]).to eq(['Successfully ran job ElasticBeanstalkJob.'])
       end
 
-      it 'successfully invokes job when /proc/net/route is not exist' do
+      it 'successfully invokes job when /proc/net/route does not exist' do
         mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', false)
         test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
 
