@@ -1,6 +1,11 @@
 Unreleased Changes
 ------------------
 
+3.7.1 (2023-02-15)
+------------------
+
+* Issue - Fix detecting docker host in `EbsSqsActiveJobMiddleware`.
+
 3.7.0 (2023-01-24)
 ------------------
 
