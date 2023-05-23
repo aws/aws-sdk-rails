@@ -20,6 +20,7 @@ module Aws
       #   [Aws::SES::Client.new](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#initialize-instance_method).
       def initialize(options = {})
         @client = SES::Client.new(options)
+        @client.config.user_agent_frameworks << 'aws-sdk-rails'
       end
 
       # Rails expects this method to exist, and to handle a Mail::Message object
