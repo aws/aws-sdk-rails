@@ -89,11 +89,14 @@ module Aws
              .merge(file_options(options))
              .merge(options)
           set_attributes(options)
-          client.config.user_agent_frameworks << 'aws-sdk-rails'
         end
 
         def client
-          @client ||= Aws::SQS::Client.new
+          @client ||= begin
+            client = Aws::SQS::Client.new
+            client.config.user_agent_frameworks << 'aws-sdk-rails'
+            client
+          end
         end
 
         # Return the queue_url for a given job_queue name
@@ -126,6 +129,7 @@ module Aws
         def set_attributes(options)
           options.keys.each do |opt_name|
             instance_variable_set("@#{opt_name}", options[opt_name])
+            client.config.user_agent_frameworks << 'aws-sdk-rails' if opt_name == :client
           end
         end
 
