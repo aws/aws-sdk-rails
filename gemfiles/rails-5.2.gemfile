@@ -3,3 +3,8 @@
 eval_gemfile '../Gemfile'
 
 gem 'rails', '~> 5.2.0'
+
+# https://github.com/flavorjones/loofah/issues/266
+if RUBY_VERSION <= '2.4'
+  gem 'loofah', '2.20.0'
+end
