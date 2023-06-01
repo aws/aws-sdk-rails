@@ -9,6 +9,11 @@ group :development do
 end
 
 group :test do
+  # https://github.com/flavorjones/loofah/issues/266
+  if RUBY_VERSION <= '2.4'
+    gem 'loofah', '2.20.0'
+  end
+
   gem 'rspec-expectations'
   gem 'rspec-mocks'
   gem 'bcrypt'
