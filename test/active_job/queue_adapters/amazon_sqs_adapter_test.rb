@@ -5,7 +5,7 @@ module ActiveJob
   module QueueAdapters
     describe AmazonSqsAdapter do
 
-      let(:client) { Aws::SQS::Client.new(stub_responses: true) }
+      let(:client) { double('Client') }
       before do
         allow(Aws::Rails::SqsActiveJob.config).to receive(:client).and_return(client)
       end
