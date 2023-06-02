@@ -79,8 +79,9 @@ queues:
           end
 
           it 'creates a client on #client' do
+            client = Aws::SQS::Client.new(stub_responses: true)
             cfg = Aws::Rails::SqsActiveJob::Configuration.new
-            expect(Aws::SQS::Client).to receive(:new)
+            expect(Aws::SQS::Client).to receive(:new).and_return(client)
             cfg.client
           end
         end

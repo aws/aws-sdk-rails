@@ -92,7 +92,11 @@ module Aws
         end
 
         def client
-          @client ||= Aws::SQS::Client.new(user_agent_suffix: user_agent)
+          @client ||= begin
+            client = Aws::SQS::Client.new
+            client.config.user_agent_frameworks << 'aws-sdk-rails'
+            client
+          end
         end
 
         # Return the queue_url for a given job_queue name
@@ -125,6 +129,7 @@ module Aws
         def set_attributes(options)
           options.keys.each do |opt_name|
             instance_variable_set("@#{opt_name}", options[opt_name])
+            client.config.user_agent_frameworks << 'aws-sdk-rails' if opt_name == :client
           end
         end
 
@@ -152,10 +157,6 @@ module Aws
         # @return [String] Configuration path found in environment or YAML file.
         def config_file_path(options)
           options[:config_file] || ENV["AWS_SQS_ACTIVE_JOB_CONFIG_FILE"]
-        end
-
-        def user_agent
-          "ft/aws-sdk-rails-activejob/#{Aws::Rails::VERSION}"
         end
 
         def load_yaml(file_path)

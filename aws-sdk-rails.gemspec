@@ -19,9 +19,12 @@ Gem::Specification.new do |spec|
   spec.executables = ['aws_sqs_active_job']
 
   spec.add_dependency('aws-record', '~> 2') # for Aws::Record integration
-  spec.add_dependency('aws-sdk-ses', '~> 1') # for ActionMailer
-  spec.add_dependency('aws-sdk-sesv2', '~> 1') # for ActionMailer
-  spec.add_dependency('aws-sdk-sqs', '~> 1') # for ActiveJob
+
+  # Require these versions for user_agent_framework configs
+  spec.add_dependency('aws-sdk-ses', '~> 1', '>= 1.50.0') # for ActionMailer
+  spec.add_dependency('aws-sdk-sesv2', '~> 1', '>= 1.34.0') # for ActionMailer
+  spec.add_dependency('aws-sdk-sqs', '~> 1', '>= 1.56.0') # for ActiveJob
+
   spec.add_dependency('aws-sessionstore-dynamodb', '~> 2') # includes DynamoDB
   spec.add_dependency('railties', '>= 5.2.0') # encrypted credentials
   spec.add_dependency('concurrent-ruby', '~> 1') # Utilities for concurrent processing
