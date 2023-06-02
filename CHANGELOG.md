@@ -1,4 +1,4 @@
-Unreleased Changes
+3.8.0 (2023-06-02)
 ------------------
 
 * Feature - Improve User-Agent tracking and bump minimum SQS and SES versions.
