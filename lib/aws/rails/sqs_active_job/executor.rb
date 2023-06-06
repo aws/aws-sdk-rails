@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'aws-sdk-sqs'
 require 'concurrent'
 
 module Aws
@@ -18,11 +19,16 @@ module Aws
 
         def initialize(options = {})
           @executor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options))
+          # Monitor threads used to refresh visiblity
+          @visibility_refresh = options.delete(:visibility_refresh)
+          @monitor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options)) if @visibility_refresh
           @logger = options[:logger] || ActiveSupport::Logger.new(STDOUT)
         end
 
         # TODO: Consider catching the exception and sleeping instead of using :caller_runs
         def execute(message)
+          # Used to tell the visibilty refresh thread to give up
+          refresh_monitor = true
           @executor.post(message) do |message|
             begin
               job = JobRunner.new(message)
@@ -36,6 +42,32 @@ module Aws
               job_msg = job ? "#{job.id}[#{job.class_name}]" : 'unknown job'
               @logger.info "Error processing job #{job_msg}: #{e}"
               @logger.debug e.backtrace.join("\n")
+            ensure
+              refresh_monitor = false
+            end
+          end
+          refresh_monitor(message, refresh_monitor) if @visibility_refresh
+        end
+
+        def refresh_monitor(message, refresh_monitor)
+          @monitor.post(message) do |message|
+            while refresh_monitor
+              begin
+                # Extend the visibility timeout to the provided refresh timeout
+                message.change_visibility({ visibility_timeout: @visibility_refresh })
+                # Wait half the refresh timeout, and repeat
+                sleep(@visibility_refresh / 2.0)
+              rescue Aws::SQS::Errors::ReceiptHandleIsInvalid
+                # Message has been deleted. We don't care!
+                break
+              rescue Aws::SQS::Errors::MessageNotInflight
+                # Message has been otherwise released. We don't care!
+                break
+              rescue => e
+                # If anything else goes wrong, we should log and break the loop.
+                @logger.error("Monitor process failed for message: #{message.id}. Error: #{e}")
+                break
+              end
             end
           end
         end
