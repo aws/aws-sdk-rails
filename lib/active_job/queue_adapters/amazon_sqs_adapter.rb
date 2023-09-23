@@ -27,11 +27,8 @@ module ActiveJob
         send_message_opts[:message_attributes] = message_attributes(job)
 
         if Aws::Rails::SqsActiveJob.fifo?(queue_url)
-          # job_id is unique per initialization of job
-          # Remove it from message dup id to ensure run-once behavior
-          # with ActiveJob retries
           send_message_opts[:message_deduplication_id] =
-            Digest::SHA256.hexdigest(Aws::Json.dump(body.except('job_id')))
+            Digest::SHA256.hexdigest(Aws::Json.dump(deduplication_body(job, body)))
 
           message_group_id = job.message_group_id if job.respond_to?(:message_group_id)
           message_group_id ||= Aws::Rails::SqsActiveJob.config.message_group_id
@@ -53,6 +50,25 @@ module ActiveJob
             data_type: 'String'
           }
         }
+      end
+
+      def deduplication_body(job, body)
+        dedup_keys = job.deduplication_keys if job.respond_to?(:deduplication_keys)
+        dedup_keys ||= Aws::Rails::SqsActiveJob.config.deduplication_keys.map(&:to_s)
+
+        ignored_dedup_key = 'job_id'
+
+        if dedup_keys.include?(ignored_dedup_key)
+          dedup_keys.delete(ignored_dedup_key)
+          Rails.logger.warn <<~WARNING
+            job_id cannot be used as a key for deduplication.
+            It is ignored to ensure run-once behavior of ActiveJob retries.
+          WARNING
+        end
+
+        dedup_keys = body.except(ignored_dedup_key).keys if dedup_keys.blank?
+
+        body.slice(*dedup_keys)
       end
     end
 

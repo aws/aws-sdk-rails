@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Feature - Add support for selectively choosing deduplication keys.
+
 3.8.0 (2023-06-02)
 ------------------
 

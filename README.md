@@ -429,6 +429,36 @@ When using FIFO queues, jobs will NOT be processed concurrently by the poller
 to ensure the correct ordering.  Additionally, all jobs on a FIFO queue will be queued
 synchronously, even if you have configured the `amazon_sqs_async` adapter.
 
+#### Message Deduplication ID
+
+FIFO queues support [Message deduplication ID](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagededuplicationid-property.html), which is the token used for deduplication of sent messages. 
+If a message with a particular message deduplication ID is sent successfully, any messages sent with the same message deduplication ID are accepted successfully but aren't delivered during the 5-minute deduplication interval.
+
+##### Customize Deduplication keys
+
+If necessary, the deduplication key used to create the message deduplication ID can be customized:
+
+```ruby
+Aws::Rails::SqsActiveJob.configure do |config|
+  config.deduplication_keys = [:job_class, :queue_name, :arguments]
+end
+
+# Or to set deduplication keys for a single job:
+class YourJob < ApplicationJob
+  include Aws::Rails::SqsActiveJob
+  deduplicate_with :job_class, :queue_name, :arguments
+  #...
+end
+```
+
+By default, the following keys are used for deduplication keys:
+
+```
+job_class, provider_job_id, queue_name, priority, arguments, executions, exception_executions, locale, timezone, enqueued_at
+```
+
+Note that `job_id` is NOT included in deduplication keys because it is unique for each initialization of the job, and the run-once behavior must be guaranteed for ActiveJob retries.
+
 #### Message Group IDs
 
 FIFO queues require a message group id to be provided for the job. It is determined by:
