@@ -19,7 +19,7 @@ module ActionDispatch
       include SessionObject
 
       def initialize(app, options = {})
-        options[:config_file] ||= config_file if config_file.exist?
+        options[:config_file] ||= config_file if File.exist?(config_file)
         options[:secret_key] ||= Rails.application.secret_key_base
         super
       end
@@ -28,7 +28,7 @@ module ActionDispatch
 
       def config_file
         file = Rails.root.join("config/dynamo_db_session_store/#{Rails.env}.yml")
-        file = Rails.root.join('config/dynamo_db_session_store.yml') unless file.exist?
+        file = Rails.root.join('config/dynamo_db_session_store.yml') unless File.exist?(file)
         file
       end
     end

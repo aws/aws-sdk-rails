@@ -11,13 +11,13 @@ module Aws
           }
         end
         it 'configures defaults without runtime or YAML options' do
-          allow_any_instance_of(Pathname).to receive(:exist?).and_return(false)
+          allow(File).to receive(:exist?).and_return(false)
           cfg = Aws::Rails::SqsActiveJob::Configuration.new
           expect(cfg.to_h).to include(Aws::Rails::SqsActiveJob::Configuration::DEFAULTS)
         end
 
         it 'merges runtime options with default options' do
-          allow_any_instance_of(Pathname).to receive(:exist?).and_return(false)
+          allow(File).to receive(:exist?).and_return(false)
           cfg = Aws::Rails::SqsActiveJob::Configuration.new(shutdown_timeout: 360)
           expect(cfg.shutdown_timeout).to eq 360
         end
