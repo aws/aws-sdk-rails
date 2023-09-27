@@ -53,22 +53,10 @@ module ActiveJob
       end
 
       def deduplication_body(job, body)
-        dedup_keys = job.deduplication_keys if job.respond_to?(:deduplication_keys)
-        dedup_keys ||= Aws::Rails::SqsActiveJob.config.deduplication_keys.map(&:to_s)
+        ex_dedup_keys = job.excluded_deduplication_keys if job.respond_to?(:excluded_deduplication_keys)
+        ex_dedup_keys ||= Aws::Rails::SqsActiveJob.config.excluded_deduplication_keys
 
-        ignored_dedup_key = 'job_id'
-
-        if dedup_keys.include?(ignored_dedup_key)
-          dedup_keys.delete(ignored_dedup_key)
-          Rails.logger.warn <<~WARNING
-            job_id cannot be used as a key for deduplication.
-            It is ignored to ensure run-once behavior of ActiveJob retries.
-          WARNING
-        end
-
-        dedup_keys = body.except(ignored_dedup_key).keys if dedup_keys.blank?
-
-        body.slice(*dedup_keys)
+        body.except(*ex_dedup_keys)
       end
     end
 

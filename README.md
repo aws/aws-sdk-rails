@@ -440,13 +440,13 @@ If necessary, the deduplication key used to create the message deduplication ID 
 
 ```ruby
 Aws::Rails::SqsActiveJob.configure do |config|
-  config.deduplication_keys = [:job_class, :queue_name, :arguments]
+  config.excluded_deduplication_keys = [:job_class, :arguments]
 end
 
-# Or to set deduplication keys for a single job:
+# Or to set deduplication keys to exclude for a single job:
 class YourJob < ApplicationJob
   include Aws::Rails::SqsActiveJob
-  deduplicate_with :job_class, :queue_name, :arguments
+  deduplicate_without :job_class, :arguments
   #...
 end
 ```
@@ -457,7 +457,8 @@ By default, the following keys are used for deduplication keys:
 job_class, provider_job_id, queue_name, priority, arguments, executions, exception_executions, locale, timezone, enqueued_at
 ```
 
-Note that `job_id` is NOT included in deduplication keys because it is unique for each initialization of the job, and the run-once behavior must be guaranteed for ActiveJob retries.
+Note that `job_id` is NOT included in deduplication keys because it is unique for each initialization of the job, and the run-once behavior must be guaranteed for ActiveJob retries. 
+Even without setting job_id, it is implicitly excluded from deduplication keys.
 
 #### Message Group IDs
 

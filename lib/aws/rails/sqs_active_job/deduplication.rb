@@ -6,12 +6,12 @@ module Aws
       extend ActiveSupport::Concern
   
       included do
-        class_attribute :deduplication_keys
+        class_attribute :excluded_deduplication_keys
       end
   
       module ClassMethods
-        def deduplicate_with(*keys)
-          self.deduplication_keys = keys.map(&:to_s)
+        def deduplicate_without(*keys)
+          self.excluded_deduplication_keys = keys.map(&:to_s) | ['job_id']
         end
       end
     end

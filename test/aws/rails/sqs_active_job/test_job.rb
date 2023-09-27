@@ -10,7 +10,6 @@ class TestJobWithMessageGroupID < TestJob
   def message_group_id; end
 end
 
-class TestJobWithDeduplicationKeys < TestJob
+class TestJobWithDedupKeys < TestJob
   include Aws::Rails::SqsActiveJob
-  deduplicate_with :job_class, :queue_name
 end

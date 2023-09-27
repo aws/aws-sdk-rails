@@ -30,14 +30,15 @@ module Aws
           queues: {},
           logger: ::Rails.logger,
           message_group_id: 'SqsActiveJobGroup',
-          deduplication_keys: []
+          excluded_deduplication_keys: ['job_id']
         }
 
         # @api private
         attr_accessor :queues, :max_messages, :visibility_timeout,
                       :shutdown_timeout, :client, :logger,
-                      :async_queue_error_handler, :message_group_id,
-                      :deduplication_keys
+                      :async_queue_error_handler, :message_group_id
+
+        attr_reader :excluded_deduplication_keys
 
         # Don't use this method directly: Confugration is a singleton class, use
         # +Aws::Rails::SqsActiveJob.config+ to access the singleton config.
@@ -86,9 +87,9 @@ module Aws
         # @option options [SQS::Client] :client SQS Client to use. A default
         #   client will be created if none is provided.
         #
-        # @option options [Array] :deduplication_keys ([])
-        #   Keys for deduplication of FIFO queues.
+        # @option options [Array] :excluded_deduplication_keys ('job_id')
         #   The type of keys stored in the array should be String or Symbol.
+        #   Using this option, job_id is implicitly added to the keys.
 
         def initialize(options = {})
           options[:config_file] ||= config_file if config_file.exist?
@@ -96,6 +97,10 @@ module Aws
             .merge(file_options(options))
             .merge(options)
           set_attributes(options)
+        end
+
+        def excluded_deduplication_keys=(keys)
+          @excluded_deduplication_keys = keys.map(&:to_s) | ['job_id']
         end
 
         def client
