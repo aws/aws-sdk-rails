@@ -85,7 +85,7 @@ module Aws
         # @option options [SQS::Client] :client SQS Client to use. A default
         #   client will be created if none is provided.
         #
-        # @option options [Array] :excluded_deduplication_keys ('job_id')
+        # @option options [Array] :excluded_deduplication_keys (['job_id'])
         #   The type of keys stored in the array should be String or Symbol.
         #   Using this option, job_id is implicitly added to the keys.
 
