@@ -2,6 +2,7 @@
 
 require 'minitest/autorun'
 require 'minitest/spec'
+require 'minitest/unit'
 require 'rspec/mocks/minitest_integration'
 require 'rspec/expectations/minitest_integration'
 
