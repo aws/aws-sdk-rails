@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'aws-sdk-rails'
   spec.version       = version
   spec.authors       = ['Amazon Web Services']
-  spec.email         = ['mamuller@amazon.com', 'alexwoo@amazon.com']
+  spec.email         = ['aws-dr-rubygems@amazon.com']
 
   spec.summary       = 'AWS SDK for Ruby on Rails Plugin'
   spec.description   = 'Integrates the AWS Ruby SDK with Ruby on Rails'

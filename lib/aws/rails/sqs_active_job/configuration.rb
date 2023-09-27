@@ -37,7 +37,7 @@ module Aws
                       :shutdown_timeout, :client, :logger,
                       :async_queue_error_handler, :message_group_id
 
-        # Don't use this method directly: Confugration is a singleton class, use
+        # Don't use this method directly: Configuration is a singleton class, use
         # +Aws::Rails::SqsActiveJob.config+ to access the singleton config.
         #
         # @param [Hash] options
@@ -84,7 +84,7 @@ module Aws
         # @option options [SQS::Client] :client SQS Client to use.  A default
         #   client will be created if none is provided.
         def initialize(options = {})
-          options[:config_file] ||= config_file if config_file.exist?
+          options[:config_file] ||= config_file if File.exist?(config_file)
           options = DEFAULTS
              .merge(file_options(options))
              .merge(options)
@@ -144,7 +144,7 @@ module Aws
 
         def config_file
           file = ::Rails.root.join("config/aws_sqs_active_job/#{::Rails.env}.yml")
-          file = ::Rails.root.join('config/aws_sqs_active_job.yml') unless file.exist?
+          file = ::Rails.root.join('config/aws_sqs_active_job.yml') unless File.exist?(file)
           file
         end
 
