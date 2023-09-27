@@ -4,8 +4,6 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'rails'
-
 group :development do
   gem 'rubocop'
 end

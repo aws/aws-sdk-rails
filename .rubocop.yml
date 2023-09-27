@@ -10,6 +10,9 @@ AllCops:
     - 'test/fixtures/**/*'
     - 'test/fixtures/**/*'
 
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
 Gemspec/RequireMFA:
   Enabled: false
 
