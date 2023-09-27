@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require_relative 'test_job'
 
 module Aws
   module Rails
     module SqsActiveJob
-
       describe JobRunner do
         let(:job_data) { TestJob.new('a1', 'a2').serialize }
         let(:body) { Aws::Json.dump(job_data) }

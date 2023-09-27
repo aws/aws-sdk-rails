@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require_relative 'elastic_beanstalk_job'
 require_relative 'elastic_beanstalk_periodic_task'

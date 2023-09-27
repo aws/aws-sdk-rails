@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 module ActionDispatch
@@ -15,7 +17,7 @@ module ActionDispatch
       def test_loads_config_file
         store = ActionDispatch::Session::DynamodbStore.new(@app, @config)
         config_file_path = store.config.config_file.to_s
-        assert_match /dynamo_db_session_store.yml/, config_file_path
+        assert_match(/dynamo_db_session_store.yml/, config_file_path)
       end
 
       def test_loads_environment_config_file_and_with_precedence
@@ -25,7 +27,7 @@ module ActionDispatch
 
         store = ActionDispatch::Session::DynamodbStore.new(@app, @config)
         config_file_path = store.config.config_file.to_s
-        assert_match /environment.yml/, config_file_path
+        assert_match(/environment.yml/, config_file_path)
 
         # Reload old env
         Rails.env = old_env
@@ -37,7 +39,7 @@ module ActionDispatch
         )
         store = ActionDispatch::Session::DynamodbStore.new(@app, options)
         config_file_path = store.config.config_file.to_s
-        assert_match /session_store.yml/, config_file_path
+        assert_match(/session_store.yml/, config_file_path)
       end
 
       def test_uses_rails_secret_key_base

@@ -1,12 +1,12 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require_relative 'test_job'
 
 module Aws
   module Rails
     module SqsActiveJob
-
       describe Executor do
-
         let(:logger) { double(info: nil, debug: nil) }
 
         before do

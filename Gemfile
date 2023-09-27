@@ -4,14 +4,16 @@ source 'https://rubygems.org'
 
 gemspec
 
+gem 'rails'
+
 group :development do
   gem 'rubocop'
 end
 
 group :test do
+  gem 'bcrypt'
   gem 'rspec-expectations'
   gem 'rspec-mocks'
-  gem 'bcrypt'
 end
 
 group :docs do

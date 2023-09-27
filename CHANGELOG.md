@@ -1,6 +1,10 @@
 Unreleased Changes
 ------------------
 
+* Feature - Set required Ruby version to >= 2.3
+
+* Issue - Run Rubocop on all files.
+
 3.8.0 (2023-06-02)
 ------------------
 

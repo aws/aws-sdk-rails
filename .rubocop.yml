@@ -1,14 +1,24 @@
-# Exclude test gemfiles and lib/aws-sdk-rails from snake_case naming.
-# The lib/aws-sdk-rails.rb file must not be snake_cased or else
-# `Bundler.require(*Rails.groups)` in Rails applications will not automatically
-# load our gem.
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 2.3
+  Exclude:
+    - 'tasks/release/**/*'
+    - 'sample_app/**/*'
+    - 'test/dummy/**/*'
+    - 'test/fixtures/**/*'
+    - 'test/fixtures/**/*'
+
+Gemspec/RequireMFA:
+  Enabled: false
+
 Naming/FileName:
   Exclude:
     - 'gemfiles/*.gemfile'
     - 'lib/aws-sdk-rails.rb'
 
-# Allow the $VERSION global variable.
-# Ideally we shouldn't use any global variables, but here we are.
 Style/GlobalVars:
   AllowedVariables:
     - $VERSION
+    - $REPO_ROOT

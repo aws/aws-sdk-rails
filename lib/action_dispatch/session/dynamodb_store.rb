@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'aws-sessionstore-dynamodb'
 require 'action_dispatch/middleware/session/abstract_store'
 
