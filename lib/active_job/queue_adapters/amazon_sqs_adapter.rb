@@ -4,9 +4,7 @@ require 'aws-sdk-sqs'
 
 module ActiveJob
   module QueueAdapters
-
     class AmazonSqsAdapter
-
       def enqueue(job)
         _enqueue(job)
       end
@@ -14,6 +12,7 @@ module ActiveJob
       def enqueue_at(job, timestamp)
         delay = (timestamp - Time.now.to_f).floor
         raise ArgumentError, 'Unable to queue a job with a delay great than 15 minutes' if delay > 15.minutes
+
         _enqueue(job, nil, delay_seconds: delay)
       end
 

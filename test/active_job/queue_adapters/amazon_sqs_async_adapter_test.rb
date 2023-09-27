@@ -1,17 +1,17 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class TestJob < ActiveJob::Base
   self.queue_adapter = :amazon_sqs_async
   queue_as :default
 
-  def perform(*args)
-  end
+  def perform(*args); end
 end
 
 module ActiveJob
   module QueueAdapters
     describe AmazonSqsAsyncAdapter do
-
       let(:client) { double('Client') }
       before do
         allow(Aws::Rails::SqsActiveJob.config).to receive(:client).and_return(client)
@@ -40,7 +40,7 @@ module ActiveJob
       end
 
       it 'calls the custom error handler when set' do
-        expect(client).to receive(:send_message).and_raise("error")
+        expect(client).to receive(:send_message).and_raise('error')
         allow(Aws::Rails::SqsActiveJob.config)
           .to receive(:async_queue_error_handler)
           .and_return(proc { @error_handled = true })

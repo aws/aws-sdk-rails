@@ -5,7 +5,6 @@ require 'concurrent'
 
 module ActiveJob
   module QueueAdapters
-
     # == Async adapter for Amazon SQS ActiveJob
     #
     # This adapter queues jobs asynchronously (ie non-blocking).  Error handler can be configured
@@ -15,7 +14,6 @@ module ActiveJob
     #
     # config.active_job.queue_adapter = :amazon_sqs_async
     class AmazonSqsAsyncAdapter < AmazonSqsAdapter
-
       private
 
       def _enqueue(job, body = nil, send_message_opts = {})

@@ -97,3 +97,20 @@ jobs:
 
       - name: Test
         run: BUNDLE_GEMFILE=gemfiles/${{ matrix.gemfile }} bundle exec rake
+
+  rubocop:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Ruby 3.2
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+
+      - uses: actions/checkout@v2
+
+      - name: Install gems
+        run: bundle install
+
+      - name: Rubocop
+        run: bundle exec rubocop -E -S

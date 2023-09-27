@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 module Aws
@@ -31,18 +33,18 @@ module Aws
         it 'merges runtime options with YAML options' do
           cfg = Aws::Rails::SqsActiveJob::Configuration.new(shutdown_timeout: 360)
           expected = Aws::Rails::SqsActiveJob::Configuration::DEFAULTS
-            .merge(expected_file_opts)
-            .merge(shutdown_timeout: 360)
+                     .merge(expected_file_opts)
+                     .merge(shutdown_timeout: 360)
           expect(cfg.to_h).to include(expected)
         end
 
         # For Ruby 3.1+, Psych 4 will normally raise BadAlias error
         it 'accepts YAML config with alias' do
           allow_any_instance_of(ERB).to receive(:result).and_return(<<~YAML)
-common: &common
-  default: 'https://queue-url'
-queues:
-  <<: *common
+            common: &common
+              default: 'https://queue-url'
+            queues:
+              <<: *common
           YAML
           expect { Aws::Rails::SqsActiveJob::Configuration.new }.to_not raise_error
         end
