@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 module Aws
@@ -11,7 +13,7 @@ module Aws
 
       it 'adds instrumentation on each call' do
         out = {}
-        ActiveSupport::Notifications.subscribe(/aws/) do |name, start, finish, id, payload|
+        ActiveSupport::Notifications.subscribe(/aws/) do |name, _start, _finish, _id, payload|
           out[:name] = name
           out[:payload] = payload
         end

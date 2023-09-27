@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 desc 'Run all table configs in table_config folder'
 namespace :aws_record do
   task migrate: :environment do

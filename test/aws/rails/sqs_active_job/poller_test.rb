@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'aws/rails/sqs_active_job/poller'
 require_relative 'test_job'
@@ -5,7 +7,6 @@ require_relative 'test_job'
 module Aws
   module Rails
     module SqsActiveJob
-
       describe Poller do
         let(:queue_poller) { double(Aws::SQS::QueuePoller) }
         let(:msg) { double('SQSMessage', receipt_handle: '1234') }
@@ -32,14 +33,14 @@ module Aws
           it 'boots rails' do
             expect(poller).to receive(:require).with('rails')
             expect(poller).to receive(:require).with(
-              File.expand_path("config/environment.rb")
+              File.expand_path('config/environment.rb')
             )
 
             allow(poller).to receive(:poll) # no-op the poll
             poller.run
 
-            expect(ENV['RACK_ENV']).to eq 'test'
-            expect(ENV['RAILS_ENV']).to eq 'test'
+            expect(ENV.fetch('RACK_ENV', nil)).to eq 'test'
+            expect(ENV.fetch('RAILS_ENV', nil)).to eq 'test'
           end
 
           it 'merges args with loaded config' do
@@ -58,7 +59,8 @@ module Aws
             allow(poller).to receive(:boot_rails) # no-op the boot
             expect(Aws::SQS::QueuePoller).to receive(:new).with(
               'https://queue-url',
-              {client: instance_of(Aws::SQS::Client)}).and_return(queue_poller)
+              { client: instance_of(Aws::SQS::Client) }
+            ).and_return(queue_poller)
 
             expect(queue_poller).to receive(:poll)
             poller.run

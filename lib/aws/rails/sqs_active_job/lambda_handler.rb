@@ -5,7 +5,6 @@ require 'aws-sdk-sqs'
 module Aws
   module Rails
     module SqsActiveJob
-
       # A lambda event handler to run jobs from an SQS queue trigger
       # Trigger the lambda from your SQS queue
       # Configure the entrypoint to: +config/environment.Aws::Rails::SqsActiveJob.lambda_job_handler+
@@ -23,13 +22,11 @@ module Aws
         "Processed #{event['Records'].length} jobs."
       end
 
-      private
-
       def self.to_sqs_msg(record)
         msg = Aws::SQS::Types::Message.new(
           body: record['body'],
           md5_of_body: record['md5OfBody'],
-          message_attributes: self.to_message_attributes(record),
+          message_attributes: to_message_attributes(record),
           message_id: record['messageId'],
           receipt_handle: record['receiptHandle']
         )

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails/generators/named_base'
 
 # This class generates a migration file for deleting and creating

@@ -3,7 +3,6 @@
 module Aws
   module Rails
     module SqsActiveJob
-
       # @return [Configuration] the (singleton) Configuration
       def self.config
         @config ||= Configuration.new
@@ -21,16 +20,15 @@ module Aws
       # Configuration for AWS SQS ActiveJob.
       # Use +Aws::Rails::SqsActiveJob.config+ to access the singleton config instance.
       class Configuration
-
         # Default configuration options
         # @api private
         DEFAULTS = {
-          max_messages:  10,
+          max_messages: 10,
           shutdown_timeout: 15,
           queues: {},
           logger: ::Rails.logger,
           message_group_id: 'SqsActiveJobGroup'
-        }
+        }.freeze
 
         # @api private
         attr_accessor :queues, :max_messages, :visibility_timeout,
@@ -86,8 +84,8 @@ module Aws
         def initialize(options = {})
           options[:config_file] ||= config_file if File.exist?(config_file)
           options = DEFAULTS
-             .merge(file_options(options))
-             .merge(options)
+                    .merge(file_options(options))
+                    .merge(options)
           set_attributes(options)
         end
 
@@ -115,9 +113,9 @@ module Aws
         # @api private
         def to_h
           h = {}
-          self.instance_variables.each do |v|
+          instance_variables.each do |v|
             v_sym = v.to_s.gsub('@', '').to_sym
-            val = self.instance_variable_get(v)
+            val = instance_variable_get(v)
             h[v_sym] = val
           end
           h
@@ -127,7 +125,7 @@ module Aws
 
         # Set accessible attributes after merged options.
         def set_attributes(options)
-          options.keys.each do |opt_name|
+          options.each_key do |opt_name|
             instance_variable_set("@#{opt_name}", options[opt_name])
             client.config.user_agent_frameworks << 'aws-sdk-rails' if opt_name == :client
           end
@@ -156,20 +154,22 @@ module Aws
 
         # @return [String] Configuration path found in environment or YAML file.
         def config_file_path(options)
-          options[:config_file] || ENV["AWS_SQS_ACTIVE_JOB_CONFIG_FILE"]
+          options[:config_file] || ENV.fetch('AWS_SQS_ACTIVE_JOB_CONFIG_FILE', nil)
         end
 
         def load_yaml(file_path)
-          require "erb"
+          require 'erb'
           source = ERB.new(File.read(file_path)).result
 
           # Avoid incompatible changes with Psych 4.0.0
           # https://bugs.ruby-lang.org/issues/17866
+          # rubocop:disable Security/YAMLLoad
           begin
             YAML.load(source, aliases: true) || {}
           rescue ArgumentError
             YAML.load(source) || {}
           end
+          # rubocop:enable Security/YAMLLoad
         end
       end
     end
