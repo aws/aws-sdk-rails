@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Feature - Add support for selectively choosing deduplication keys.
+
 * Feature - Set required Ruby version to >= 2.3 (#104)
 
 * Issue - Run Rubocop on all files. (#104)

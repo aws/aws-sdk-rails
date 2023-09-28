@@ -69,8 +69,13 @@ module Aws
           it 'allows configuration through a block' do
             Aws::Rails::SqsActiveJob.configure do |config|
               config.visibility_timeout = 360
+              config.excluded_deduplication_keys = [:job_class]
             end
-            expect(Aws::Rails::SqsActiveJob.config.visibility_timeout).to eq 360
+
+            expect(Aws::Rails::SqsActiveJob.config).to have_attributes(
+              visibility_timeout: 360,
+              excluded_deduplication_keys: contain_exactly('job_class', 'job_id')
+            )
           end
         end
 

@@ -10,3 +10,7 @@ end
 class TestJobWithMessageGroupID < TestJob
   def message_group_id; end
 end
+
+class TestJobWithDedupKeys < TestJob
+  include Aws::Rails::SqsActiveJob
+end

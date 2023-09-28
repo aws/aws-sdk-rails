@@ -27,13 +27,16 @@ module Aws
           shutdown_timeout: 15,
           queues: {},
           logger: ::Rails.logger,
-          message_group_id: 'SqsActiveJobGroup'
+          message_group_id: 'SqsActiveJobGroup',
+          excluded_deduplication_keys: ['job_id']
         }.freeze
 
         # @api private
         attr_accessor :queues, :max_messages, :visibility_timeout,
                       :shutdown_timeout, :client, :logger,
                       :async_queue_error_handler, :message_group_id
+
+        attr_reader :excluded_deduplication_keys
 
         # Don't use this method directly: Configuration is a singleton class, use
         # +Aws::Rails::SqsActiveJob.config+ to access the singleton config.
@@ -65,7 +68,7 @@ module Aws
         #   for the poller.
         #
         # @option options [String] :config_file
-        #   Override file to load configuration from.  If not specified will
+        #   Override file to load configuration from. If not specified will
         #   attempt to load from config/aws_sqs_active_job.yml.
         #
         # @option options [String] :message_group_id (SqsActiveJobGroup)
@@ -79,14 +82,23 @@ module Aws
         #   +active_job.queue_adapter = :amazon_sqs_async+.  Called with:
         #   [error, job, job_options]
         #
-        # @option options [SQS::Client] :client SQS Client to use.  A default
+        # @option options [SQS::Client] :client SQS Client to use. A default
         #   client will be created if none is provided.
+        #
+        # @option options [Array] :excluded_deduplication_keys (['job_id'])
+        #   The type of keys stored in the array should be String or Symbol.
+        #   Using this option, job_id is implicitly added to the keys.
+
         def initialize(options = {})
           options[:config_file] ||= config_file if File.exist?(config_file)
           options = DEFAULTS
                     .merge(file_options(options))
                     .merge(options)
           set_attributes(options)
+        end
+
+        def excluded_deduplication_keys=(keys)
+          @excluded_deduplication_keys = keys.map(&:to_s) | ['job_id']
         end
 
         def client
