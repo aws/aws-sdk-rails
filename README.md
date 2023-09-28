@@ -134,8 +134,8 @@ For configuration options, see the [Configuration](https://docs.aws.amazon.com/s
 
 #### Rack Configuration
 
-DynamoDB session storage is implemented in the [`aws-sessionstore-dynamodb`](https://github.com/aws/aws-sessionstore-dynamodb-ruby)
-gem. The Rack middleware inherits from the [`Rack::Session::Abstract::Persisted`](https://www.rubydoc.info/github/rack/rack/Rack/Session/Abstract/Persisted)
+DynamoDB session storage is implemented in the [\`aws-sessionstore-dynamodb\`](https://github.com/aws/aws-sessionstore-dynamodb-ruby)
+gem. The Rack middleware inherits from the [\`Rack::Session::Abstract::Persisted\`](https://www.rubydoc.info/github/rack/rack/Rack/Session/Abstract/Persisted)
 class, which also includes additional options (such as `:key`) that can be
 passed into the Rails initializer.
 
@@ -191,8 +191,8 @@ Aws::Rails.add_action_mailer_delivery_method(
 
 ### Using ARNs with SES
 
-This gem uses [`Aws::SES::Client#send_raw_email`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#send_raw_email-instance_method)
-and [`Aws::SESV2::Client#send_email`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SESV2/Client.html#send_email-instance_method)
+This gem uses [\`Aws::SES::Client#send_raw_email\`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#send_raw_email-instance_method)
+and [\`Aws::SESV2::Client#send_email\`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SESV2/Client.html#send_email-instance_method)
 to send emails. This operation allows you to specify a cross-account identity
 for the email's Source, From, and Return-Path. To set these ARNs, use any of the
 following headers on your `Mail::Message` object returned by your Mailer class:
@@ -469,7 +469,7 @@ You can optionally specify a custom value in your config as the default that wil
 
 ## AWS Record Generators
 
-This package also pulls in the [`aws-record` gem](https://github.com/aws/aws-sdk-ruby-record)
+This package also pulls in the [\`aws-record\` gem](https://github.com/aws/aws-sdk-ruby-record)
 and provides generators for creating models and a rake task for performing
 table config migrations.
 
