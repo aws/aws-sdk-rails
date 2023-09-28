@@ -74,7 +74,7 @@ module Aws
 
             expect(Aws::Rails::SqsActiveJob.config).to have_attributes(
               visibility_timeout: 360,
-              excluded_deduplication_keys: contain_exactly('job_class', 'job_id') 
+              excluded_deduplication_keys: contain_exactly('job_class', 'job_id')
             )
           end
         end
