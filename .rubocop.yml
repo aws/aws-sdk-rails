@@ -25,3 +25,11 @@ Style/GlobalVars:
   AllowedVariables:
     - $VERSION
     - $REPO_ROOT
+
+Metrics/BlockLength:
+  Exclude:
+    - 'test/**/*.rb'
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'test/**/*.rb'
