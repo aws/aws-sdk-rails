@@ -45,50 +45,59 @@ module ActiveJob
         end
 
         describe 'when job has excluded deduplication keys defined' do
+          let(:ex_dedup_keys) { %w[job_class queue_name] }
+          let(:ex_dudup_keys_with_job_id) { ex_dedup_keys << 'job_id' }
+          let(:hashed_body) { 'hashed_body' }
+
           describe 'through #deduplicate_without' do
-            let(:ex_dedup_keys) { ['job_class', 'queue_name'] }
-            let(:ex_dudup_keys_with_job_id) { ex_dedup_keys << 'job_id' }
             before do
-              allow_any_instance_of(TestJobWithDedupKeys).to receive(:excluded_deduplication_keys)
-                .and_return(ex_dudup_keys_with_job_id)
+              TestJobWithDedupKeys.deduplicate_without(*ex_dedup_keys)
             end
+
             it 'adds customized message_deduplication_id' do
-              expect_any_instance_of(TestJobWithDedupKeys).to receive(:excluded_deduplication_keys).once
+              expect(Digest::SHA256).to receive(:hexdigest) do |body|
+                ex_dudup_keys_with_job_id.each do |key|
+                  expect(body).not_to include(%("#{key}"))
+                end
+              end.and_return(hashed_body)
               expect(client).to receive(:send_message).with(
                 {
                   queue_url: 'https://queue-url.fifo',
                   message_body: instance_of(String),
                   message_attributes: instance_of(Hash),
                   message_group_id: Aws::Rails::SqsActiveJob.config.message_group_id,
-                  message_deduplication_id: instance_of(String)
+                  message_deduplication_id: hashed_body
                 }
               )
-  
-              TestJobWithDedupKeys.deduplicate_without *ex_dedup_keys
+
               TestJobWithDedupKeys.perform_later('test')
               sleep(0.2)
             end
           end
 
           describe 'through Aws::Rails::SqsActiveJob config' do
-            let(:ex_dedup_keys) { ['job_class', 'queue_name', 'job_id'] }
             before do
-              Aws::Rails::SqsActiveJob.config.excluded_deduplication_keys = ex_dedup_keys
-              allow(Aws::Rails::SqsActiveJob.config).to receive(:excluded_deduplication_keys)
-                .and_return(ex_dedup_keys)
+              Aws::Rails::SqsActiveJob.configure do |config|
+                config.excluded_deduplication_keys = ex_dedup_keys
+              end
             end
+
             it 'adds customized message_deduplication_id' do
-              expect(Aws::Rails::SqsActiveJob.config).to receive(:excluded_deduplication_keys).once
+              expect(Digest::SHA256).to receive(:hexdigest) do |body|
+                ex_dudup_keys_with_job_id.each do |key|
+                  expect(body).not_to include(%("#{key}"))
+                end
+              end.and_return(hashed_body)
               expect(client).to receive(:send_message).with(
                 {
                   queue_url: 'https://queue-url.fifo',
                   message_body: instance_of(String),
                   message_attributes: instance_of(Hash),
                   message_group_id: Aws::Rails::SqsActiveJob.config.message_group_id,
-                  message_deduplication_id: instance_of(String)
+                  message_deduplication_id: hashed_body
                 }
               )
-  
+
               TestJob.perform_later('test')
               sleep(0.2)
             end
