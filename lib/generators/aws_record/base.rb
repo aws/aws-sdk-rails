@@ -147,7 +147,7 @@ module AwsRecord
           [idx.name, parse_rw_units(idx.name)]
         end.to_h
 
-        options['table_config'].each do |config, _rw_units|
+        options['table_config'].each_key do |config|
           next if config == 'primary'
 
           gsi = @gsis.select { |idx| idx.name == config }
