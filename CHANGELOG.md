@@ -1,4 +1,4 @@
-Unreleased Changes
+3.9.1 (2023-12-19)
 ------------------
 
 * Issue - Fix negative `delay_seconds` being passed to parameter in the SQS adapter.
