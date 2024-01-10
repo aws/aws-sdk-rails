@@ -126,7 +126,7 @@ module Aws
         def to_h
           h = {}
           instance_variables.each do |v|
-            v_sym = v.to_s.gsub('@', '').to_sym
+            v_sym = v.to_s.delete('@').to_sym
             val = instance_variable_get(v)
             h[v_sym] = val
           end
