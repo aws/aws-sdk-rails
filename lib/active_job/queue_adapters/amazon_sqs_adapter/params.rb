@@ -5,6 +5,16 @@ module ActiveJob
     class AmazonSqsAdapter
       # == build request parameter of Aws::SQS::Client
       class Params
+        class << self
+          def assured_delay_seconds(timestamp)
+            delay = (timestamp - Time.now.to_f).floor
+            delay = 0 if delay.negative?
+            raise ArgumentError, 'Unable to queue a job with a delay great than 15 minutes' if delay > 15.minutes
+
+            delay
+          end
+        end
+
         def initialize(job, body)
           @job = job
           @body = body || job.serialize

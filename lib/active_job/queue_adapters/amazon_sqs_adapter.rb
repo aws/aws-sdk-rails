@@ -10,11 +10,7 @@ module ActiveJob
       end
 
       def enqueue_at(job, timestamp)
-        delay = (timestamp - Time.now.to_f).floor
-
-        delay = 0 if delay.negative?
-        raise ArgumentError, 'Unable to queue a job with a delay great than 15 minutes' if delay > 15.minutes
-
+        delay = Params.assured_delay_seconds(timestamp)
         _enqueue(job, nil, delay_seconds: delay)
       end
 

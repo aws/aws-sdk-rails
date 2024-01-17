@@ -1,12 +1,32 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'timecop'
 
 module ActiveJob
   module QueueAdapters
     class AmazonSqsAdapter
       describe Params do
+        describe '.assured_delay_seconds' do
+          let(:now) { Time.now }
+
+          before { allow(Time).to receive(:now).and_return(now) }
+
+          it 'returns seconds from present' do
+            unix_time = (now + 15.minutes).to_f
+            expect(Params.assured_delay_seconds(unix_time)).to eq 900
+          end
+
+          it 'rounds up to zero' do
+            unix_time = (now - 1.second).to_f
+            expect(Params.assured_delay_seconds(unix_time)).to eq 0
+          end
+
+          it 'raise error when 15 minutes after present' do
+            unix_time = (now + 15.minutes + 1.second).to_f
+            expect { Params.assured_delay_seconds(unix_time) }.to raise_error ArgumentError
+          end
+        end
+
         describe '#queue_url' do
           let(:params) { Params.new(job, nil) }
           let(:job) { TestJob.new('a1', 'a2') }
