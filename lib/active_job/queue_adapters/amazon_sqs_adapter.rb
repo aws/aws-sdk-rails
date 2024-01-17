@@ -22,42 +22,11 @@ module ActiveJob
 
       def _enqueue(job, body = nil, send_message_opts = {})
         body ||= job.serialize
-        queue_url = Aws::Rails::SqsActiveJob.config.queue_url_for(job.queue_name)
-        send_message_opts[:queue_url] = queue_url
-        send_message_opts[:message_body] = Aws::Json.dump(body)
-        send_message_opts[:message_attributes] = message_attributes(job)
-
-        if Aws::Rails::SqsActiveJob.fifo?(queue_url)
-          send_message_opts[:message_deduplication_id] =
-            Digest::SHA256.hexdigest(Aws::Json.dump(deduplication_body(job, body)))
-
-          message_group_id = job.message_group_id if job.respond_to?(:message_group_id)
-          message_group_id ||= Aws::Rails::SqsActiveJob.config.message_group_id
-
-          send_message_opts[:message_group_id] = message_group_id
-        end
+        params = Params.new(job, body)
+        send_message_opts = send_message_opts.merge(params.entry)
+        send_message_opts[:queue_url] = params.queue_url
 
         Aws::Rails::SqsActiveJob.config.client.send_message(send_message_opts)
-      end
-
-      def message_attributes(job)
-        {
-          'aws_sqs_active_job_class' => {
-            string_value: job.class.to_s,
-            data_type: 'String'
-          },
-          'aws_sqs_active_job_version' => {
-            string_value: Aws::Rails::VERSION,
-            data_type: 'String'
-          }
-        }
-      end
-
-      def deduplication_body(job, body)
-        ex_dedup_keys = job.excluded_deduplication_keys if job.respond_to?(:excluded_deduplication_keys)
-        ex_dedup_keys ||= Aws::Rails::SqsActiveJob.config.excluded_deduplication_keys
-
-        body.except(*ex_dedup_keys)
       end
     end
 
