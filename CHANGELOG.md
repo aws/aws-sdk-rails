@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Feature - Support `enqueue_all` in the SQS ActiveJob adapter. 
+
 * Issue - Improve `to_h` method's performance of `Aws::Rails::SqsActiveJob::Configuration`.
 
 3.9.1 (2023-12-19)

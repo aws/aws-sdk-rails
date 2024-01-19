@@ -10,54 +10,43 @@ module ActiveJob
       end
 
       def enqueue_at(job, timestamp)
-        delay = (timestamp - Time.now.to_f).floor
-
-        delay = 0 if delay.negative?
-        raise ArgumentError, 'Unable to queue a job with a delay great than 15 minutes' if delay > 15.minutes
-
+        delay = Params.assured_delay_seconds(timestamp)
         _enqueue(job, nil, delay_seconds: delay)
+      end
+
+      def enqueue_all(jobs)
+        enqueued_count = 0
+        jobs.group_by(&:queue_name).each do |queue_name, same_queue_jobs|
+          queue_url = Aws::Rails::SqsActiveJob.config.queue_url_for(queue_name)
+          base_send_message_opts = { queue_url: queue_url }
+
+          same_queue_jobs.each_slice(10) do |chunk|
+            entries = chunk.map do |job|
+              entry = Params.new(job, nil).entry
+              entry[:id] = job.job_id
+              entry[:delay_seconds] = Params.assured_delay_seconds(job.scheduled_at) if job.scheduled_at
+              entry
+            end
+
+            send_message_opts = base_send_message_opts.deep_dup
+            send_message_opts[:entries] = entries
+
+            send_message_batch_result = Aws::Rails::SqsActiveJob.config.client.send_message_batch(send_message_opts)
+            enqueued_count += send_message_batch_result.successful.count
+          end
+        end
+        enqueued_count
       end
 
       private
 
       def _enqueue(job, body = nil, send_message_opts = {})
         body ||= job.serialize
-        queue_url = Aws::Rails::SqsActiveJob.config.queue_url_for(job.queue_name)
-        send_message_opts[:queue_url] = queue_url
-        send_message_opts[:message_body] = Aws::Json.dump(body)
-        send_message_opts[:message_attributes] = message_attributes(job)
-
-        if Aws::Rails::SqsActiveJob.fifo?(queue_url)
-          send_message_opts[:message_deduplication_id] =
-            Digest::SHA256.hexdigest(Aws::Json.dump(deduplication_body(job, body)))
-
-          message_group_id = job.message_group_id if job.respond_to?(:message_group_id)
-          message_group_id ||= Aws::Rails::SqsActiveJob.config.message_group_id
-
-          send_message_opts[:message_group_id] = message_group_id
-        end
+        params = Params.new(job, body)
+        send_message_opts = send_message_opts.merge(params.entry)
+        send_message_opts[:queue_url] = params.queue_url
 
         Aws::Rails::SqsActiveJob.config.client.send_message(send_message_opts)
-      end
-
-      def message_attributes(job)
-        {
-          'aws_sqs_active_job_class' => {
-            string_value: job.class.to_s,
-            data_type: 'String'
-          },
-          'aws_sqs_active_job_version' => {
-            string_value: Aws::Rails::VERSION,
-            data_type: 'String'
-          }
-        }
-      end
-
-      def deduplication_body(job, body)
-        ex_dedup_keys = job.excluded_deduplication_keys if job.respond_to?(:excluded_deduplication_keys)
-        ex_dedup_keys ||= Aws::Rails::SqsActiveJob.config.excluded_deduplication_keys
-
-        body.except(*ex_dedup_keys)
       end
     end
 

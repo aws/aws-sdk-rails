@@ -13,6 +13,7 @@ require_relative 'aws/rails/middleware/ebs_sqs_active_job_middleware'
 
 require_relative 'action_dispatch/session/dynamodb_store'
 require_relative 'active_job/queue_adapters/amazon_sqs_adapter'
+require_relative 'active_job/queue_adapters/amazon_sqs_adapter/params'
 require_relative 'active_job/queue_adapters/amazon_sqs_async_adapter'
 
 require_relative 'generators/aws_record/base'
