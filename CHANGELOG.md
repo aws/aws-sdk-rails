@@ -1,4 +1,4 @@
-Unreleased Changes
+3.10.0 (2024-01-19)
 ------------------
 
 * Feature - Support `enqueue_all` in the SQS ActiveJob adapter. 
