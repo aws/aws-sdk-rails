@@ -17,6 +17,7 @@ module Aws
 
         def initialize(options = {})
           @executor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options))
+          @retry_standard_errors = options[:retry_standard_errors]
           @logger = options[:logger] || ActiveSupport::Logger.new($stdout)
         end
 
@@ -31,10 +32,16 @@ module Aws
             rescue Aws::Json::ParseError => e
               @logger.error "Unable to parse message body: #{message.data.body}. Error: #{e}."
             rescue StandardError => e
-              # message will not be deleted and will be retried
               job_msg = job ? "#{job.id}[#{job.class_name}]" : 'unknown job'
               @logger.info "Error processing job #{job_msg}: #{e}"
               @logger.debug e.backtrace.join("\n")
+
+              if @retry_standard_errors
+                @logger.info("Leaving #{job_msg} in the queue.")
+              else
+                message.delete
+              end
+
             end
           end
         end

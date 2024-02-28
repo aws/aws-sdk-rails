@@ -16,7 +16,8 @@ module Aws
           threads: 2 * Concurrent.processor_count,
           max_messages: 10,
           shutdown_timeout: 15,
-          backpressure: 10
+          backpressure: 10,
+          retry_standard_errors: true
         }.freeze
 
         def initialize(args = ARGV)
@@ -45,7 +46,12 @@ module Aws
 
           Signal.trap('INT') { raise Interrupt }
           Signal.trap('TERM') { raise Interrupt }
-          @executor = Executor.new(max_threads: @options[:threads], logger: @logger, max_queue: @options[:backpressure])
+          @executor = Executor.new(
+            max_threads: @options[:threads],
+            logger: @logger,
+            max_queue: @options[:backpressure],
+            retry_standard_errors: @options[:retry_standard_errors]
+          )
 
           poll
         rescue Interrupt
@@ -126,6 +132,10 @@ module Aws
             opts.on('-s', '--shutdown_timeout INTEGER', Integer,
                     'The amount of time to wait for a clean shutdown.  Jobs that are unable to complete in this time will not be deleted from the SQS queue and will be retryable after the visibility timeout.') do |a|
               out[:shutdown_timeout] = a
+            end
+            opts.on('--[no-]retry_standard_errors [FLAG]', TrueClass,
+              'When set, retry all StandardErrors (leaving failed messages on the SQS Queue). These retries are ON TOP of standard Rails ActiveJob retries set by retry_on in the ActiveJob.') do |a|
+              out[:retry_standard_errors] = a.nil? ? true : a
             end
           end
 

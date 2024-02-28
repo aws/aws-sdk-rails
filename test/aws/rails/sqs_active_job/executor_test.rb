@@ -34,12 +34,24 @@ module Aws
             executor.shutdown # give the job a chance to run
           end
 
-          it 'does not delete the message on exception' do
+          it 'deletes the message on exception' do
             expect(JobRunner).to receive(:new).and_return(runner)
             expect(runner).to receive(:run).and_raise StandardError
-            expect(msg).not_to receive(:delete)
+            expect(msg).to receive(:delete)
             executor.execute(msg)
             executor.shutdown # give the job a chance to run
+          end
+
+          describe 'retry_standard_errors' do
+            let(:executor) { Executor.new(retry_standard_errors: true) }
+
+            it 'does not delete the message on exception' do
+              expect(JobRunner).to receive(:new).and_return(runner)
+              expect(runner).to receive(:run).and_raise StandardError
+              expect(msg).not_to receive(:delete)
+              executor.execute(msg)
+              executor.shutdown # give the job a chance to run
+            end
           end
         end
 
