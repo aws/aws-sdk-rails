@@ -105,6 +105,7 @@ module Aws
           require File.expand_path('config/environment.rb')
         end
 
+        # rubocop:disable Metrics
         def parse_args(argv)
           out = {}
           parser = ::OptionParser.new do |opts|
@@ -134,7 +135,7 @@ module Aws
               out[:shutdown_timeout] = a
             end
             opts.on('--[no-]retry_standard_errors [FLAG]', TrueClass,
-              'When set, retry all StandardErrors (leaving failed messages on the SQS Queue). These retries are ON TOP of standard Rails ActiveJob retries set by retry_on in the ActiveJob.') do |a|
+                    'When set, retry all StandardErrors (leaving failed messages on the SQS Queue). These retries are ON TOP of standard Rails ActiveJob retries set by retry_on in the ActiveJob.') do |a|
               out[:retry_standard_errors] = a.nil? ? true : a
             end
           end
@@ -148,6 +149,7 @@ module Aws
           parser.parse(argv)
           out
         end
+        # rubocop:enable Metrics
 
         def validate_config
           raise ArgumentError, 'You must specify the name of the queue to process jobs from' unless @options[:queue]

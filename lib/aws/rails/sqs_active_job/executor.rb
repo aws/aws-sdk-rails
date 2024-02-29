@@ -41,7 +41,6 @@ module Aws
               else
                 message.delete
               end
-
             end
           end
         end
