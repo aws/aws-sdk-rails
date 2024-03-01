@@ -298,12 +298,31 @@ YourJob.set(wait: 1.minute).perform_later(args)
 Note: Due to limitations in SQS, you cannot schedule jobs for
 later than 15 minutes in the future.
 
-### Performance
-AWS SQS ActiveJob is a lightweight and performant queueing backend.  Benchmark performed using: Ruby MRI 2.6.5,  
-shoryuken 5.0.5, aws-sdk-rails 3.3.1 and aws-sdk-sqs 1.34.0 on a 2015 Macbook Pro dual-core i7 with 16GB ram.
+### Retry Behavior and Handling Errors
+See the Rails ActiveJob Guide on 
+[Exceptions](https://guides.rubyonrails.org/active_job_basics.html#exceptions)
+for background on how ActiveJob handles exceptions and retries.
 
-*AWS SQS ActiveJob* (default settings): Throughput 119.1 jobs/sec
-*Shoryuken* (default settings): Throughput 76.8 jobs/sec
+In general - you should configure retries for your jobs using 
+[retry_on](https://edgeapi.rubyonrails.org/classes/ActiveJob/Exceptions/ClassMethods.html#method-i-retry_on).
+When configured, ActiveJob will catch the exception and reschedule the job for
+re-execution after the configured delay. This will delete the original
+message from the SQS queue and requeue a new message.
+
+By default SQS ActiveJob is configured with `retry_standard_error` set to `true`
+and will not delete messages for jobs that raise a `StandardError` and that do
+not handle that error via `retry_on` or `discard_on`.  These job messages
+will remain on the queue and will be re-read and retried following the 
+SQS Queue's configured 
+[retry and DLQ settings](https://docs.aws.amazon.com/lambda/latest/operatorguide/sqs-retries.html).
+If you do not have a DLQ configured, the message will continue to be attempted
+until it reaches the queues retention period.  In general, it is a best practice
+to configure a DLQ to store unprocessable jobs for troubleshooting and redrive.
+
+If you want failed jobs that do not have `retry_on` or `discard_on` configured
+to be immediately discarded and not left on the queue, set `retry_standard_error`
+to `false`.  See the configuration section below for details.
+
 
 ### Running workers - polling for jobs
 To start processing jobs, you need to start a separate process
@@ -324,6 +343,13 @@ actively running jobs to finish before killing them.
 Note: When running in production, its recommended that use a process
 supervisor such as [foreman](https://github.com/ddollar/foreman), systemd,
 upstart, daemontools, launchd, runit, ect.  
+
+### Performance
+AWS SQS ActiveJob is a lightweight and performant queueing backend.  Benchmark performed using: Ruby MRI 2.6.5,  
+shoryuken 5.0.5, aws-sdk-rails 3.3.1 and aws-sdk-sqs 1.34.0 on a 2015 Macbook Pro dual-core i7 with 16GB ram.
+
+*AWS SQS ActiveJob* (default settings): Throughput 119.1 jobs/sec
+*Shoryuken* (default settings): Throughput 76.8 jobs/sec
 
 ### Serverless workers: processing activejobs using AWS Lambda
 Rather than managing the worker processes yourself, you can use Lambda with an SQS Trigger.
