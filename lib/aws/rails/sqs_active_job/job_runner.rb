@@ -15,6 +15,11 @@ module Aws
         def run
           ActiveJob::Base.execute @job_data
         end
+
+        def exception_executions?
+          @job_data['exception_executions'] &&
+            !@job_data['exception_executions'].empty?
+        end
       end
     end
   end

@@ -13,6 +13,7 @@ module Aws
           auto_terminate: true,
           idletime: 60, # 1 minute
           fallback_policy: :caller_runs # slow down the producer thread
+          # TODO: Consider catching the exception and sleeping instead of using :caller_runs
         }.freeze
 
         def initialize(options = {})
@@ -21,7 +22,6 @@ module Aws
           @logger = options[:logger] || ActiveSupport::Logger.new($stdout)
         end
 
-        # TODO: Consider catching the exception and sleeping instead of using :caller_runs
         def execute(message)
           @executor.post(message) do |message|
             begin
@@ -36,8 +36,11 @@ module Aws
               @logger.info "Error processing job #{job_msg}: #{e}"
               @logger.debug e.backtrace.join("\n")
 
-              if @retry_standard_errors
-                @logger.info("Leaving #{job_msg} in the queue.")
+              if @retry_standard_errors && !job.exception_executions?
+                @logger.info(
+                  'retry_standard_errors is enabled and job has not ' \
+                  "been retried by Rails.  Leaving #{job_msg} in the queue."
+                )
               else
                 message.delete
               end
