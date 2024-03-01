@@ -25,7 +25,7 @@ module Aws
         DEFAULTS = {
           max_messages: 10,
           shutdown_timeout: 15,
-          retry_standard_errors: true,
+          retry_standard_errors: true, # TODO: Remove in next MV
           queues: {},
           logger: ::Rails.logger,
           message_group_id: 'SqsActiveJobGroup',
