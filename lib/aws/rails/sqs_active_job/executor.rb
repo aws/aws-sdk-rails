@@ -13,14 +13,15 @@ module Aws
           auto_terminate: true,
           idletime: 60, # 1 minute
           fallback_policy: :caller_runs # slow down the producer thread
+          # TODO: Consider catching the exception and sleeping instead of using :caller_runs
         }.freeze
 
         def initialize(options = {})
           @executor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options))
+          @retry_standard_errors = options[:retry_standard_errors]
           @logger = options[:logger] || ActiveSupport::Logger.new($stdout)
         end
 
-        # TODO: Consider catching the exception and sleeping instead of using :caller_runs
         def execute(message)
           @executor.post(message) do |message|
             begin
@@ -31,10 +32,18 @@ module Aws
             rescue Aws::Json::ParseError => e
               @logger.error "Unable to parse message body: #{message.data.body}. Error: #{e}."
             rescue StandardError => e
-              # message will not be deleted and will be retried
               job_msg = job ? "#{job.id}[#{job.class_name}]" : 'unknown job'
               @logger.info "Error processing job #{job_msg}: #{e}"
               @logger.debug e.backtrace.join("\n")
+
+              if @retry_standard_errors && !job.exception_executions?
+                @logger.info(
+                  'retry_standard_errors is enabled and job has not ' \
+                  "been retried by Rails.  Leaving #{job_msg} in the queue."
+                )
+              else
+                message.delete
+              end
             end
           end
         end

@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Feature - Add `retry_standard_errors` (default `true`) in SQS ActiveJob and improve retry logic (#114).
+
 3.10.0 (2024-01-19)
 ------------------
 

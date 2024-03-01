@@ -25,6 +25,7 @@ module Aws
         DEFAULTS = {
           max_messages: 10,
           shutdown_timeout: 15,
+          retry_standard_errors: true, # TODO: Remove in next MV
           queues: {},
           logger: ::Rails.logger,
           message_group_id: 'SqsActiveJobGroup',
@@ -63,6 +64,16 @@ module Aws
         #   for a clean shutdown.  Jobs that are unable to complete in this time
         #   will not be deleted from the SQS queue and will be retryable after
         #   the visibility timeout.
+        #
+        # @ option options [Boolean] :retry_standard_errors
+        #   If `true`, StandardErrors raised by ActiveJobs are left on the queue
+        #   and will be retried (pending the SQS Queue's redrive/DLQ/maximum receive settings).
+        #   This behavior overrides the standard Rails ActiveJob
+        #   [Retry/Discard for failed jobs](https://guides.rubyonrails.org/active_job_basics.html#retrying-or-discarding-failed-jobs)
+        #   behavior.  When set to `true` the retries provided by this will be
+        #   on top of any retries configured on the job with `retry_on`.
+        #   When `false`, retry behavior is fully configured
+        #   through `retry_on`/`discard_on` on the ActiveJobs.
         #
         # @option options [ActiveSupport::Logger] :logger Logger to use
         #   for the poller.
