@@ -118,6 +118,64 @@ module Aws
         expect(response[2]).to eq(['Successfully ran job ElasticBeanstalkJob.'])
       end
 
+      it 'successfully invokes job in docker container with cgroup1' do
+        mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', false)
+        test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
+
+        proc_1_cgroup = <<~CONTENT
+          13:rdma:/docker/d59538e9b3d3aa6012f08587c13199cbad3f882ecaa9637905971df18ab89757
+          12:hugetlb:/docker/d59538e9b3d3aa6012f08587c13199cbad3f882ecaa9637905971df18ab89757
+          11:memory:/docker/d59538e9b3d3aa6012f08587c13199cbad3f882ecaa9637905971df18ab89757
+          10:devices:/docker/d59538e9b3d3aa6012f08587c13199cbad3f882ecaa9637905971df18ab89757
+          9:blkio:/docker/d59538e9b3d3aa6012f08587c13199cbad3f882ecaa9637905971df18ab89757
+        CONTENT
+
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:read).and_call_original
+
+        expect(File).to receive(:exist?).with('/proc/1/cgroup').and_return(true)
+        expect(File).to receive(:read).with('/proc/1/cgroup').and_return(proc_1_cgroup)
+
+        response = test_middleware.call(mock_rack_env)
+
+        expect(response[0]).to eq(200)
+        expect(response[1]['Content-Type']).to eq('text/plain')
+        expect(response[2]).to eq(['Successfully ran job ElasticBeanstalkJob.'])
+      end
+
+      it 'successfully invokes job in docker container with cgroup2' do
+        mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', false)
+        test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
+
+        proc_1_cgroup = <<~CONTENT
+          0::/
+        CONTENT
+
+        proc_1_mountinfo = <<~CONTENT
+          355 354 0:21 / /sys/fs/cgroup ro,nosuid,nodev,noexec,relatime - cgroup2 cgroup rw,nsdelegate
+          356 352 0:74 / /dev/mqueue rw,nosuid,nodev,noexec,relatime - mqueue mqueue rw
+          357 352 0:79 / /dev/shm rw,nosuid,nodev,noexec,relatime - tmpfs shm rw,size=65536k
+          358 350 8:16 /var/lib/docker/containers/69e3febd00ac4720d2ea58c935574776285f6a0016d2aa30b0c280a81c385e69/resolv.conf /etc/resolv.conf rw,relatime - ext4 /dev/sdb rw,discard,errors=remount-ro,data=ordered
+          359 350 8:16 /var/lib/docker/containers/69e3febd00ac4720d2ea58c935574776285f6a0016d2aa30b0c280a81c385e69/hostname /etc/hostname rw,relatime - ext4 /dev/sdb rw,discard,errors=remount-ro,data=ordered
+          360 350 8:16 /var/lib/docker/containers/69e3febd00ac4720d2ea58c935574776285f6a0016d2aa30b0c280a81c385e69/hosts /etc/hosts rw,relatime - ext4 /dev/sdb rw,discard,errors=remount-ro,data=ordered
+          316 352 0:77 /0 /dev/console rw,nosuid,noexec,relatime - devpts devpts rw,gid=5,mode=620,ptmxmode=666
+        CONTENT
+
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:read).and_call_original
+
+        expect(File).to receive(:exist?).with('/proc/1/cgroup').and_return(true)
+        expect(File).to receive(:read).with('/proc/1/cgroup').and_return(proc_1_cgroup)
+        expect(File).to receive(:exist?).with('/proc/1/mountinfo').and_return(true)
+        expect(File).to receive(:read).with('/proc/1/mountinfo').and_return(proc_1_mountinfo)
+
+        response = test_middleware.call(mock_rack_env)
+
+        expect(response[0]).to eq(200)
+        expect(response[1]['Content-Type']).to eq('text/plain')
+        expect(response[2]).to eq(['Successfully ran job ElasticBeanstalkJob.'])
+      end
+
       # Create a minimal mock Rack environment hash to test just what we need
       def create_mock_env(source_ip, user_agent, is_periodic_task = false)
         mock_env = {
