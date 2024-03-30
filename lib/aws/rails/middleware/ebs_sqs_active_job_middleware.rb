@@ -93,7 +93,7 @@ module Aws
       end
 
       def in_docker_containr_with_cgroup2?
-        File.exist?('/proc/1/mountinfo') && File.read('/proc/1/mountinfo') =~ %r{/docker/containers/}
+        File.exist?('/proc/self/mountinfo') && File.read('/proc/self/mountinfo') =~ %r{/docker/containers/}
       end
 
       def default_gw_ips

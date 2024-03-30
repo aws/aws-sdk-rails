@@ -151,7 +151,7 @@ module Aws
           0::/
         CONTENT
 
-        proc_1_mountinfo = <<~CONTENT
+        proc_self_mountinfo = <<~CONTENT
           355 354 0:21 / /sys/fs/cgroup ro,nosuid,nodev,noexec,relatime - cgroup2 cgroup rw,nsdelegate
           356 352 0:74 / /dev/mqueue rw,nosuid,nodev,noexec,relatime - mqueue mqueue rw
           357 352 0:79 / /dev/shm rw,nosuid,nodev,noexec,relatime - tmpfs shm rw,size=65536k
@@ -166,8 +166,8 @@ module Aws
 
         expect(File).to receive(:exist?).with('/proc/1/cgroup').and_return(true)
         expect(File).to receive(:read).with('/proc/1/cgroup').and_return(proc_1_cgroup)
-        expect(File).to receive(:exist?).with('/proc/1/mountinfo').and_return(true)
-        expect(File).to receive(:read).with('/proc/1/mountinfo').and_return(proc_1_mountinfo)
+        expect(File).to receive(:exist?).with('/proc/self/mountinfo').and_return(true)
+        expect(File).to receive(:read).with('/proc/self/mountinfo').and_return(proc_self_mountinfo)
 
         response = test_middleware.call(mock_rack_env)
 
