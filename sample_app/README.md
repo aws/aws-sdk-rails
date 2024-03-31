@@ -4,7 +4,7 @@ Sample app using `aws-sdk-rails` features. Used for development and testing.
 
 * Ruby version
 
-2.6.6
+3.3.0
 
 * Database creation
 
