@@ -85,14 +85,14 @@ module Aws
       end
 
       def app_runs_in_docker_container?
-        @app_runs_in_docker_container ||= in_docker_containr_with_cgroup1? || in_docker_containr_with_cgroup2?
+        @app_runs_in_docker_container ||= in_docker_container_with_cgroup1? || in_docker_container_with_cgroup2?
       end
 
-      def in_docker_containr_with_cgroup1?
+      def in_docker_container_with_cgroup1?
         File.exist?('/proc/1/cgroup') && File.read('/proc/1/cgroup') =~ %r{/docker/}
       end
 
-      def in_docker_containr_with_cgroup2?
+      def in_docker_container_with_cgroup2?
         File.exist?('/proc/self/mountinfo') && File.read('/proc/self/mountinfo') =~ %r{/docker/containers/}
       end
 
