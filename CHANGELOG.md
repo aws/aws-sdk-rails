@@ -1,5 +1,6 @@
 Unreleased Changes
 ------------------
+* Feature - Drop support for Ruby 2.3 and Ruby 2.4 (#117).
 * Issue - Fix `EbsSqsActiveJobMiddleware` to detect Docker container with cgroup2. (#116).
 
 3.11.0 (2024-03-01)
