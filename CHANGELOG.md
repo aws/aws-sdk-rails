@@ -1,3 +1,6 @@
+Unreleased Changes
+------------------
+
 3.12.0 (2024-04-02)
 ------------------
 * Feature - Drop support for Ruby 2.3 and Ruby 2.4 (#117).
