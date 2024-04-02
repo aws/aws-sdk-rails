@@ -85,7 +85,15 @@ module Aws
       end
 
       def app_runs_in_docker_container?
-        @app_runs_in_docker_container ||= `[ -f /proc/1/cgroup ] && cat /proc/1/cgroup` =~ /docker/
+        @app_runs_in_docker_container ||= in_docker_container_with_cgroup1? || in_docker_container_with_cgroup2?
+      end
+
+      def in_docker_container_with_cgroup1?
+        File.exist?('/proc/1/cgroup') && File.read('/proc/1/cgroup') =~ %r{/docker/}
+      end
+
+      def in_docker_container_with_cgroup2?
+        File.exist?('/proc/self/mountinfo') && File.read('/proc/self/mountinfo') =~ %r{/docker/containers/}
       end
 
       def default_gw_ips
