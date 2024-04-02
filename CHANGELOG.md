@@ -1,5 +1,6 @@
 Unreleased Changes
 ------------------
+* Issue - Fix `EbsSqsActiveJobMiddleware` to detect Docker container with cgroup2. (#116).
 
 3.11.0 (2024-03-01)
 ------------------
