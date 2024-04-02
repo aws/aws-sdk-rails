@@ -30,5 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency('railties', '>= 5.2.0') # encrypted credentials
   spec.add_development_dependency('rails')
 
-  spec.required_ruby_version = '>= 2.3'
+  spec.required_ruby_version = '>= 2.5'
 end
