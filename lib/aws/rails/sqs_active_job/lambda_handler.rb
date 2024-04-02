@@ -39,8 +39,8 @@ module Aws
       end
 
       def self.to_message_attributes(record)
-        record['messageAttributes'].each_with_object({}) do |(key, value), acc|
-          acc[key] = {
+        record['messageAttributes'].transform_values do |value|
+          {
             string_value: value['stringValue'],
             binary_value: value['binaryValue'],
             string_list_values: ['stringListValues'],

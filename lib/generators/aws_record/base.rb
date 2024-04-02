@@ -53,12 +53,10 @@ module AwsRecord
 
       def parse_attributes!
         self.attributes = (attributes || []).map do |attr|
-          begin
-            GeneratedAttribute.parse(attr)
-          rescue ArgumentError => e
-            @parse_errors << e
-            next
-          end
+          GeneratedAttribute.parse(attr)
+        rescue ArgumentError => e
+          @parse_errors << e
+          next
         end
         self.attributes = attributes.compact
 
@@ -167,28 +165,26 @@ module AwsRecord
 
       def parse_gsis!
         @gsis = (options['gsi'] || []).map do |raw_idx|
-          begin
-            idx = SecondaryIndex.parse(raw_idx)
+          idx = SecondaryIndex.parse(raw_idx)
 
-            attributes = self.attributes.select { |attr| attr.name == idx.hash_key }
-            if attributes.empty?
-              @parse_errors << ArgumentError.new("Could not find attribute #{idx.hash_key} for gsi #{idx.name} hkey")
-              next
-            end
-
-            if idx.range_key
-              attributes = self.attributes.select { |attr| attr.name == idx.range_key }
-              if attributes.empty?
-                @parse_errors << ArgumentError.new("Could not find attribute #{idx.range_key} for gsi #{idx.name} rkey")
-                next
-              end
-            end
-
-            idx
-          rescue ArgumentError => e
-            @parse_errors << e
+          attributes = self.attributes.select { |attr| attr.name == idx.hash_key }
+          if attributes.empty?
+            @parse_errors << ArgumentError.new("Could not find attribute #{idx.hash_key} for gsi #{idx.name} hkey")
             next
           end
+
+          if idx.range_key
+            attributes = self.attributes.select { |attr| attr.name == idx.range_key }
+            if attributes.empty?
+              @parse_errors << ArgumentError.new("Could not find attribute #{idx.range_key} for gsi #{idx.name} rkey")
+              next
+            end
+          end
+
+          idx
+        rescue ArgumentError => e
+          @parse_errors << e
+          next
         end
 
         @gsis = @gsis.compact

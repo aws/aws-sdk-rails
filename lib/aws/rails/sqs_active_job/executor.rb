@@ -24,26 +24,24 @@ module Aws
 
         def execute(message)
           @executor.post(message) do |message|
-            begin
-              job = JobRunner.new(message)
-              @logger.info("Running job: #{job.id}[#{job.class_name}]")
-              job.run
-              message.delete
-            rescue Aws::Json::ParseError => e
-              @logger.error "Unable to parse message body: #{message.data.body}. Error: #{e}."
-            rescue StandardError => e
-              job_msg = job ? "#{job.id}[#{job.class_name}]" : 'unknown job'
-              @logger.info "Error processing job #{job_msg}: #{e}"
-              @logger.debug e.backtrace.join("\n")
+            job = JobRunner.new(message)
+            @logger.info("Running job: #{job.id}[#{job.class_name}]")
+            job.run
+            message.delete
+          rescue Aws::Json::ParseError => e
+            @logger.error "Unable to parse message body: #{message.data.body}. Error: #{e}."
+          rescue StandardError => e
+            job_msg = job ? "#{job.id}[#{job.class_name}]" : 'unknown job'
+            @logger.info "Error processing job #{job_msg}: #{e}"
+            @logger.debug e.backtrace.join("\n")
 
-              if @retry_standard_errors && !job.exception_executions?
-                @logger.info(
-                  'retry_standard_errors is enabled and job has not ' \
-                  "been retried by Rails.  Leaving #{job_msg} in the queue."
-                )
-              else
-                message.delete
-              end
+            if @retry_standard_errors && !job.exception_executions?
+              @logger.info(
+                'retry_standard_errors is enabled and job has not ' \
+                "been retried by Rails.  Leaving #{job_msg} in the queue."
+              )
+            else
+              message.delete
             end
           end
         end
