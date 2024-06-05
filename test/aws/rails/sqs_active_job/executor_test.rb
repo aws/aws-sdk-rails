@@ -24,7 +24,7 @@ module Aws
           # message is a reserved minitest name
           let(:msg) { double(data: double(body: body)) }
           let(:executor) { Executor.new }
-          let(:runner) { double('runner', id: 'jobid', class_name: 'jobclass') }
+          let(:runner) { double('runner', id: 'jobid', class_name: 'jobclass', exception_executions?: false) }
 
           it 'executes the job and deletes the message' do
             expect(JobRunner).to receive(:new).and_return(runner)
@@ -51,6 +51,25 @@ module Aws
               expect(msg).not_to receive(:delete)
               executor.execute(msg)
               executor.shutdown # give the job a chance to run
+            end
+          end
+
+          describe 'backpressure' do
+            let(:executor) { Executor.new(max_threads: 1, max_queue: 1) }
+            let(:trigger) { Concurrent::Event.new }
+
+            it 'waits for a tasks to complete before attempting to post new tasks' do
+              task_complete_event = executor.instance_variable_get(:@task_complete)
+              expect(JobRunner).to receive(:new).at_least(:once).and_return(runner)
+              allow(runner).to receive(:run) do
+                trigger.wait
+              end
+              executor.execute(msg) # first message runs
+              executor.execute(msg) # second message enters queue
+              expect(task_complete_event).to receive(:wait).at_least(:once) do
+                trigger.set # unblock the task
+              end
+              executor.execute(msg) # third message triggers wait
             end
           end
         end
