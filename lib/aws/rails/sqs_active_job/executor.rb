@@ -12,18 +12,19 @@ module Aws
           max_threads: Concurrent.processor_count,
           auto_terminate: true,
           idletime: 60, # 1 minute
-          fallback_policy: :caller_runs # slow down the producer thread
-          # TODO: Consider catching the exception and sleeping instead of using :caller_runs
+          fallback_policy: :abort # Concurrent::RejectedExecutionError must be handled
         }.freeze
 
         def initialize(options = {})
           @executor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options))
           @retry_standard_errors = options[:retry_standard_errors]
           @logger = options[:logger] || ActiveSupport::Logger.new($stdout)
+          @task_complete = Concurrent::Event.new
         end
 
         def execute(message)
-          @executor.post(message) do |message|
+          begin
+            @executor.post(message) do |message|
             job = JobRunner.new(message)
             @logger.info("Running job: #{job.id}[#{job.class_name}]")
             job.run
@@ -43,6 +44,14 @@ module Aws
             else
               message.delete
             end
+            ensure
+              @task_complete.set
+            end
+          rescue Concurrent::RejectedExecutionError
+            # no capacity, wait for a task to complete
+            @task_complete.reset
+            @task_complete.wait
+            retry
           end
         end
 

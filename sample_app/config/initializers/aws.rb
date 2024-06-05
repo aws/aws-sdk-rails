@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
-Aws.config.update(
-  endpoint: ENV['AWS_SERVICE_ENDPOINT'],
-)
+if ENV['AWS_SERVICE_ENDPOINT']
+  Aws.config.update(
+    endpoint: ENV['AWS_SERVICE_ENDPOINT'],
+  )
+end
