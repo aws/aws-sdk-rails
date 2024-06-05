@@ -23,8 +23,7 @@ module Aws
         end
 
         def execute(message)
-          begin
-            @executor.post(message) do |message|
+          @executor.post(message) do |message|
             job = JobRunner.new(message)
             @logger.info("Running job: #{job.id}[#{job.class_name}]")
             job.run
@@ -44,15 +43,14 @@ module Aws
             else
               message.delete
             end
-            ensure
-              @task_complete.set
-            end
-          rescue Concurrent::RejectedExecutionError
-            # no capacity, wait for a task to complete
-            @task_complete.reset
-            @task_complete.wait
-            retry
+          ensure
+            @task_complete.set
           end
+        rescue Concurrent::RejectedExecutionError
+          # no capacity, wait for a task to complete
+          @task_complete.reset
+          @task_complete.wait
+          retry
         end
 
         def shutdown(timeout = nil)
