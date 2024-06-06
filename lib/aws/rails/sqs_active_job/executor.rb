@@ -9,7 +9,7 @@ module Aws
       class Executor
         DEFAULTS = {
           min_threads: 0,
-          max_threads: Concurrent.processor_count,
+          max_threads: Concurrent.available_processor_count.to_i,
           auto_terminate: true,
           idletime: 60, # 1 minute
           fallback_policy: :abort # Concurrent::RejectedExecutionError must be handled
