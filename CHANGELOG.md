@@ -1,4 +1,4 @@
-Unreleased Changes
+3.13.0 (2024-06-06)
 ------------------
 
 * Feature - Use `Concurrent.available_processor_count` to set default thread pool max threads (#125).
