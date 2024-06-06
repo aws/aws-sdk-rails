@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency('aws-sdk-sqs', '~> 1', '>= 1.56.0') # for ActiveJob
 
   spec.add_dependency('aws-sessionstore-dynamodb', '~> 2') # includes DynamoDB
-  spec.add_dependency('concurrent-ruby', '~> 1') # Utilities for concurrent processing
+  spec.add_dependency('concurrent-ruby', '>= 1.3.1') # Utilities for concurrent processing
   spec.add_dependency('railties', '>= 5.2.0') # encrypted credentials
   spec.add_development_dependency('rails')
 

@@ -7,7 +7,7 @@ PATH
       aws-sdk-sesv2 (~> 1, >= 1.34.0)
       aws-sdk-sqs (~> 1, >= 1.56.0)
       aws-sessionstore-dynamodb (~> 2)
-      concurrent-ruby (~> 1)
+      concurrent-ruby (>= 1.3.1)
       railties (>= 5.2.0)
 
 GEM

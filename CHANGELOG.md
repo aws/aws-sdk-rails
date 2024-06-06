@@ -1,6 +1,7 @@
 Unreleased Changes
 ------------------
 
+* Issue - Use `Concurrent.available_processor_count` to set default thread pool max threads (#125).
 * Issue - No longer rely on caller_runs for backpressure in sqs active job executor (#123).
 
 3.12.0 (2024-04-02)
