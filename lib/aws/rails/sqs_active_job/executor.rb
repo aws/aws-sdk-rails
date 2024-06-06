@@ -12,17 +12,41 @@ module Aws
           max_threads: Concurrent.processor_count,
           auto_terminate: true,
           idletime: 60, # 1 minute
-          fallback_policy: :caller_runs # slow down the producer thread
-          # TODO: Consider catching the exception and sleeping instead of using :caller_runs
+          fallback_policy: :abort # Concurrent::RejectedExecutionError must be handled
         }.freeze
 
         def initialize(options = {})
           @executor = Concurrent::ThreadPoolExecutor.new(DEFAULTS.merge(options))
           @retry_standard_errors = options[:retry_standard_errors]
           @logger = options[:logger] || ActiveSupport::Logger.new($stdout)
+          @task_complete = Concurrent::Event.new
         end
 
         def execute(message)
+          post_task(message)
+        rescue Concurrent::RejectedExecutionError
+          # no capacity, wait for a task to complete
+          @task_complete.reset
+          @task_complete.wait
+          retry
+        end
+
+        def shutdown(timeout = nil)
+          @executor.shutdown
+          clean_shutdown = @executor.wait_for_termination(timeout)
+          if clean_shutdown
+            @logger.info 'Clean shutdown complete.  All executing jobs finished.'
+          else
+            @logger.info "Timeout (#{timeout}) exceeded.  Some jobs may not have " \
+                         'finished cleanly.  Unfinished jobs will not be removed from ' \
+                         'the queue and can be ru-run once their visibility timeout ' \
+                         'passes.'
+          end
+        end
+
+        private
+
+        def post_task(message)
           @executor.post(message) do |message|
             job = JobRunner.new(message)
             @logger.info("Running job: #{job.id}[#{job.class_name}]")
@@ -43,19 +67,8 @@ module Aws
             else
               message.delete
             end
-          end
-        end
-
-        def shutdown(timeout = nil)
-          @executor.shutdown
-          clean_shutdown = @executor.wait_for_termination(timeout)
-          if clean_shutdown
-            @logger.info 'Clean shutdown complete.  All executing jobs finished.'
-          else
-            @logger.info "Timeout (#{timeout}) exceeded.  Some jobs may not have " \
-                         'finished cleanly.  Unfinished jobs will not be removed from ' \
-                         'the queue and can be ru-run once their visibility timeout ' \
-                         'passes.'
+          ensure
+            @task_complete.set
           end
         end
       end

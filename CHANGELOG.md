@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Issue - No longer rely on caller_runs for backpressure in sqs active job executor (#123).
+
 3.12.0 (2024-04-02)
 ------------------
 * Feature - Drop support for Ruby 2.3 and Ruby 2.4 (#117).
