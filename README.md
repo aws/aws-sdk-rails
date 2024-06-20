@@ -21,6 +21,7 @@ This gem also brings in the following AWS gems:
 * `aws-sdk-ses`
 * `aws-sdk-sesv2`
 * `aws-sdk-sqs`
+* `aws-sdk-sns`
 * `aws-record`
 * `aws-sessionstore-dynamodb`
 
@@ -245,7 +246,7 @@ end
 
 ## AWS SQS Active Job
 This package provides a lightweight, high performance SQS backend
-for [ActiveJob](https://guides.rubyonrails.org/active_job_basics.html).  
+for [ActiveJob](https://guides.rubyonrails.org/active_job_basics.html).
 
 To use AWS SQS ActiveJob as your queuing backend, simply set the `active_job.queue_adapter`
 to `:sqs` For details on setting the queuing backend see: [ActiveJob: Setting the Backend](https://guides.rubyonrails.org/active_job_basics.html#setting-the-backend).
@@ -296,11 +297,11 @@ Note: Due to limitations in SQS, you cannot schedule jobs for
 later than 15 minutes in the future.
 
 ### Retry Behavior and Handling Errors
-See the Rails ActiveJob Guide on 
+See the Rails ActiveJob Guide on
 [Exceptions](https://guides.rubyonrails.org/active_job_basics.html#exceptions)
 for background on how ActiveJob handles exceptions and retries.
 
-In general - you should configure retries for your jobs using 
+In general - you should configure retries for your jobs using
 [retry_on](https://edgeapi.rubyonrails.org/classes/ActiveJob/Exceptions/ClassMethods.html#method-i-retry_on).
 When configured, ActiveJob will catch the exception and reschedule the job for
 re-execution after the configured delay. This will delete the original
@@ -309,8 +310,8 @@ message from the SQS queue and requeue a new message.
 By default SQS ActiveJob is configured with `retry_standard_error` set to `true`
 and will not delete messages for jobs that raise a `StandardError` and that do
 not handle that error via `retry_on` or `discard_on`.  These job messages
-will remain on the queue and will be re-read and retried following the 
-SQS Queue's configured 
+will remain on the queue and will be re-read and retried following the
+SQS Queue's configured
 [retry and DLQ settings](https://docs.aws.amazon.com/lambda/latest/operatorguide/sqs-retries.html).
 If you do not have a DLQ configured, the message will continue to be attempted
 until it reaches the queues retention period.  In general, it is a best practice
@@ -330,7 +331,7 @@ process jobs from:
 RAILS_ENV=development bundle exec aws_sqs_active_job --queue default
 ```
 
-To see a complete list of arguments use `--help`.  
+To see a complete list of arguments use `--help`.
 
 You can kill the process at any time with `CTRL+C` - the processor will attempt
 to shutdown cleanly and will wait up to `:shutdown_timeout` seconds for all
@@ -339,10 +340,10 @@ actively running jobs to finish before killing them.
 
 Note: When running in production, its recommended that use a process
 supervisor such as [foreman](https://github.com/ddollar/foreman), systemd,
-upstart, daemontools, launchd, runit, ect.  
+upstart, daemontools, launchd, runit, ect.
 
 ### Performance
-AWS SQS ActiveJob is a lightweight and performant queueing backend.  Benchmark performed using: Ruby MRI 2.6.5,  
+AWS SQS ActiveJob is a lightweight and performant queueing backend.  Benchmark performed using: Ruby MRI 2.6.5,
 shoryuken 5.0.5, aws-sdk-rails 3.3.1 and aws-sdk-sqs 1.34.0 on a 2015 Macbook Pro dual-core i7 with 16GB ram.
 
 *AWS SQS ActiveJob* (default settings): Throughput 119.1 jobs/sec
@@ -422,13 +423,13 @@ For a complete list of configuration options see the
 documentation.
 
 You can configure AWS SQS Active Job either through the yml file or
-through code in your config/<env>.rb or initializers.  
+through code in your config/<env>.rb or initializers.
 
 For file based configuration, you can use either:
 1. config/aws_sqs_active_job/<RAILS_ENV>.yml
 2. config/aws_sqs_active_job.yml
 
-The yml file supports ERB.  
+The yml file supports ERB.
 
 To configure in code:
 ```ruby
@@ -454,7 +455,7 @@ synchronously, even if you have configured the `sqs_async` adapter.
 
 #### Message Deduplication ID
 
-FIFO queues support [Message deduplication ID](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagededuplicationid-property.html), which is the token used for deduplication of sent messages. 
+FIFO queues support [Message deduplication ID](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagededuplicationid-property.html), which is the token used for deduplication of sent messages.
 If a message with a particular message deduplication ID is sent successfully, any messages sent with the same message deduplication ID are accepted successfully but aren't delivered during the 5-minute deduplication interval.
 
 ##### Customize Deduplication keys
@@ -480,7 +481,7 @@ By default, the following keys are used for deduplication keys:
 job_class, provider_job_id, queue_name, priority, arguments, executions, exception_executions, locale, timezone, enqueued_at
 ```
 
-Note that `job_id` is NOT included in deduplication keys because it is unique for each initialization of the job, and the run-once behavior must be guaranteed for ActiveJob retries. 
+Note that `job_id` is NOT included in deduplication keys because it is unique for each initialization of the job, and the run-once behavior must be guaranteed for ActiveJob retries.
 Even without setting job_id, it is implicitly excluded from deduplication keys.
 
 #### Message Group IDs
