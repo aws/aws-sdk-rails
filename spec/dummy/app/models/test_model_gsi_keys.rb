@@ -12,7 +12,7 @@ class TestModelGsiKeys
     hash_key: :gsi_hkey,
     range_key: :gsi_rkey,
     projection: {
-      projection_type: "ALL"
+      projection_type: 'ALL'
     }
   )
 end

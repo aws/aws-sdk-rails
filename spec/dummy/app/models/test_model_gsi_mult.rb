@@ -11,7 +11,7 @@ class TestModelGsiMult
     :SecondaryIndex,
     hash_key: :gsi_hkey,
     projection: {
-      projection_type: "ALL"
+      projection_type: 'ALL'
     }
   )
 
@@ -19,7 +19,7 @@ class TestModelGsiMult
     :SecondaryIndex2,
     hash_key: :gsi2_hkey,
     projection: {
-      projection_type: "ALL"
+      projection_type: 'ALL'
     }
   )
 end

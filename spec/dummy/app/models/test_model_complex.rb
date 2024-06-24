@@ -9,6 +9,6 @@ class TestModelComplex
   string_attr :post_title
   string_attr :post_body
   string_set_attr :tags, default_value: Set.new
-  datetime_attr :created_at, database_attribute_name: "PostCreatedAtTime"
+  datetime_attr :created_at, database_attribute_name: 'PostCreatedAtTime'
   boolean_attr :moderation, default_value: false
 end

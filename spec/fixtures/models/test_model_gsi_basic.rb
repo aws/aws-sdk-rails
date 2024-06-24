@@ -10,7 +10,7 @@ class TestModelGsiBasic
     :SecondaryIndex,
     hash_key: :gsi_hkey,
     projection: {
-      projection_type: "ALL"
+      projection_type: 'ALL'
     }
   )
 end
