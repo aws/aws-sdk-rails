@@ -22,5 +22,5 @@ def fixture(name, type)
 end
 
 RSpec.configure do |config|
-  config.before { ActionMailbox::InboundEmail.destroy_all }
+  config.use_transactional_fixtures = true
 end
