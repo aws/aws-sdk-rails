@@ -19,7 +19,7 @@ module AwsRecord
 
         def parse_raw_options(raw_opts)
           raw_opts ||= []
-          raw_opts.map { |opt| get_option_value(opt) }.to_h
+          raw_opts.to_h { |opt| get_option_value(opt) }
         end
 
         def get_option_value(raw_option)

@@ -8,8 +8,9 @@ doc
 docs.zip
 Gemfile.lock
 sample_app/Gemfile.lock
-test/dummy/db/migrate
-test/dummy/log/
-test/dummy/tmp/
+gemfiles/*.gemfile.lock
+spec/dummy/db/migrate
+spec/dummy/log/
+spec/dummy/tmp/
 vendor
 .idea/

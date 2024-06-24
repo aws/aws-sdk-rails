@@ -54,7 +54,7 @@ module AwsRecord
 
         def parse_type_and_options(name, type, opts)
           opts ||= []
-          [parse_type(name, type), opts.map { |opt| parse_option(name, opt) }.to_h]
+          [parse_type(name, type), opts.to_h { |opt| parse_option(name, opt) }]
         end
 
         def parse_option(name, opt)

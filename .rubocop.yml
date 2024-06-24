@@ -2,13 +2,13 @@ inherit_from: .rubocop_todo.yml
 
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 2.5
+  TargetRubyVersion: 2.7
   Exclude:
     - 'tasks/release/**/*'
     - 'sample_app/**/*'
-    - 'test/dummy/**/*'
-    - 'test/fixtures/**/*'
-    - 'test/fixtures/**/*'
+    - 'spec/dummy/**/*'
+    - 'spec/fixtures/**/*'
+    - 'spec/fixtures/**/*'
 
 Gemspec/DevelopmentDependencies:
   Enabled: false
@@ -28,8 +28,11 @@ Style/GlobalVars:
 
 Metrics/BlockLength:
   Exclude:
-    - 'test/**/*.rb'
+    - 'spec/**/*.rb'
 
 Metrics/ModuleLength:
   Exclude:
-    - 'test/**/*.rb'
+    - 'spec/**/*.rb'
+
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never

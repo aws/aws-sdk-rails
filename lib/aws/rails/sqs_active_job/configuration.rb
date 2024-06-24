@@ -186,13 +186,11 @@ module Aws
 
           # Avoid incompatible changes with Psych 4.0.0
           # https://bugs.ruby-lang.org/issues/17866
-          # rubocop:disable Security/YAMLLoad
           begin
-            YAML.load(source, aliases: true) || {}
+            YAML.safe_load(source, aliases: true) || {}
           rescue ArgumentError
-            YAML.load(source) || {}
+            YAML.safe_load(source) || {}
           end
-          # rubocop:enable Security/YAMLLoad
         end
       end
     end
