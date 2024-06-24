@@ -64,6 +64,10 @@ All tests should pass when running:
 
 `bundle exec rspec`
 
+### Updating AWS Fixtures for SES Action Mailbox Ingestion
+
+`bundle exec rake sign_aws_fixtures`
+
 ## Finding contributions to work on
 
 Looking at the existing issues is a great way to find something to contribute
