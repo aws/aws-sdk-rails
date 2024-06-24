@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 describe Aws::Rails::ActionMailbox::RSpec::Email do

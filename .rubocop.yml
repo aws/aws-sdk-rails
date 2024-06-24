@@ -3,12 +3,14 @@ inherit_from: .rubocop_todo.yml
 AllCops:
   NewCops: enable
   TargetRubyVersion: 2.7
+  SuggestExtensions: false
   Exclude:
     - 'tasks/release/**/*'
     - 'sample_app/**/*'
     - 'spec/dummy/**/*'
     - 'spec/fixtures/**/*'
     - 'spec/fixtures/**/*'
+    - 'db/**/*'
 
 Gemspec/DevelopmentDependencies:
   Enabled: false
@@ -29,6 +31,7 @@ Style/GlobalVars:
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*.rb'
+    - aws-sdk-rails.gemspec
 
 Metrics/ModuleLength:
   Exclude:
@@ -36,3 +39,6 @@ Metrics/ModuleLength:
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
+
+Style/Documentation:
+  Enabled: false

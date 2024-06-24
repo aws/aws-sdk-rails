@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'aws/rails/action_mailbox/rspec'
 
@@ -5,7 +7,7 @@ describe 'rspec', type: :request do
   include Aws::Rails::ActionMailbox::RSpec
 
   before do
-    allow(::Rails.configuration.action_mailbox.amazon).to receive(:subscribed_topics) { topic }
+    allow(Rails.configuration.action_mailbox.amazon).to receive(:subscribed_topics) { topic }
   end
 
   describe 'topic subscription' do
@@ -58,8 +60,8 @@ describe 'rspec', type: :request do
         )
 
         expect(ActionMailbox::InboundEmail.last.mail.recipients).to contain_exactly(
-                                                                      'user@example.com', 'bcc_user@example.com'
-                                                                    )
+          'user@example.com', 'bcc_user@example.com'
+        )
       end
     end
   end
