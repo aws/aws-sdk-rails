@@ -8,6 +8,7 @@ doc
 docs.zip
 Gemfile.lock
 sample_app/Gemfile.lock
+gemfiles/*.gemfile.lock
 spec/dummy/db/migrate
 spec/dummy/log/
 spec/dummy/tmp/
