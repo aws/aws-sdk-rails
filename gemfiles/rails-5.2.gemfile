@@ -1,8 +1,0 @@
-# frozen_string_literal: true
-
-# https://github.com/flavorjones/loofah/issues/266
-gem 'loofah', '2.20.0' if RUBY_VERSION < '2.5'
-
-eval_gemfile '../Gemfile'
-
-gem 'rails', '~> 5.2.0'
