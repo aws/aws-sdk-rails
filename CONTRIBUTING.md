@@ -54,6 +54,16 @@ GitHub provides additional document on [forking a
 repository](https://help.github.com/articles/fork-a-repo/) and [creating a pull
 request](https://help.github.com/articles/creating-a-pull-request/).
 
+### Setup
+
+To setup the repository:
+
+1. `bundle install`
+
+All tests should pass when running:
+
+`bundle exec rspec`
+
 ## Finding contributions to work on
 
 Looking at the existing issues is a great way to find something to contribute

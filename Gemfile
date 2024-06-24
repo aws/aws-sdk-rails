@@ -10,8 +10,6 @@ end
 
 group :test do
   gem 'bcrypt'
-  gem 'rspec-expectations'
-  gem 'rspec-mocks'
 end
 
 group :docs do

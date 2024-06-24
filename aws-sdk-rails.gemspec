@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency('concurrent-ruby', '>= 1.3.1') # Utilities for concurrent processing
   spec.add_dependency('railties', '>= 5.2.0') # encrypted credentials
   spec.add_development_dependency('rails')
+  spec.add_development_dependency('rspec-rails', '~> 6.1')
 
   spec.required_ruby_version = '>= 2.5'
 end
