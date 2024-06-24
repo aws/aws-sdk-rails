@@ -43,7 +43,7 @@ module Aws
           allow(Net::HTTP).to receive(:get_response).and_call_original
           allow(Net::HTTP)
             .to receive(:get_response)
-                  .with(URI('http://example.com/subscribe')) { double(code: '200') }
+              .with(URI('http://example.com/subscribe')) { double(code: '200') }
         end
       end
     end
