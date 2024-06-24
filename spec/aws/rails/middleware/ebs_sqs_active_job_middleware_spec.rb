@@ -57,7 +57,7 @@ module Aws
       end
 
       it 'successfully invokes periodic task when passed through custom header' do
-        mock_rack_env = create_mock_env('127.0.0.1', 'aws-sqsd/1.1', true)
+        mock_rack_env = create_mock_env('127.0.0.1', 'aws-sqsd/1.1', is_periodic_task: true)
         test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
 
         expect_any_instance_of(ElasticBeanstalkPeriodicTask).to receive(:perform_now)
@@ -69,7 +69,7 @@ module Aws
       end
 
       it 'returns internal server error if periodic task cannot be resolved' do
-        mock_rack_env = create_mock_env('127.0.0.1', 'aws-sqsd/1.1', true)
+        mock_rack_env = create_mock_env('127.0.0.1', 'aws-sqsd/1.1', is_periodic_task: true)
         mock_rack_env['HTTP_X_AWS_SQSD_TASKNAME'] = 'NonExistentTask'
 
         test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
@@ -79,7 +79,7 @@ module Aws
       end
 
       it 'successfully invokes job when docker default gateway ip is changed' do
-        mock_rack_env = create_mock_env('192.168.176.1', 'aws-sqsd/1.1', false)
+        mock_rack_env = create_mock_env('192.168.176.1', 'aws-sqsd/1.1', is_periodic_task: false)
         test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
 
         proc_net_route = <<~CONTENT
@@ -103,7 +103,7 @@ module Aws
       end
 
       it 'successfully invokes job when /proc/net/route does not exist' do
-        mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', false)
+        mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', is_periodic_task: false)
         test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
 
         allow(File).to receive(:exist?).and_call_original
@@ -119,7 +119,7 @@ module Aws
       end
 
       it 'successfully invokes job in docker container with cgroup1' do
-        mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', false)
+        mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', is_periodic_task: false)
         test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
 
         proc_1_cgroup = <<~CONTENT
@@ -144,7 +144,7 @@ module Aws
       end
 
       it 'successfully invokes job in docker container with cgroup2' do
-        mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', false)
+        mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', is_periodic_task: false)
         test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
 
         proc_1_cgroup = <<~CONTENT
@@ -177,7 +177,7 @@ module Aws
       end
 
       # Create a minimal mock Rack environment hash to test just what we need
-      def create_mock_env(source_ip, user_agent, is_periodic_task = false)
+      def create_mock_env(source_ip, user_agent, is_periodic_task: false)
         mock_env = {
           'REMOTE_ADDR' => source_ip,
           'HTTP_USER_AGENT' => user_agent

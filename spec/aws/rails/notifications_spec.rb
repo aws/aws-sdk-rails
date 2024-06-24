@@ -6,7 +6,7 @@ module Aws
   module Rails
     describe Notifications do
       let(:client) do
-        Client = Aws::SES::Client
+        Client = Aws::SES::Client # rubocop:disable Lint/ConstantDefinitionInBlock
         Client.add_plugin(Aws::Rails::Notifications)
         Client.new(stub_responses: true, logger: nil)
       end

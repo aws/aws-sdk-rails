@@ -23,7 +23,8 @@ module AwsRecord
         end
 
         it 'properly parses all valid types for an attribute' do
-          VALID_TYPES = {
+          base_params = 'uuid:'
+          {
             'bool' => :boolean_attr,
             'boolean' => :boolean_attr,
             'date' => :date_attr,
@@ -40,10 +41,7 @@ module AwsRecord
             's_set' => :string_set_attr,
             'sset' => :string_set_attr,
             'string' => :string_attr
-          }.freeze
-
-          base_params = 'uuid:'
-          VALID_TYPES.each do |input, attr_type|
+          }.each do |input, attr_type|
             input_params = "#{base_params}#{input}"
 
             attribute = GeneratedAttribute.parse(input_params)
@@ -53,18 +51,16 @@ module AwsRecord
         end
 
         describe 'properly handles attribute options' do
-          VALID_OPTIONS = {
-            'hkey' => [:hash_key, true],
-            'rkey' => [:range_key, true],
-            'persist_nil' => [:persist_nil, true],
-            'db_attr_name{PostTitle}' => [:database_attribute_name, '"PostTitle"'],
-            'ddb_type{BOOL}' => [:dynamodb_type, '"BOOL"'],
-            'default_value{9}' => [:default_value, '9']
-          }.freeze
-
           it 'properly handles all valid options' do
             base_params = 'uuid:'
-            VALID_OPTIONS.each do |opt, parsed_opt|
+            {
+              'hkey' => [:hash_key, true],
+              'rkey' => [:range_key, true],
+              'persist_nil' => [:persist_nil, true],
+              'db_attr_name{PostTitle}' => [:database_attribute_name, '"PostTitle"'],
+              'ddb_type{BOOL}' => [:dynamodb_type, '"BOOL"'],
+              'default_value{9}' => [:default_value, '9']
+            }.each do |opt, parsed_opt|
               input_params = "#{base_params}#{opt}"
 
               attribute = GeneratedAttribute.parse(input_params)

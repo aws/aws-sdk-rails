@@ -141,9 +141,9 @@ module AwsRecord
 
         @primary_read_units, @primary_write_units = parse_rw_units('primary')
 
-        @gsi_rw_units = @gsis.map do |idx|
+        @gsi_rw_units = @gsis.to_h do |idx|
           [idx.name, parse_rw_units(idx.name)]
-        end.to_h
+        end
 
         options['table_config'].each_key do |config|
           next if config == 'primary'
