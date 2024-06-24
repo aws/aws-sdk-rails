@@ -31,5 +31,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('rails')
   spec.add_development_dependency('rspec-rails', '~> 6.1')
 
-  spec.required_ruby_version = '>= 2.5'
+  spec.required_ruby_version = '>= 2.7'
 end
