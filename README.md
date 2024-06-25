@@ -13,7 +13,7 @@ the latest version of [AWS SDK For Ruby](https://github.com/aws/aws-sdk-ruby).
 Add this gem to your Rails project's Gemfile:
 
 ```ruby
-gem 'aws-sdk-rails', '~> 4'
+gem 'aws-sdk-rails', '~> 3'
 ```
 
 This gem also brings in the following AWS gems:
@@ -28,7 +28,7 @@ If you want to use other services (such as S3), you will still need to add them 
 Gemfile:
 
 ```ruby
-gem 'aws-sdk-rails', '~> 4'
+gem 'aws-sdk-rails', '~> 3'
 gem 'aws-sdk-s3', '~> 1'
 ```
 
