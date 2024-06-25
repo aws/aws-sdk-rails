@@ -6,7 +6,7 @@ require_relative 'dummy/config/environment'
 require 'webmock/rspec'
 require 'rspec/rails'
 
-ActiveRecord::Base.connection.migration_context.migrate
+ActiveRecord::Migration.maintain_test_schema!
 
 class TestMailer < ActionMailer::Base
   layout nil

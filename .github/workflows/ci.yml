@@ -24,20 +24,18 @@ jobs:
             ruby: 2.7
           - gemfile: rails-main.gemfile
             ruby: 3.0
-
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}
     steps:
+      - uses: actions/checkout@v4
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-
-      - uses: actions/checkout@v3
-      - name: Install gems
-        run: bundle install --gemfile=gemfiles/${{ matrix.gemfile }}
-
+          rubygems: latest
       - name: Test
-        run: BUNDLE_GEMFILE=gemfiles/${{ matrix.gemfile }} bundle exec rspec
+        run: bundle exec rspec
 
   rubocop:
     runs-on: ubuntu-latest
