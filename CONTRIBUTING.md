@@ -58,15 +58,15 @@ request](https://help.github.com/articles/creating-a-pull-request/).
 
 To setup the repository:
 
-1. `bundle install`
+1. `BUNDLE_GEMFILE=gemfiles/rails-7.1.gemfile bundle install`
 
 All tests should pass when running:
 
-`bundle exec rspec`
+`BUNDLE_GEMFILE=gemfiles/rails-7.1.gemfile bundle exec rspec`
 
 ### Updating AWS Fixtures for SES Action Mailbox Ingestion
 
-`bundle exec rake sign_aws_fixtures`
+`BUNDLE_GEMFILE=gemfiles/rails-7.1.gemfile bundle exec rake sign_aws_fixtures`
 
 ## Finding contributions to work on
 
