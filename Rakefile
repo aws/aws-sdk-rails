@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rake/testtask'
+require 'rspec/core/rake_task'
 require 'rubocop/rake_task'
 
 $REPO_ROOT = File.dirname(__FILE__)
@@ -10,11 +10,7 @@ Dir.glob('**/*.rake').each do |task_file|
   load task_file
 end
 
-Rake::TestTask.new do |t|
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.warning = false
-end
+RSpec::Core::RakeTask.new(:test)
 
 RuboCop::RakeTask.new
 

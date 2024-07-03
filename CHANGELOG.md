@@ -92,7 +92,7 @@ Unreleased Changes
 3.4.0 (2020-12-07)
 ------------------
 
-* Feature - Add a non-blocking async ActiveJob adapter: `:amazon_sqs_async`.
+* Feature - Add a non-blocking async ActiveJob adapter: `:sqs_async`.
 
 * Feature - Add a lambda handler for processing active jobs from an SQS trigger.
 

@@ -2,7 +2,7 @@
 
 module ActiveJob
   module QueueAdapters
-    class AmazonSqsAdapter
+    class SqsAdapter
       # == build request parameter of Aws::SQS::Client
       class Params
         class << self

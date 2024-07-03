@@ -5,7 +5,7 @@ require_relative '../../aws/rails/sqs_active_job/test_job'
 
 module ActiveJob
   module QueueAdapters
-    describe AmazonSqsAdapter do
+    describe SqsAdapter do
       let(:client) { double('Client') }
       before do
         allow(Aws::Rails::SqsActiveJob.config).to receive(:client).and_return(client)

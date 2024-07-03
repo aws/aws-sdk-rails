@@ -248,12 +248,9 @@ This package provides a lightweight, high performance SQS backend
 for [ActiveJob](https://guides.rubyonrails.org/active_job_basics.html).  
 
 To use AWS SQS ActiveJob as your queuing backend, simply set the `active_job.queue_adapter`
-to `:amazon` or `:amazon_sqs` (note, `:amazon` has been used for a number of
- other Amazon rails adapters such as ActiveStorage, so has been
- carried forward as convention here).  For details on setting the
- queuing backend see:
-[ActiveJob: Setting the Backend](https://guides.rubyonrails.org/active_job_basics.html#setting-the-backend).
-To use the non-blocking (async) adapter set `active_job.queue_adapter` to `:amazon_sqs_async`.  If you have
+to `:sqs` For details on setting the queuing backend see: [ActiveJob: Setting the Backend](https://guides.rubyonrails.org/active_job_basics.html#setting-the-backend).
+
+To use the non-blocking (async) adapter set `active_job.queue_adapter` to `:sqs_async`.  If you have
 a lot of jobs to queue or you need to avoid the extra latency from an SQS call in your request then consider
 using the async adapter.  However, you may also want to configure a `async_queue_error_handler` to
 handle errors that may occur when queuing jobs.  See the
@@ -265,15 +262,15 @@ for documentation.
 # config/application.rb
 module YourApp
   class Application < Rails::Application
-    config.active_job.queue_adapter = :amazon_sqs # note: can use either :amazon or :amazon_sqs
+    config.active_job.queue_adapter = :sqs
     # To use the non-blocking async adapter:
-    # config.active_job.queue_adapter = :amazon_sqs_async
+    # config.active_job.queue_adapter = :sqs_async
   end
 end
 
 # Or to set the adapter for a single job:
 class YourJob < ApplicationJob
-  self.queue_adapter = :amazon_sqs
+  self.queue_adapter = :sqs
   #....
 end
 ```
@@ -453,7 +450,7 @@ in your config.
 
 When using FIFO queues, jobs will NOT be processed concurrently by the poller
 to ensure the correct ordering.  Additionally, all jobs on a FIFO queue will be queued
-synchronously, even if you have configured the `amazon_sqs_async` adapter.
+synchronously, even if you have configured the `sqs_async` adapter.
 
 #### Message Deduplication ID
 
