@@ -12,6 +12,7 @@ gemfiles/*.gemfile.lock
 spec/dummy/db/test.db-shm
 spec/dummy/db/test.db-wal
 spec/dummy/db/test.db
+spec/dummy/db/schema.rb
 spec/dummy/log/
 spec/dummy/tmp/
 vendor
