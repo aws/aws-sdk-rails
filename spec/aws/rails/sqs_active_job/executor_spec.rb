@@ -67,7 +67,7 @@ module Aws
               end
               executor.execute(msg) # first message runs
               executor.execute(msg) # second message enters queue
-              sleep(1)
+              sleep(3)
               expect(task_complete_event).to receive(:wait).at_least(:once) do
                 trigger.set # unblock the task
               end
