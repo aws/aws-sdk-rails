@@ -34,6 +34,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
           rubygems: latest
+          cache-version: 2
       - run: bin/rails db:migrate
         working-directory: spec/dummy
       - name: Test
