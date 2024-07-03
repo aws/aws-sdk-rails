@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'aws-sdk-s3'
 
 describe 'inbound email', type: :request do
   let(:inbound_email_url) { '/rails/action_mailbox/amazon/inbound_emails' }
