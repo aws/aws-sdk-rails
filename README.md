@@ -165,7 +165,7 @@ config.action_mailer.delivery_method = :ses # or :sesv2
 
 1. [Configure SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-notifications.html) to (save emails to S3)(https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-s3.html) or to send them as raw messages.
 
-2. [Configure the SNS topic for SES or for the S3 action](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-sns.html) to send notifications to +/rails/action_mailbox/amazon/inbound_emails+. For example, if your website is hosted at https://www.example.com then configure _SNS_ to publish the _SES_ notification topic to this _HTTP_ endpoint: https://example.com/rails/action_mailbox/amazon/inbound_emails
+2. [Configure the SNS topic for SES or for the S3 action](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-sns.html) to send notifications to +/rails/action_mailbox/ses/inbound_emails+. For example, if your website is hosted at https://www.example.com then configure _SNS_ to publish the _SES_ notification topic to this _HTTP_ endpoint: https://example.com/rails/action_mailbox/ses/inbound_emails
 
 #### Rails
 
@@ -173,16 +173,16 @@ config.action_mailer.delivery_method = :ses # or :sesv2
 
 ```
 # config/environments/production.rb
-config.action_mailbox.ingress = :amazon
+config.action_mailbox.ingress = :ses
 ```
 
 2. Configure which _SNS_ topics will be accepted:
 
 ```
 # config/environments/production.rb
-config.action_mailbox.amazon.subscribed_topics = %w(
-  arn:aws:sns:eu-west-1:123456789001:example-topic-1
-  arn:aws:sns:us-east-1:123456789002:example-topic-2
+config.action_mailbox.ses.subscribed_topics = %w(
+  arn:aws:sns:eu-west-1:012345678910:example-topic-1
+  arn:aws:sns:us-east-1:012345678910:example-topic-2
 )
 ```
 
@@ -218,7 +218,7 @@ Configure your _test_ environment to accept the default topic used by the provid
 ```ruby
 # config/environments/test.rb
 
-config.action_mailbox.amazon.subscribed_topics = ['topic:arn:default']
+config.action_mailbox.ses.subscribed_topics = ['topic:arn:default']
 ```
 
 ##### Example Usage

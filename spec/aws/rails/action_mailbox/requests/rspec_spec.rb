@@ -7,7 +7,7 @@ describe 'rspec', type: :request do
   include Aws::Rails::ActionMailbox::RSpec
 
   before do
-    allow(Rails.configuration.action_mailbox.amazon).to receive(:subscribed_topics) { topic }
+    allow(Rails.configuration.action_mailbox.ses).to receive(:subscribed_topics) { topic }
   end
 
   describe 'topic subscription' do

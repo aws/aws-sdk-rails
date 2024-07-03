@@ -16,7 +16,7 @@ describe Aws::Rails::ActionMailbox::RSpec::SubscriptionConfirmation do
   end
 
   it 'has the correct data' do
-    expect(subscription.url).to eq('/rails/action_mailbox/amazon/inbound_emails')
+    expect(subscription.url).to eq('/rails/action_mailbox/ses/inbound_emails')
     expect(subscription.headers).to eq('content-type' => 'application/json')
     expect(subscription.params).to eq(expected_params)
   end

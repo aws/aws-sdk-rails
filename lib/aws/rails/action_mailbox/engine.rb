@@ -5,7 +5,7 @@ module Aws
     module ActionMailbox
       # @api private
       class Engine < ::Rails::Engine
-        config.action_mailbox.amazon = ActiveSupport::OrderedOptions.new
+        config.action_mailbox.ses = ActiveSupport::OrderedOptions.new
 
         initializer 'aws-sdk-rails.mount_engine' do |app|
           app.routes.append do

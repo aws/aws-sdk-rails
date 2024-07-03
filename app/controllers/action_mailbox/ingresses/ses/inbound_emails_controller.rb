@@ -4,7 +4,7 @@ require 'aws/rails/action_mailbox/sns_notification'
 
 module ActionMailbox
   module Ingresses
-    module Amazon
+    module Ses
       # Ingests inbound emails from Amazon SES/SNS and confirms subscriptions.
       #
       # Subscription requests must provide the following parameters in a JSON body:
@@ -71,7 +71,7 @@ module ActionMailbox
         end
 
         def valid_topics
-          ::Rails.configuration.action_mailbox.amazon.subscribed_topics
+          ::Rails.configuration.action_mailbox.ses.subscribed_topics
         end
       end
     end

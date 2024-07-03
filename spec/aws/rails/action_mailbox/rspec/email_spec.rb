@@ -19,7 +19,7 @@ describe Aws::Rails::ActionMailbox::RSpec::Email do
   end
 
   it 'has the correct data' do
-    expect(email.url).to eq('/rails/action_mailbox/amazon/inbound_emails')
+    expect(email.url).to eq('/rails/action_mailbox/ses/inbound_emails')
     expect(email.headers).to eq('content-type' => 'application/json')
     expect(email.params).to eq(expected_params)
   end

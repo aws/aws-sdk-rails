@@ -2,7 +2,7 @@
 
 Rails.application.routes.draw do
   scope '/rails/action_mailbox', module: 'action_mailbox/ingresses' do
-    post '/amazon/inbound_emails' => 'amazon/inbound_emails#create',
-         as: :rails_amazon_inbound_emails
+    post '/ses/inbound_emails' => 'ses/inbound_emails#create',
+         as: :rails_ses_inbound_emails
   end
 end

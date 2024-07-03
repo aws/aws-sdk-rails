@@ -12,7 +12,7 @@ module Aws
           end
 
           def url
-            '/rails/action_mailbox/amazon/inbound_emails'
+            '/rails/action_mailbox/ses/inbound_emails'
           end
 
           def headers

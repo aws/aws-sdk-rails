@@ -19,7 +19,7 @@ describe 'subscription confirmation', type: :request do
   let(:topic) { 'example-topic' }
 
   let(:action) do
-    post '/rails/action_mailbox/amazon/inbound_emails',
+    post '/rails/action_mailbox/ses/inbound_emails',
          headers: { 'Content-Type' => 'application/json' },
          params: fixture_for(type, type: :json)
   end

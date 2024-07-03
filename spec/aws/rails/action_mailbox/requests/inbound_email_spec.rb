@@ -3,7 +3,7 @@
 require 'test_helper'
 
 describe 'inbound email', type: :request do
-  let(:inbound_email_url) { '/rails/action_mailbox/amazon/inbound_emails' }
+  let(:inbound_email_url) { '/rails/action_mailbox/ses/inbound_emails' }
 
   before do
     stub_request(
