@@ -17,7 +17,7 @@ class TestMailer < ActionMailer::Base
   end
 end
 
-def fixture(name, type)
+def fixture_for(name, type:)
   File.read(File.join('spec', 'fixtures', type.to_s, "#{name}.#{type}"))
 end
 

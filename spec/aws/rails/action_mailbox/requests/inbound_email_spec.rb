@@ -9,18 +9,18 @@ describe 'inbound email', type: :request do
     stub_request(
       :get,
       'https://sns.eu-west-1.amazonaws.com/SimpleNotificationService-a86cb10b4e1f29c941702d737128f7b6.pem'
-    ).and_return(body: fixture(:certificate, :pem))
+    ).and_return(body: fixture_for(:certificate, type: :pem))
   end
 
   it 'receives inbound email' do
-    post inbound_email_url, params: JSON.parse(fixture(:inbound_email, :json)), as: :json
+    post inbound_email_url, params: JSON.parse(fixture_for(:inbound_email, type: :json)), as: :json
 
     expect(response).to have_http_status(:no_content)
     expect(ActionMailbox::InboundEmail.count).to eql 1
   end
 
   it 'receives an inbound email with data in s3' do
-    s3_email = fixture(:s3_email, :txt)
+    s3_email = fixture_for(:s3_email, type: :txt)
 
     Aws.config[:s3] = {
       stub_responses: {
@@ -31,7 +31,7 @@ describe 'inbound email', type: :request do
 
     expect do
       post inbound_email_url,
-           params: JSON.parse(fixture(:inbound_email_s3, :json)),
+           params: JSON.parse(fixture_for(:inbound_email_s3, type: :json)),
            as: :json
     end.to change(ActionMailbox::InboundEmail, :count).by(1)
 

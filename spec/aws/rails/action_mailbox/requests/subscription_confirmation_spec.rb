@@ -21,14 +21,14 @@ describe 'subscription confirmation', type: :request do
   let(:action) do
     post '/rails/action_mailbox/amazon/inbound_emails',
          headers: { 'Content-Type' => 'application/json' },
-         params: fixture(type, :json)
+         params: fixture_for(type, type: :json)
   end
 
   before do
     stub_request(
       :get,
       'https://sns.eu-west-1.amazonaws.com/SimpleNotificationService-a86cb10b4e1f29c941702d737128f7b6.pem'
-    ).and_return(body: fixture(:certificate, :pem))
+    ).and_return(body: fixture_for(:certificate, type: :pem))
   end
 
   describe 'valid Amazon SSL signature' do
