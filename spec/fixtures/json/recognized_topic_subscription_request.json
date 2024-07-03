@@ -2,11 +2,11 @@
   "Type": "SubscriptionConfirmation",
   "MessageId": "abc12345-abc1-abc1-abc1-abc123456789",
   "Token": "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1",
-  "TopicArn": "arn:aws:sns:eu-west-1:111111111111:recognized-topic",
-  "Message": "You have chosen to subscribe to the topic arn:aws:sns:eu-west-1:111111111111:recognized-topic. To confirm the subscription, visit the SubscribeURL included in this message.",
-  "SubscribeURL": "https://sns.eu-west-1.amazonaws.com/?Action=ConfirmSubscription&TopicArn=arn:aws:sns:eu-west-1:111111111111:recognized-topic&Token=abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
+  "TopicArn": "arn:aws:sns:eu-west-1:012345678910:recognized-topic",
+  "Message": "You have chosen to subscribe to the topic arn:aws:sns:eu-west-1:012345678910:recognized-topic. To confirm the subscription, visit the SubscribeURL included in this message.",
+  "SubscribeURL": "https://sns.eu-west-1.amazonaws.com/?Action=ConfirmSubscription&TopicArn=arn:aws:sns:eu-west-1:012345678910:recognized-topic&Token=abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
   "Timestamp": "2020-05-07T07:25:25.364Z",
   "SignatureVersion": "1",
-  "Signature": "II9/qqCwfz4GNBzGHyYMK4YxSCFUTSY+2XGVAfYW/wLS96srFmTSFeb2ylzs\n8jm6RO4NMxlVfYf2uef+/Ow8SUrpIHF/W3URhuDtP3TyPOhhJYTGz/nPGCeO\n3LDmVupBc90xMDwkJFyyjy+BcgLJ28+a7WuauqrYSnko6X1Q8QsVxvbjTGmY\nWFUVhdljc51jx+X7jZthauY/4o4uBxcDgNUtqKFfHQqTudJWKWPItBbGBZmL\nPX6wPpyrZYYU+7gPanj1b7yWNBrp0uuUR2I8IfiwP4stp5IOpB2XySkPO6Jy\nHB9y26sB1iOWCn3SNQSnBpNoATMc5tLk9phbq/fl4A==\n",
+  "Signature": "cjaRd4N8UcSsW7HszXfmAxECIJNcE1LDnUMocbksvw3naD7eGaK0adcRm54u\nzhypWoEUFSbxzysdo5JIzzgoSHV+1X/mmK45ToDCNrV2djfMUl301aslcM7g\n76lSCDlR7fH6d/V7OcCmxxW18VQfFCm0RR6/w1P/Ds1+++UDmt5OM57LrJ3x\nvxPLV6TfO/q2kBrQwQFXP8ewhieBnNJnlGmmMIOZi5vfepzTlxiniV8V/1zY\nxgmZfla3u7ugIG0PKLv+iTVCy4E/Z6bCUqPUY7d551iBTbaHP4YjhQ07P5NR\nrRSzlJYu52mBRtR5QAxSI7QItwt2EIVVcOI2npzM7g==\n",
   "SigningCertURL": "https://sns.eu-west-1.amazonaws.com/SimpleNotificationService-a86cb10b4e1f29c941702d737128f7b6.pem"
 }

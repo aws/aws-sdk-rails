@@ -12,7 +12,7 @@ describe 'subscription confirmation', type: :request do
     {
       Action: 'ConfirmSubscription',
       Token: 'abcd1234' * 32,
-      TopicArn: "arn:aws:sns:eu-west-1:111111111111:#{topic}"
+      TopicArn: "arn:aws:sns:eu-west-1:012345678910:#{topic}"
     }
   end
 
