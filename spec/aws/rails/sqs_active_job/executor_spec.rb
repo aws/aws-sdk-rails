@@ -63,11 +63,11 @@ module Aws
               expect(JobRunner).to receive(:new).at_least(:once).and_return(runner)
               allow(msg).to receive(:delete)
               allow(runner).to receive(:run) do
-                sleep(1)
                 trigger.wait
               end
               executor.execute(msg) # first message runs
               executor.execute(msg) # second message enters queue
+              sleep(1)
               expect(task_complete_event).to receive(:wait).at_least(:once) do
                 trigger.set # unblock the task
               end
