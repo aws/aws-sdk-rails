@@ -4,12 +4,24 @@ source 'https://rubygems.org'
 
 gemspec
 
+group :development, :test do
+  gem 'pry'
+  gem 'rails'
+end
+
 group :development do
   gem 'rubocop'
 end
 
 group :test do
   gem 'bcrypt'
+  gem 'rspec-rails'
+  if defined?(JRUBY_VERSION)
+    gem 'jdbc-sqlite3'
+  else
+    gem 'sqlite3', '~> 1.4'
+  end
+  gem 'webmock'
 end
 
 group :docs do

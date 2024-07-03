@@ -13,7 +13,7 @@ AllCops:
     - 'db/**/*'
 
 Gemspec/DevelopmentDependencies:
-  Enabled: false
+  EnforcedStyle: Gemfile
 
 Gemspec/RequireMFA:
   Enabled: false
@@ -41,4 +41,11 @@ Style/HashSyntax:
   EnforcedShorthandSyntax: never
 
 Style/Documentation:
-  Enabled: false
+  Exclude:
+    - 'lib/aws/rails/action_mailbox/**/*.rb'
+    - 'lib/generators/**/*.rb'
+    - 'lib/aws/rails/sqs_active_job/**/*.rb'
+    - 'lib/active_job/queue_adapters/amazon_sqs_adapter.rb'
+    - 'lib/aws/rails/notifications.rb'
+    - 'spec/**/*.rb'
+    - 'app/controllers/action_mailbox/ingresses/amazon/inbound_emails_controller.rb'
