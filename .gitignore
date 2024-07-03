@@ -9,7 +9,6 @@ docs.zip
 Gemfile.lock
 sample_app/Gemfile.lock
 gemfiles/*.gemfile.lock
-spec/dummy/db/migrate
 spec/dummy/db/test.db-shm
 spec/dummy/db/test.db-wal
 spec/dummy/db/test.db
