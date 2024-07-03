@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'aws-sdk-sns'
+require 'aws-sdk-s3'
 
 module Aws
   module Rails
@@ -50,8 +51,6 @@ module Aws
         end
 
         def s3_content
-          require 'aws-sdk-s3'
-
           Aws::S3::Client
             .new(region: region)
             .get_object(key: key, bucket: bucket)

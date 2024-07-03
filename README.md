@@ -18,20 +18,13 @@ gem 'aws-sdk-rails', '~> 3'
 
 This gem also brings in the following AWS gems:
 
+* `aws-sdk-s3`
 * `aws-sdk-ses`
 * `aws-sdk-sesv2`
 * `aws-sdk-sqs`
 * `aws-sdk-sns`
 * `aws-record`
 * `aws-sessionstore-dynamodb`
-
-If you want to use other services (such as S3), you will still need to add them to your
-Gemfile:
-
-```ruby
-gem 'aws-sdk-rails', '~> 3'
-gem 'aws-sdk-s3', '~> 1'
-```
 
 You will have to ensure that you provide credentials for the SDK to use. See the
 latest [AWS SDK for Ruby Docs](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/index.html#Configuration)
