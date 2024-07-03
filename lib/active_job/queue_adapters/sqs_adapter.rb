@@ -5,6 +5,10 @@ require 'aws-sdk-sqs'
 module ActiveJob
   module QueueAdapters
     class SqsAdapter
+      def enqueue_after_transaction_commit?
+        true
+      end
+
       def enqueue(job)
         _enqueue(job)
       end
