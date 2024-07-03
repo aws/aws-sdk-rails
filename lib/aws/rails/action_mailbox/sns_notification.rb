@@ -52,8 +52,9 @@ module Aws
         end
 
         def s3_content
-          Aws::S3::Client
-            .new(region: region)
+          client = Aws::S3::Client.new(region: region)
+          client.config.user_agent_frameworks << 'aws-sdk-rails'
+          client
             .get_object(key: key, bucket: bucket)
             .body
             .string
