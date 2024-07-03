@@ -15,7 +15,7 @@ module Aws
         end
 
         def subscription_confirmed?
-          confirmation_response.code&.start_with?('2')
+          (200..299).cover?(confirmation_response.code.to_i)
         end
 
         def verified?
