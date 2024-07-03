@@ -26,6 +26,7 @@ jobs:
             ruby: 3.0
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}
+      RAILS_ENV: test
     steps:
       - uses: actions/checkout@v4
       - name: Setup Ruby
