@@ -198,8 +198,8 @@ See [ActionMailbox documentation](https://guides.rubyonrails.org/action_mailbox_
 
 Two _RSpec_ _request spec_ helpers are provided to facilitate testing _Amazon SNS/SES_ notifications in your application:
 
-* `amazon_ingress_deliver_subscription_confirmation`
-* `amazon_ingress_deliver_email`
+* `action_mailbox_ses_deliver_subscription_confirmation`
+* `action_mailbox_ses_deliver_email`
 
 Include the `ActionMailboxAmazonIngress::RSpec` extension in your tests:
 
@@ -228,12 +228,12 @@ config.action_mailbox.amazon.subscribed_topics = ['topic:arn:default']
 
 RSpec.describe 'amazon emails', type: :request do
   it 'delivers a subscription notification' do
-    amazon_ingress_deliver_subscription_confirmation
+    action_mailbox_ses_deliver_subscription_confirmation
     expect(response).to have_http_status :ok
   end
 
   it 'delivers an email notification' do
-    amazon_ingress_deliver_email(mail: Mail.new(to: 'user@example.com'))
+    action_mailbox_ses_deliver_email(mail: Mail.new(to: 'user@example.com'))
     expect(ActionMailbox::InboundEmail.last.mail.recipients).to eql ['user@example.com']
   end
 end

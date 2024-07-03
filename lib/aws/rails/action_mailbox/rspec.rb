@@ -8,7 +8,7 @@ module Aws
   module Rails
     module ActionMailbox
       module RSpec
-        def amazon_ingress_deliver_subscription_confirmation(options = {})
+        def action_mailbox_ses_deliver_subscription_confirmation(options = {})
           subscription_confirmation = SubscriptionConfirmation.new(**options)
           stub_aws_sns_message_verifier(subscription_confirmation)
           stub_aws_sns_subscription_request
@@ -19,7 +19,7 @@ module Aws
                as: :json
         end
 
-        def amazon_ingress_deliver_email(options = {})
+        def action_mailbox_ses_deliver_email(options = {})
           email = Email.new(**options)
           stub_aws_sns_message_verifier(email)
 

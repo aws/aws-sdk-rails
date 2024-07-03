@@ -14,7 +14,7 @@ describe 'rspec', type: :request do
     describe 'recognized topic' do
       let(:topic) { 'topic:arn:default' }
       it 'renders 200 OK' do
-        amazon_ingress_deliver_subscription_confirmation
+        action_mailbox_ses_deliver_subscription_confirmation
         expect(response).to have_http_status :ok
       end
     end
@@ -22,7 +22,7 @@ describe 'rspec', type: :request do
     describe 'unrecognized topic' do
       let(:topic) { 'topic:arn:other' }
       it 'renders 401 Unauthorized' do
-        amazon_ingress_deliver_subscription_confirmation
+        action_mailbox_ses_deliver_subscription_confirmation
         expect(response).to have_http_status :unauthorized
       end
     end
@@ -32,12 +32,12 @@ describe 'rspec', type: :request do
     describe 'when recognized topic' do
       let(:topic) { 'topic:arn:default' }
       it 'renders 204 No Content' do
-        amazon_ingress_deliver_email(mail: Mail.new)
+        action_mailbox_ses_deliver_email(mail: Mail.new)
         expect(response).to have_http_status :no_content
       end
 
       it 'delivers an email to inbox' do
-        amazon_ingress_deliver_email(mail: Mail.new(to: 'user@example.com'))
+        action_mailbox_ses_deliver_email(mail: Mail.new(to: 'user@example.com'))
         expect(ActionMailbox::InboundEmail.last.mail.recipients).to eql ['user@example.com']
       end
     end
@@ -45,7 +45,7 @@ describe 'rspec', type: :request do
     describe 'when unrecognized topic' do
       let(:topic) { 'topic:arn:other' }
       it 'renders 401 Unauthorized' do
-        amazon_ingress_deliver_email
+        action_mailbox_ses_deliver_email
         expect(response).to have_http_status :unauthorized
       end
     end
@@ -54,7 +54,7 @@ describe 'rspec', type: :request do
       let(:topic) { 'topic:arn:default' }
 
       it 'extracts recipient email from SNS notification content' do
-        amazon_ingress_deliver_email(
+        action_mailbox_ses_deliver_email(
           mail: Mail.new(to: 'user@example.com'),
           message_params: { 'mail' => { 'destination' => ['bcc_user@example.com'] } }
         )
