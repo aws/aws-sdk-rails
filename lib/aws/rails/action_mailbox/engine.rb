@@ -3,6 +3,7 @@
 module Aws
   module Rails
     module ActionMailbox
+      # @api private
       class Engine < ::Rails::Engine
         config.action_mailbox.amazon = ActiveSupport::OrderedOptions.new
 

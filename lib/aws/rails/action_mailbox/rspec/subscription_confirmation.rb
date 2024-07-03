@@ -4,6 +4,7 @@ module Aws
   module Rails
     module ActionMailbox
       module RSpec
+        # @api private
         class SubscriptionConfirmation
           def initialize(authentic: true, topic: 'topic:arn:default')
             @authentic = authentic

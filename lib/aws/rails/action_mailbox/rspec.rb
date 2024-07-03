@@ -7,6 +7,7 @@ require 'aws-sdk-sns'
 module Aws
   module Rails
     module ActionMailbox
+      # @api private
       module RSpec
         def action_mailbox_ses_deliver_subscription_confirmation(options = {})
           subscription_confirmation = SubscriptionConfirmation.new(**options)

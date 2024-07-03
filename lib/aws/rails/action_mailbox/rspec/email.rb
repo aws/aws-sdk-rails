@@ -4,6 +4,7 @@ module Aws
   module Rails
     module ActionMailbox
       module RSpec
+        # @api private
         class Email
           def initialize(authentic: true, topic: 'topic:arn:default', mail: default_mail, message_params: {})
             @authentic = authentic

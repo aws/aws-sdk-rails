@@ -6,6 +6,7 @@ require 'aws-sdk-s3'
 module Aws
   module Rails
     module ActionMailbox
+      # @api private
       class SnsNotification
         class MessageContentError < StandardError; end
 
