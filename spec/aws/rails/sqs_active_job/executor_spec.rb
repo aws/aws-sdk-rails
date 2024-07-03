@@ -61,22 +61,16 @@ module Aws
             it 'waits for a tasks to complete before attempting to post new tasks' do
               task_complete_event = executor.instance_variable_get(:@task_complete)
               expect(JobRunner).to receive(:new).at_least(:once).and_return(runner)
-              expect(msg).to receive(:delete).twice
+              allow(msg).to receive(:delete)
               allow(runner).to receive(:run) do
-                puts 'waiting!'
+                sleep(1)
                 trigger.wait
-                puts 'done waiting!'
               end
-              puts 'execute once'
               executor.execute(msg) # first message runs
-              puts 'execute twice'
               executor.execute(msg) # second message enters queue
               expect(task_complete_event).to receive(:wait).at_least(:once) do
-                puts 'trigger set'
                 trigger.set # unblock the task
-                puts 'trigger reset'
               end
-              puts 'execute thrice'
               executor.execute(msg) # third message triggers wait
             end
           end

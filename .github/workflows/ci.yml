@@ -37,7 +37,7 @@ jobs:
         run: bundle install --gemfile=gemfiles/${{ matrix.gemfile }}
 
       - name: Test
-        run: BUNDLE_GEMFILE=gemfiles/${{ matrix.gemfile }} bundle exec rspec --format documentation
+        run: BUNDLE_GEMFILE=gemfiles/${{ matrix.gemfile }} bundle exec rspec
 
   rubocop:
     runs-on: ubuntu-latest
