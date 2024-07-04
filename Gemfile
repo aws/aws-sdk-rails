@@ -16,6 +16,7 @@ group :test do
   gem 'bcrypt'
   gem 'rspec-rails'
   if defined?(JRUBY_VERSION)
+    gem 'psych', '5.1.1.1'
     gem 'activerecord-jdbcsqlite3-adapter'
   else
     gem 'sqlite3', '~> 1.4'
