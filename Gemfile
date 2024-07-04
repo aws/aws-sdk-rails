@@ -13,10 +13,22 @@ group :development do
 end
 
 group :test do
+  if ENV['RAILS_VERSION'] == '7.0'
+    gem 'activerecord-jdbcsqlite3-adapter', '~> 70.0', platform: :jruby
+  elsif ENV['RAILS_VERSION'] == '7.1'
+    gem 'activerecord-jdbc-adapter', '~> 71.0', platform: :jruby,
+        # this is not published for some reason
+        git: 'https://github.com/jruby/activerecord-jdbc-adapter',
+        glob: 'activerecord-jdbc-adapter.gemspec'
+    gem 'activerecord-jdbcsqlite3-adapter', '~> 71.0', platform: :jruby,
+        # this is not published for some reason
+        git: 'https://github.com/jruby/activerecord-jdbc-adapter',
+        glob: 'activerecord-jdbcsqlite3-adapter/activerecord-jdbcsqlite3-adapter.gemspec'
+  end
+
   gem 'bcrypt'
   gem 'rspec-rails'
-  gem 'activerecord-jdbcsqlite3-adapter', '~> 70.0', platform: :jruby
-  gem 'sqlite3', '~> 1.6', platform: :mri
+  gem 'sqlite3', '~> 1.6', platform: :ruby
   gem 'webmock'
 end
 

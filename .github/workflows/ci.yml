@@ -16,16 +16,22 @@ jobs:
       fail-fast: false
       matrix:
         ruby: [2.7, '3.0', 3.1, 3.2, 3.3, jruby-9.4]
+        rails: [7.0, 7.1, main]
         gemfile: [rails-7.0.gemfile, rails-7.1.gemfile, rails-main.gemfile]
 
         exclude:
           # Rails 7.1 dropped support for older rubygems
-          - gemfile: rails-main.gemfile
+          - rails: main
             ruby: 2.7
-          - gemfile: rails-main.gemfile
+          - rails: main
             ruby: 3.0
+          # JDBC adapters don't support the latest Rails
+          - rails: main
+            ruby: jruby-9.4
+
     env:
       RAILS_ENV: test
+      RAILS_VERSION: ${{ matrix.rails }}
     steps:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -35,13 +41,13 @@ jobs:
 
       - uses: actions/checkout@v4
       - name: Install gems
-        run: bundle install --gemfile=gemfiles/${{ matrix.gemfile }}
+        run: bundle install --gemfile=gemfiles/rails-${{ matrix.rails }}.gemfile
 
-      - run: BUNDLE_GEMFILE=../../gemfiles/${{ matrix.gemfile }} bundle exec rake db:migrate
+      - run: BUNDLE_GEMFILE=../../gemfiles/rails-${{ matrix.rails }}.gemfile bundle exec rake db:migrate
         working-directory: spec/dummy
 
       - name: Test
-        run: BUNDLE_GEMFILE=gemfiles/${{ matrix.gemfile }} bundle exec rspec
+        run: BUNDLE_GEMFILE=gemfiles/rails-${{ matrix.rails }}.gemfile bundle exec rspec
 
   rubocop:
     runs-on: ubuntu-latest
