@@ -28,15 +28,11 @@ group :test do
         git: 'https://github.com/jruby/activerecord-jdbc-adapter',
         glob: 'activerecord-jdbcsqlite3-adapter/activerecord-jdbcsqlite3-adapter.gemspec'
   end
-  # last supported version of sqlite3
-  if RUBY_VERSION <= '2.7'
-    gem 'sqlite3', '~> 1.6.0', platform: :ruby
-  else
-    gem 'sqlite3', platform: :ruby
-  end
 
   gem 'bcrypt'
   gem 'rspec-rails'
+  # last supported version of sqlite3 for minimum ruby
+  gem 'sqlite3', '~> 1.6.0', platform: :ruby
   gem 'webmock'
 end
 
