@@ -18,7 +18,7 @@ group :test do
   if defined?(JRUBY_VERSION)
     gem 'activerecord-jdbcsqlite3-adapter'
   else
-    gem 'sqlite3'
+    gem 'sqlite3', '~> 1.7'
   end
   gem 'webmock'
 end
