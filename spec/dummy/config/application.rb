@@ -3,6 +3,7 @@
 require 'rails'
 require 'active_job/railtie'
 require 'action_controller/railtie'
+require 'action_mailer/railtie'
 require 'action_mailbox/engine'
 require 'action_view/railtie'
 require 'aws-sdk-rails'

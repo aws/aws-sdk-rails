@@ -37,7 +37,7 @@ jobs:
       - name: Install gems
         run: bundle install --gemfile=gemfiles/${{ matrix.gemfile }}
 
-      - run: bin/rails db:migrate
+      - run: BUNDLE_GEMFILE=../../gemfiles/${{ matrix.gemfile }} bundle exec rake db:migrate
         working-directory: spec/dummy
 
       - name: Test
