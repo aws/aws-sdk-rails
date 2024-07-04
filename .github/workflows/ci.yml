@@ -28,18 +28,21 @@ jobs:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}
       RAILS_ENV: test
     steps:
-      - uses: actions/checkout@v4
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-          rubygems: latest
-          cache-version: 2
+
+      - uses: actions/checkout@v4
+      - name: Install gems
+        run: bundle install --gemfile=gemfiles/${{ matrix.gemfile }}
+
       - run: bin/rails db:migrate
         working-directory: spec/dummy
+
       - name: Test
-        run: bundle exec rspec
+        run: BUNDLE_GEMFILE=gemfiles/${{ matrix.gemfile }} bundle exec rspec
 
   rubocop:
     runs-on: ubuntu-latest
@@ -50,7 +53,7 @@ jobs:
         with:
           ruby-version: 3.3
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install gems
         run: bundle install
