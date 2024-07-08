@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'aws-sdk-sns'
-require 'aws-sdk-s3'
+require 'aws/rails/action_mailbox/s3_client'
 
 module Aws
   module Rails
@@ -52,9 +52,8 @@ module Aws
         end
 
         def s3_content
-          client = Aws::S3::Client.new(region: region)
-          client.config.user_agent_frameworks << 'aws-sdk-rails'
-          client
+          S3Client
+            .client
             .get_object(key: key, bucket: bucket)
             .body
             .string
@@ -76,10 +75,6 @@ module Aws
 
         def bucket
           action.fetch(:bucketName)
-        end
-
-        def region
-          action.fetch(:topicArn).split(':')[3]
         end
 
         def key

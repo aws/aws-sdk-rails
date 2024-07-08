@@ -176,7 +176,7 @@ config.action_mailer.delivery_method = :ses # or :sesv2
 config.action_mailbox.ingress = :ses
 ```
 
-2. Configure which _SNS_ topics will be accepted:
+2. Configure which _SNS_ topics will be accepted and what region the emails will be stored in when using S3 (plus any other desired options):
 
 ```
 # config/environments/production.rb
@@ -184,6 +184,7 @@ config.action_mailbox.ses.subscribed_topics = %w(
   arn:aws:sns:eu-west-1:012345678910:example-topic-1
   arn:aws:sns:us-east-1:012345678910:example-topic-2
 )
+config.action_mailbox.ses.s3_client_options = { region: 'us-east-1' }
 ```
 
 SNS Subscriptions will now be auto-confirmed and messages will be automatically handled via _ActionMailbox_.
