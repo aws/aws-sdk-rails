@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TestJob < ActiveJob::Base
-  self.queue_adapter = :amazon_sqs
+  self.queue_adapter = :sqs
   queue_as :default
 
   def perform(arg1, arg2); end

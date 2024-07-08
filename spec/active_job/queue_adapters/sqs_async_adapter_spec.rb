@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class TestJob < ActiveJob::Base
-  self.queue_adapter = :amazon_sqs_async
+  self.queue_adapter = :sqs_async
   queue_as :default
 
   def perform(*args); end
@@ -11,7 +11,7 @@ end
 
 module ActiveJob
   module QueueAdapters
-    describe AmazonSqsAsyncAdapter do
+    describe SqsAsyncAdapter do
       let(:client) { double('Client') }
       before do
         allow(Aws::Rails::SqsActiveJob.config).to receive(:client).and_return(client)

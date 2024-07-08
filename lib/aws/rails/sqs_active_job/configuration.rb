@@ -90,7 +90,7 @@ module Aws
         # @option options [Callable] :async_queue_error_handler An error handler
         #   to be called when the async active job adapter experiances an error
         #   queueing a job.  Only applies when
-        #   +active_job.queue_adapter = :amazon_sqs_async+.  Called with:
+        #   +active_job.queue_adapter = :sqs_async+.  Called with:
         #   [error, job, job_options]
         #
         # @option options [SQS::Client] :client SQS Client to use. A default
