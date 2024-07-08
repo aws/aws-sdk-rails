@@ -15,6 +15,6 @@ module Dummy
     config.eager_load = false
     config.require_master_key = true
 
-    config.active_job.queue_adapter = :sqs
+    config.active_job.queue_adapter = :test
   end
 end
