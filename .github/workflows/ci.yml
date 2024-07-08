@@ -31,7 +31,7 @@ jobs:
     env:
       RAILS_ENV: test
       RAILS_VERSION: ${{ matrix.rails }}
-      BUNDLE_GEMFILE: gemfiles/rails-${{ matrix.rails }}.gemfile
+      BUNDLE_GEMFILE: ${{ github.workspace }}/../gemfiles/rails-${{ matrix.rails }}.gemfile
     steps:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
