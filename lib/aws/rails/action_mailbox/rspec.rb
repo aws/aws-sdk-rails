@@ -7,7 +7,23 @@ require 'aws-sdk-sns'
 module Aws
   module Rails
     module ActionMailbox
-      # @api private
+      # Include the `Aws::Rails::ActionMailbox::RSpec` extension in your tests, like so:
+      # require 'aws/rails/action_mailbox/rspec'
+      # RSpec.configure do |config|
+      #   config.include Aws::Rails::ActionMailbox::RSpec
+      # end
+      # Then, in a request spec, use like so:
+      # RSpec.describe 'amazon emails', type: :request do
+      #   it 'delivers a subscription notification' do
+      #     action_mailbox_ses_deliver_subscription_confirmation
+      #     expect(response).to have_http_status :ok
+      #   end
+
+      #   it 'delivers an email notification' do
+      #     action_mailbox_ses_deliver_email(mail: Mail.new(to: 'user@example.com'))
+      #     expect(ActionMailbox::InboundEmail.last.mail.recipients).to eql ['user@example.com']
+      #   end
+      # end
       module RSpec
         def action_mailbox_ses_deliver_subscription_confirmation(options = {})
           subscription_confirmation = SubscriptionConfirmation.new(**options)

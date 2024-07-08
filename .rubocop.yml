@@ -43,7 +43,5 @@ Style/HashSyntax:
 Style/Documentation:
   Exclude:
     - 'lib/generators/**/*.rb'
-    - 'lib/aws/rails/sqs_active_job/**/*.rb'
-    - 'lib/active_job/queue_adapters/amazon_sqs_adapter.rb'
     - 'lib/aws/rails/notifications.rb'
     - 'spec/**/*.rb'

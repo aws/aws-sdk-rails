@@ -4,11 +4,11 @@ require 'aws-sdk-sqs'
 
 module Aws
   module Rails
+    # A lambda event handler to run jobs from an SQS queue trigger
+    # Trigger the lambda from your SQS queue
+    # Configure the entrypoint to: +config/environment.Aws::Rails::SqsActiveJob.lambda_job_handler+
+    # This will load your Rails environment, and then use this method as the handler.
     module SqsActiveJob
-      # A lambda event handler to run jobs from an SQS queue trigger
-      # Trigger the lambda from your SQS queue
-      # Configure the entrypoint to: +config/environment.Aws::Rails::SqsActiveJob.lambda_job_handler+
-      # This will load your Rails environment, and then use this method as the handler.
       def self.lambda_job_handler(event:, context:)
         return 'no records to process' unless event['Records']
 

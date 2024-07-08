@@ -2,6 +2,7 @@
 
 module Aws
   module Rails
+    # Configuration for AWS SQS ActiveJob.
     module SqsActiveJob
       # @return [Configuration] the (singleton) Configuration
       def self.config
@@ -17,7 +18,6 @@ module Aws
         queue_url.ends_with? '.fifo'
       end
 
-      # Configuration for AWS SQS ActiveJob.
       # Use +Aws::Rails::SqsActiveJob.config+ to access the singleton config instance.
       class Configuration
         # Default configuration options

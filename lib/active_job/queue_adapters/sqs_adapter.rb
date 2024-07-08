@@ -4,6 +4,7 @@ require 'aws-sdk-sqs'
 
 module ActiveJob
   module QueueAdapters
+    # Set in rails config via config.active_job.queue_adapter = :sqs to use the SQS adapter
     class SqsAdapter
       def enqueue_after_transaction_commit?
         true
