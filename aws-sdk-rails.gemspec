@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.license       = 'Apache-2.0'
 
   spec.require_paths = ['lib']
-  spec.files += Dir['lib/**/*', 'bin/*', 'app/**/*']
+  spec.files += Dir['lib/**/*', 'bin/*', 'app/**/*', 'config/*']
   spec.files << 'VERSION'
   spec.executables = ['aws_sqs_active_job']
 
