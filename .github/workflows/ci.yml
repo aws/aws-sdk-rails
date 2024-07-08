@@ -31,6 +31,7 @@ jobs:
     env:
       RAILS_ENV: test
       RAILS_VERSION: ${{ matrix.rails }}
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/rails-${{ matrix.rails }}.gemfile
     steps:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -42,18 +43,12 @@ jobs:
 
       - name: Install gems
         run: bundle install
-        env:
-          BUNDLE_GEMFILE: gemfiles/rails-${{ matrix.rails }}.gemfile
 
       - run: bundle exec bin/rails db:migrate
         working-directory: spec/dummy
-        env:
-          BUNDLE_GEMFILE: ../../gemfiles/rails-${{ matrix.rails }}.gemfile
 
       - name: Test
         run: bundle exec rspec
-        env:
-          BUNDLE_GEMFILE: gemfiles/rails-${{ matrix.rails }}.gemfile
 
   rubocop:
     runs-on: ubuntu-latest
