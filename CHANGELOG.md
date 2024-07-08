@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Issue - Ensure `:ses` or `:sesv2` as ActionMailer configuration.
+
 3.13.0 (2024-06-06)
 ------------------
 

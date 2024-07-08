@@ -9,7 +9,7 @@ module Aws
                   before: :load_config_initializers do
         # Initialization Actions
         Aws::Rails.use_rails_encrypted_credentials
-        Aws::Rails.add_action_mailer_delivery_method
+        Aws::Rails.add_action_mailer_delivery_method(:ses)
         Aws::Rails.add_action_mailer_delivery_method(:sesv2)
         Aws::Rails.log_to_rails_logger
       end
@@ -25,18 +25,22 @@ module Aws
     end
 
     # This is called automatically from the SDK's Railtie, but can be manually
-    # called if you want to specify options for building the Aws::SES::Client.
+    # called if you want to specify options for building the Aws::SES::Client or
+    # Aws::SESV2::Client.
     #
     # @param [Symbol] name The name of the ActionMailer delivery method to
-    #   register.
+    #   register, either :ses or :sesv2.
     # @param [Hash] client_options The options you wish to pass on to the
     #   Aws::SES[V2]::Client initialization method.
-    def self.add_action_mailer_delivery_method(name = :ses, client_options = {})
+    def self.add_action_mailer_delivery_method(name, client_options = {})
       ActiveSupport.on_load(:action_mailer) do
-        if name == :sesv2
+        case name
+        when :ses
+          add_delivery_method(name, Aws::Rails::SesMailer, client_options)
+        when :sesv2
           add_delivery_method(name, Aws::Rails::Sesv2Mailer, client_options)
         else
-          add_delivery_method(name, Aws::Rails::SesMailer, client_options)
+          raise ArgumentError, "Unknown action mailer delivery method: #{name}"
         end
       end
     end
