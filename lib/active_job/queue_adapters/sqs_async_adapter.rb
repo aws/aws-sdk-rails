@@ -12,8 +12,8 @@ module ActiveJob
     #
     # To use this adapter, set up as:
     #
-    # config.active_job.queue_adapter = :amazon_sqs_async
-    class AmazonSqsAsyncAdapter < AmazonSqsAdapter
+    # config.active_job.queue_adapter = :sqs_async
+    class SqsAsyncAdapter < SqsAdapter
       private
 
       def _enqueue(job, body = nil, send_message_opts = {})

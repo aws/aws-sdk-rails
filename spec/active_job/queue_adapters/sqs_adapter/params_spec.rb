@@ -4,7 +4,7 @@ require 'test_helper'
 
 module ActiveJob
   module QueueAdapters
-    class AmazonSqsAdapter
+    class SqsAdapter
       describe Params do
         describe '.assured_delay_seconds' do
           let(:now) { Time.now }

@@ -75,7 +75,7 @@ Style/Documentation:
   Exclude:
     - 'spec/**/*'
     - 'test/**/*'
-    - 'lib/active_job/queue_adapters/amazon_sqs_adapter.rb'
+    - 'lib/active_job/queue_adapters/sqs_adapter.rb'
     - 'lib/aws/rails/notifications.rb'
     - 'lib/aws/rails/sqs_active_job/configuration.rb'
     - 'lib/aws/rails/sqs_active_job/job_runner.rb'
