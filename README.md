@@ -176,14 +176,11 @@ config.action_mailer.delivery_method = :ses # or :sesv2
 config.action_mailbox.ingress = :ses
 ```
 
-2. Configure which _SNS_ topics will be accepted and what region the emails will be stored in when using S3 (plus any other desired options):
+2. Configure which _SNS_ topic will be accepted and what region the emails will be stored in when using S3 (plus any other desired options):
 
 ```
 # config/environments/production.rb
-config.action_mailbox.ses.subscribed_topics = %w(
-  arn:aws:sns:eu-west-1:012345678910:example-topic-1
-  arn:aws:sns:us-east-1:012345678910:example-topic-2
-)
+config.action_mailbox.ses.subscribed_topic = 'arn:aws:sns:eu-west-1:012345678910:example-topic-1'
 config.action_mailbox.ses.s3_client_options = { region: 'us-east-1' }
 ```
 
@@ -202,7 +199,7 @@ Two _RSpec_ _request spec_ helpers are provided to facilitate testing _Amazon SN
 * `action_mailbox_ses_deliver_subscription_confirmation`
 * `action_mailbox_ses_deliver_email`
 
-Include the `ActionMailboxAmazonIngress::RSpec` extension in your tests:
+Include the `Aws::Rails::ActionMailbox::RSpec` extension in your tests:
 
 ```ruby
 # spec/rails_helper.rb
@@ -219,7 +216,7 @@ Configure your _test_ environment to accept the default topic used by the provid
 ```ruby
 # config/environments/test.rb
 
-config.action_mailbox.ses.subscribed_topics = ['topic:arn:default']
+config.action_mailbox.ses.subscribed_topic = 'topic:arn:default'
 ```
 
 ##### Example Usage

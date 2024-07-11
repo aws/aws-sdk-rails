@@ -2,6 +2,7 @@
 
 require 'aws-sdk-sns'
 require 'aws/rails/action_mailbox/s3_client'
+require 'aws/rails/action_mailbox/sns_message_verifier'
 
 module Aws
   module Rails
@@ -19,7 +20,7 @@ module Aws
         end
 
         def verified?
-          Aws::SNS::MessageVerifier.new.authentic?(@request_body)
+          SnsMessageVerifier.client.authentic?(@request_body)
         end
 
         def topic

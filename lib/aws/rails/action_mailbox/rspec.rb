@@ -53,7 +53,7 @@ module Aws
         end
 
         def stub_aws_sns_message_verifier(notification)
-          allow(Aws::SNS::MessageVerifier).to receive(:new) { message_verifier(notification) }
+          allow(Aws::Rails::ActionMailbox::SnsMessageVerifier).to receive(:client) { message_verifier(notification) }
         end
 
         def stub_aws_sns_subscription_request

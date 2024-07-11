@@ -31,37 +31,31 @@ describe 'subscription confirmation', type: :request do
     ).and_return(body: fixture_for(:certificate, type: :pem))
   end
 
-  describe 'valid Amazon SSL signature' do
+  context 'when valid Amazon SSL signature' do
     let(:type) { 'valid_signature' }
+
     it 'fetches subscription URL' do
       action
       expect(subscription_confirmation_request).to have_been_requested
     end
   end
 
-  describe 'invalid Amazon SSL signature' do
+  context 'when invalid Amazon SSL signature' do
     let(:type) { 'invalid_signature' }
+
     it 'does not fetch subscription URL' do
       action
       expect(subscription_confirmation_request).to_not have_been_requested
     end
   end
 
-  describe 'unrecognized topic' do
+  context 'when unrecognized topic' do
     let(:type) { 'unrecognized_topic_subscription_request' }
     let(:topic) { 'unrecognized-topic' }
+
     it 'does not fetch subscription URL' do
       action
       expect(subscription_confirmation_request).to_not have_been_requested
-    end
-  end
-
-  describe 'recognized topic' do
-    let(:type) { 'recognized_topic_subscription_request' }
-    let(:topic) { 'recognized-topic' }
-    it 'fetches subscription URL' do
-      action
-      expect(subscription_confirmation_request).to have_been_requested
     end
   end
 end

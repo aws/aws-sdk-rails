@@ -56,7 +56,7 @@ module ActionMailbox
         end
 
         def validate_topic
-          return if valid_topics.include?(notification.topic)
+          return if valid_topic == notification.topic
 
           Rails.logger.warn("Ignoring unknown topic: #{topic}")
           head :unauthorized
@@ -70,8 +70,8 @@ module ActionMailbox
           @topic ||= notification.topic
         end
 
-        def valid_topics
-          ::Rails.configuration.action_mailbox.ses.subscribed_topics
+        def valid_topic
+          ::Rails.configuration.action_mailbox.ses.subscribed_topic
         end
       end
     end
