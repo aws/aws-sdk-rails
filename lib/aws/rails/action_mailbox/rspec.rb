@@ -3,6 +3,7 @@
 require 'aws/rails/action_mailbox/rspec/email'
 require 'aws/rails/action_mailbox/rspec/subscription_confirmation'
 require 'aws-sdk-sns'
+require 'aws/rails/action_mailbox/sns_message_verifier'
 
 module Aws
   module Rails
