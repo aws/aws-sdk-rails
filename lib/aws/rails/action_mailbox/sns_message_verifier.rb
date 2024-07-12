@@ -8,8 +8,8 @@ module Aws
       # @api private
       class SnsMessageVerifier
         class << self
-          def client
-            @client ||= Aws::SNS::MessageVerifier.new
+          def verifier
+            @verifier ||= Aws::SNS::MessageVerifier.new
           end
         end
       end

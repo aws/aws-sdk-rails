@@ -20,7 +20,7 @@ module Aws
         end
 
         def verified?
-          SnsMessageVerifier.client.authentic?(@request_body)
+          SnsMessageVerifier.verifier.authentic?(@request_body)
         end
 
         def topic

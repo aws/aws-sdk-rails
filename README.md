@@ -176,7 +176,7 @@ config.action_mailer.delivery_method = :ses # or :sesv2
 config.action_mailbox.ingress = :ses
 ```
 
-2. Configure which _SNS_ topic will be accepted and what region the emails will be stored in when using S3 (plus any other desired options):
+2. Configure which _SNS_ topic will be accepted and what region (note: the region of the bucket need not match the topic region) the emails will be stored in when using S3 (plus any other desired options):
 
 ```
 # config/environments/production.rb
