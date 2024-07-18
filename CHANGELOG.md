@@ -1,4 +1,4 @@
-Unreleased Changes
+4.0.1 (2024-07-18)
 ------------------
 
 * Issue - Require `action_mailbox/engine` from `Aws::Rails::ActionMailbox::Engine`.
