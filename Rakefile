@@ -20,6 +20,6 @@ task :db_migrate do
   end
 end
 
-task test: [:db_migrate, :spec]
+task test: %i[db_migrate spec]
 task default: :test
 task 'release:test' => :test
