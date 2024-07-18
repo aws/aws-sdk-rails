@@ -1,9 +1,11 @@
 Unreleased Changes
 ------------------
 
+* Feature - Add support for Action Mailbox with SES (#127).
+
 * Issue - Ensure `:ses` or `:sesv2` as ActionMailer configuration.
 
-* Feature - Do not allow `:amazon`, `amazon_sqs`, or `amazon_sqs_async` for SQS active job configuration. Instead use `:sqs` and `:sqs_async`.
+* Issue - Do not allow `:amazon`, `amazon_sqs`, or `amazon_sqs_async` for SQS active job configuration. Instead use `:sqs` and `:sqs_async`.
 
 
 3.13.0 (2024-06-06)
