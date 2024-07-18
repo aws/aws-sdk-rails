@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Issue - Require `action_mailbox/engine` from `Aws::Rails::ActionMailbox::Engine`.
+
 4.0.0 (2024-07-18)
 ------------------
 
@@ -10,11 +12,11 @@ Unreleased Changes
 
 * Issue - Do not allow `:amazon`, `amazon_sqs`, or `amazon_sqs_async` for SQS active job configuration. Instead use `:sqs` and `:sqs_async`.
 
-
 3.13.0 (2024-06-06)
 ------------------
 
 * Feature - Use `Concurrent.available_processor_count` to set default thread pool max threads (#125).
+
 * Issue - No longer rely on `caller_runs` for backpressure in sqs active job executor (#123).
 
 3.12.0 (2024-04-02)
