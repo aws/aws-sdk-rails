@@ -1,4 +1,4 @@
-class CreateActionMailboxTables < ActiveRecord::Migration[6.0]
+class CreateActionMailboxTables < ActiveRecord::Migration[7.0]
   def change
     create_table :action_mailbox_inbound_emails, id: primary_key_type do |t|
       t.integer :status, default: 0, null: false
