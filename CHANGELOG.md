@@ -1,4 +1,4 @@
-Unreleased Changes
+4.0.0 (2024-07-18)
 ------------------
 
 * Feature - Add support for Action Mailbox with SES (#127).
