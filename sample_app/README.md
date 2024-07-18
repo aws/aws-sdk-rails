@@ -22,13 +22,17 @@ Add credentials under `:aws` key after running:
 
 `EDITOR=nano rails credentials:edit`
 
-## SES
+## SES (Outbound)
 
 Start rails with `ACTION_MAILER_EMAIL=my@email.com rails server`
 
 Send an email using the `/emails/index` route.
 
 Make sure your email address is verified in SES.
+
+## SES (Inbound)
+
+Fixture based testing of SES is possible via RSpec request helpers that this gem offers. How to use them is documented within the main README. How to setup inbound emails with SES is also covered there.
 
 ## DynamoDB Session Store
 

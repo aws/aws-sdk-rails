@@ -3,6 +3,7 @@
 module Aws
   module Rails
     module SqsActiveJob
+      # @api private
       class JobRunner
         attr_reader :id, :class_name
 

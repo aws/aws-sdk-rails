@@ -18,19 +18,13 @@ gem 'aws-sdk-rails', '~> 3'
 
 This gem also brings in the following AWS gems:
 
+* `aws-sdk-s3`
 * `aws-sdk-ses`
 * `aws-sdk-sesv2`
 * `aws-sdk-sqs`
+* `aws-sdk-sns`
 * `aws-record`
 * `aws-sessionstore-dynamodb`
-
-If you want to use other services (such as S3), you will still need to add them to your
-Gemfile:
-
-```ruby
-gem 'aws-sdk-rails', '~> 3'
-gem 'aws-sdk-s3', '~> 1'
-```
 
 You will have to ensure that you provide credentials for the SDK to use. See the
 latest [AWS SDK for Ruby Docs](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/index.html#Configuration)
@@ -163,6 +157,91 @@ You simply need to configure Rails to use it in your environment configuration:
 config.action_mailer.delivery_method = :ses # or :sesv2
 ```
 
+## Amazon Simple Email Service (SES) as an ActionMailbox Method
+
+### Configuration
+
+#### Amazon SES/SNS
+
+1. [Configure SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-notifications.html) to (save emails to S3)(https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-s3.html) or to send them as raw messages.
+
+2. [Configure the SNS topic for SES or for the S3 action](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-sns.html) to send notifications to +/rails/action_mailbox/ses/inbound_emails+. For example, if your website is hosted at https://www.example.com then configure _SNS_ to publish the _SES_ notification topic to this _HTTP_ endpoint: https://example.com/rails/action_mailbox/ses/inbound_emails
+
+#### Rails
+
+1. Configure _ActionMailbox_ to accept emails from Amazon SES:
+
+```
+# config/environments/production.rb
+config.action_mailbox.ingress = :ses
+```
+
+2. Configure which _SNS_ topic will be accepted and what region (note: the region of the bucket need not match the topic region) the emails will be stored in when using S3 (plus any other desired options):
+
+```
+# config/environments/production.rb
+config.action_mailbox.ses.subscribed_topic = 'arn:aws:sns:eu-west-1:012345678910:example-topic-1'
+config.action_mailbox.ses.s3_client_options = { region: 'us-east-1' }
+```
+
+SNS Subscriptions will now be auto-confirmed and messages will be automatically handled via _ActionMailbox_.
+
+Note that even if you manually confirm subscriptions you will still need to provide a list of subscribed topics; messages from unrecognized topics will be ignored.
+
+See [ActionMailbox documentation](https://guides.rubyonrails.org/action_mailbox_basics.html) for full usage information.
+
+### Testing
+
+#### RSpec
+
+Two _RSpec_ _request spec_ helpers are provided to facilitate testing _Amazon SNS/SES_ notifications in your application:
+
+* `action_mailbox_ses_deliver_subscription_confirmation`
+* `action_mailbox_ses_deliver_email`
+
+Include the `Aws::Rails::ActionMailbox::RSpec` extension in your tests:
+
+```ruby
+# spec/rails_helper.rb
+
+require 'aws/rails/action_mailbox/rspec'
+
+RSpec.configure do |config|
+  config.include Aws::Rails::ActionMailbox::RSpec
+end
+```
+
+Configure your _test_ environment to accept the default topic used by the provided helpers:
+
+```ruby
+# config/environments/test.rb
+
+config.action_mailbox.ses.subscribed_topic = 'topic:arn:default'
+```
+
+##### Example Usage
+
+```ruby
+# spec/requests/amazon_emails_spec.rb
+
+RSpec.describe 'amazon emails', type: :request do
+  it 'delivers a subscription notification' do
+    action_mailbox_ses_deliver_subscription_confirmation
+    expect(response).to have_http_status :ok
+  end
+
+  it 'delivers an email notification' do
+    action_mailbox_ses_deliver_email(mail: Mail.new(to: 'user@example.com'))
+    expect(ActionMailbox::InboundEmail.last.mail.recipients).to eql ['user@example.com']
+  end
+end
+```
+
+You may also pass the following keyword arguments to both helpers:
+
+* `topic`: The _SNS_ topic used for each notification (default: `topic:arn:default`).
+* `authentic`: The `Aws::SNS::MessageVerifier` class is stubbed by these helpers; set `authentic` to `true` or `false` to define how it will verify incoming notifications (default: `true`).
+
 ### Override credentials or other client options
 
 Client options can be overridden by re-registering the mailer with any set of
@@ -245,7 +324,7 @@ end
 
 ## AWS SQS Active Job
 This package provides a lightweight, high performance SQS backend
-for [ActiveJob](https://guides.rubyonrails.org/active_job_basics.html).  
+for [ActiveJob](https://guides.rubyonrails.org/active_job_basics.html).
 
 To use AWS SQS ActiveJob as your queuing backend, simply set the `active_job.queue_adapter`
 to `:sqs` For details on setting the queuing backend see: [ActiveJob: Setting the Backend](https://guides.rubyonrails.org/active_job_basics.html#setting-the-backend).
@@ -296,11 +375,11 @@ Note: Due to limitations in SQS, you cannot schedule jobs for
 later than 15 minutes in the future.
 
 ### Retry Behavior and Handling Errors
-See the Rails ActiveJob Guide on 
+See the Rails ActiveJob Guide on
 [Exceptions](https://guides.rubyonrails.org/active_job_basics.html#exceptions)
 for background on how ActiveJob handles exceptions and retries.
 
-In general - you should configure retries for your jobs using 
+In general - you should configure retries for your jobs using
 [retry_on](https://edgeapi.rubyonrails.org/classes/ActiveJob/Exceptions/ClassMethods.html#method-i-retry_on).
 When configured, ActiveJob will catch the exception and reschedule the job for
 re-execution after the configured delay. This will delete the original
@@ -309,8 +388,8 @@ message from the SQS queue and requeue a new message.
 By default SQS ActiveJob is configured with `retry_standard_error` set to `true`
 and will not delete messages for jobs that raise a `StandardError` and that do
 not handle that error via `retry_on` or `discard_on`.  These job messages
-will remain on the queue and will be re-read and retried following the 
-SQS Queue's configured 
+will remain on the queue and will be re-read and retried following the
+SQS Queue's configured
 [retry and DLQ settings](https://docs.aws.amazon.com/lambda/latest/operatorguide/sqs-retries.html).
 If you do not have a DLQ configured, the message will continue to be attempted
 until it reaches the queues retention period.  In general, it is a best practice
@@ -330,7 +409,7 @@ process jobs from:
 RAILS_ENV=development bundle exec aws_sqs_active_job --queue default
 ```
 
-To see a complete list of arguments use `--help`.  
+To see a complete list of arguments use `--help`.
 
 You can kill the process at any time with `CTRL+C` - the processor will attempt
 to shutdown cleanly and will wait up to `:shutdown_timeout` seconds for all
@@ -339,10 +418,10 @@ actively running jobs to finish before killing them.
 
 Note: When running in production, its recommended that use a process
 supervisor such as [foreman](https://github.com/ddollar/foreman), systemd,
-upstart, daemontools, launchd, runit, ect.  
+upstart, daemontools, launchd, runit, ect.
 
 ### Performance
-AWS SQS ActiveJob is a lightweight and performant queueing backend.  Benchmark performed using: Ruby MRI 2.6.5,  
+AWS SQS ActiveJob is a lightweight and performant queueing backend.  Benchmark performed using: Ruby MRI 2.6.5,
 shoryuken 5.0.5, aws-sdk-rails 3.3.1 and aws-sdk-sqs 1.34.0 on a 2015 Macbook Pro dual-core i7 with 16GB ram.
 
 *AWS SQS ActiveJob* (default settings): Throughput 119.1 jobs/sec
@@ -422,13 +501,13 @@ For a complete list of configuration options see the
 documentation.
 
 You can configure AWS SQS Active Job either through the yml file or
-through code in your config/<env>.rb or initializers.  
+through code in your config/<env>.rb or initializers.
 
 For file based configuration, you can use either:
 1. config/aws_sqs_active_job/<RAILS_ENV>.yml
 2. config/aws_sqs_active_job.yml
 
-The yml file supports ERB.  
+The yml file supports ERB.
 
 To configure in code:
 ```ruby
@@ -454,7 +533,7 @@ synchronously, even if you have configured the `sqs_async` adapter.
 
 #### Message Deduplication ID
 
-FIFO queues support [Message deduplication ID](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagededuplicationid-property.html), which is the token used for deduplication of sent messages. 
+FIFO queues support [Message deduplication ID](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagededuplicationid-property.html), which is the token used for deduplication of sent messages.
 If a message with a particular message deduplication ID is sent successfully, any messages sent with the same message deduplication ID are accepted successfully but aren't delivered during the 5-minute deduplication interval.
 
 ##### Customize Deduplication keys
@@ -480,7 +559,7 @@ By default, the following keys are used for deduplication keys:
 job_class, provider_job_id, queue_name, priority, arguments, executions, exception_executions, locale, timezone, enqueued_at
 ```
 
-Note that `job_id` is NOT included in deduplication keys because it is unique for each initialization of the job, and the run-once behavior must be guaranteed for ActiveJob retries. 
+Note that `job_id` is NOT included in deduplication keys because it is unique for each initialization of the job, and the run-once behavior must be guaranteed for ActiveJob retries.
 Even without setting job_id, it is implicitly excluded from deduplication keys.
 
 #### Message Group IDs
