@@ -45,13 +45,8 @@ jobs:
         env:
           BUNDLE_GEMFILE: gemfiles/rails-${{ matrix.rails }}.gemfile
 
-      - run: bundle exec bin/rails db:migrate
-        working-directory: spec/dummy
-        env:
-          BUNDLE_GEMFILE: ../../gemfiles/rails-${{ matrix.rails }}.gemfile
-
       - name: Test
-        run: bundle exec rspec
+        run: bundle exec rake test
         env:
           BUNDLE_GEMFILE: gemfiles/rails-${{ matrix.rails }}.gemfile
 
