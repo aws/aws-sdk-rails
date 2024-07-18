@@ -3,8 +3,6 @@
 require 'rspec/core/rake_task'
 require 'rubocop/rake_task'
 
-RSpec::Core::RakeTask.new(:spec)
-
 $REPO_ROOT = File.dirname(__FILE__)
 $VERSION = ENV['VERSION'] || File.read(File.join($REPO_ROOT, 'VERSION')).strip
 
@@ -14,5 +12,14 @@ end
 
 RuboCop::RakeTask.new
 
-task default: :spec
-task 'release:test' => :spec
+RSpec::Core::RakeTask.new(:spec)
+
+task :db_migrate do
+  Dir.chdir('spec/dummy') do
+    `rake db:migrate`
+  end
+end
+
+task test: [:db_migrate, :spec]
+task default: :test
+task 'release:test' => :test
