@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'action_mailbox/engine'
+
 module Aws
   module Rails
     module ActionMailbox
