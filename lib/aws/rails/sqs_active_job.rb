@@ -14,6 +14,20 @@ module Aws
     # == AWS SQS ActiveJob.
     #
     # SQS-based queuing backend for Active Job.
-    module SqsActiveJob; end
+    module SqsActiveJob
+      # @return [Configuration] the (singleton) Configuration
+      def self.config
+        @config ||= Configuration.new
+      end
+
+      # @yield Configuration
+      def self.configure
+        yield(config)
+      end
+
+      def self.fifo?(queue_url)
+        queue_url.ends_with? '.fifo'
+      end
+    end
   end
 end
