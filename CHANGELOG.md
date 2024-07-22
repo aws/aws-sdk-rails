@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Issue - Refactor the loading of the SQS ActiveJob adapter to be in `aws/rails/sqs_active_job`.
+
 4.0.1 (2024-07-18)
 ------------------
 
