@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   spec.executables = ['aws_sqs_active_job']
 
   spec.add_dependency('aws-record', '~> 2') # for Aws::Record integration
+  spec.add_dependency('aws-sessionstore-dynamodb', '~> 2') # includes DynamoDB
 
   # Require these versions for user_agent_framework configs
   spec.add_dependency('aws-sdk-s3', '~> 1', '>= 1.123.0')
@@ -27,10 +28,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency('aws-sdk-sns', '~> 1', '>= 1.61.0') # for ActionMailbox
   spec.add_dependency('aws-sdk-sqs', '~> 1', '>= 1.56.0') # for ActiveJob
 
-  spec.add_dependency('actionmailbox', '>= 7.0.0') # for SES ActionMailbox
-  spec.add_dependency('aws-sessionstore-dynamodb', '~> 2') # includes DynamoDB
-  spec.add_dependency('concurrent-ruby', '>= 1.3.1') # Utilities for concurrent processing
-  spec.add_dependency('railties', '>= 7.0.0') # Minimum supported Rails version
+  spec.add_dependency('actionmailbox', '~> 7.0', '>= 7.0.0') # for SES ActionMailbox
+  spec.add_dependency('concurrent-ruby', '~> 1.3', '>= 1.3.1') # Utilities for concurrent processing
+  spec.add_dependency('railties', '~> 7.0', '>= 7.0.0') # Minimum supported Rails version
 
   spec.required_ruby_version = '>= 2.7'
 end
