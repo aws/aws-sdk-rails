@@ -34,6 +34,18 @@ module Aws
           )
         end
       end
+
+      describe '.fifo?' do
+        it 'returns true if queue_url is fifo' do
+          queue_url = 'https://sqs.us-west-2.amazonaws.com/012345678910/queue.fifo'
+          expect(Aws::Rails::SqsActiveJob.fifo?(queue_url)).to be(true)
+        end
+
+        it 'returns false if queue_url is not fifo' do
+          queue_url = 'https://sqs.us-west-2.amazonaws.com/012345678910/queue'
+          expect(Aws::Rails::SqsActiveJob.fifo?(queue_url)).to be(false)
+        end
+      end
     end
   end
 end
