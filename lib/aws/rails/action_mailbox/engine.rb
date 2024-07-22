@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-module Aws
-  module Rails
-    module ActionMailbox
-      # @api private
-      class Engine < ::Rails::Engine
-        if defined?(ActionMailbox::Engine)
+if defined?(ActionMailbox::Engine)
+  module Aws
+    module Rails
+      module ActionMailbox
+        # @api private
+        class Engine < ::Rails::Engine
           config.action_mailbox.ses = ActiveSupport::OrderedOptions.new
           config.action_mailbox.ses.s3_client_options ||= {}
 
