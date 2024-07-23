@@ -28,9 +28,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency('aws-sdk-sns', '~> 1', '>= 1.61.0') # for ActionMailbox
   spec.add_dependency('aws-sdk-sqs', '~> 1', '>= 1.56.0') # for ActiveJob
 
-  spec.add_dependency('actionmailbox', '~> 7.0', '>= 7.0.0') # for SES ActionMailbox
+  spec.add_dependency('actionmailbox', '>= 7.0.0') # for SES ActionMailbox
   spec.add_dependency('concurrent-ruby', '~> 1.3', '>= 1.3.1') # Utilities for concurrent processing
-  spec.add_dependency('railties', '~> 7.0', '>= 7.0.0') # Minimum supported Rails version
+  spec.add_dependency('railties', '>= 7.0.0') # Minimum supported Rails version
 
   spec.required_ruby_version = '>= 2.7'
 end
