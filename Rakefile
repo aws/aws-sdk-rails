@@ -15,9 +15,8 @@ RuboCop::RakeTask.new
 RSpec::Core::RakeTask.new(:spec)
 
 task :db_migrate do
-  ENV['RAILS_ENV'] = 'test'
   Dir.chdir('spec/dummy') do
-    `rake db:migrate`
+    `RAILS_ENV=test rake -I ../../lib db:migrate`
   end
 end
 
