@@ -1,4 +1,4 @@
-Unreleased Changes
+4.0.3 (2024-07-31)
 ------------------
 
 * Issue - Revert "Ensure `:ses` or `:sesv2` as ActionMailer configuration." (#136)
