@@ -16,7 +16,9 @@ RSpec::Core::RakeTask.new(:spec)
 
 task :db_migrate do
   Dir.chdir('spec/dummy') do
+    version = ENV.delete('VERSION') # ActiveRecord uses this
     `RAILS_ENV=test rake -I ../../lib db:migrate`
+    ENV['VERSION'] = version
   end
 end
 
