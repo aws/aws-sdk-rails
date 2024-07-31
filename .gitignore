@@ -17,3 +17,4 @@ spec/dummy/log/
 spec/dummy/tmp/
 vendor
 .idea/
+.release/
