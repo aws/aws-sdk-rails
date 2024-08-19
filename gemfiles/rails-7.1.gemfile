@@ -3,3 +3,19 @@
 eval_gemfile '../Gemfile'
 
 gem 'rails', '~> 7.1.0'
+
+group :test do
+  # JDBC versions track Rails versions
+  gem 'activerecord-jdbc-adapter', '~> 71.0',
+      platform: :jruby,
+      # this is not published for some reason
+      git: 'https://github.com/jruby/activerecord-jdbc-adapter',
+      glob: 'activerecord-jdbc-adapter.gemspec'
+  gem 'activerecord-jdbcsqlite3-adapter', '~> 71.0',
+      platform: :jruby,
+      # this is not published for some reason
+      git: 'https://github.com/jruby/activerecord-jdbc-adapter',
+      glob: 'activerecord-jdbcsqlite3-adapter/activerecord-jdbcsqlite3-adapter.gemspec'
+  # last supported version of sqlite3 for minimum ruby
+  gem 'sqlite3', '~> 1.6.0', platform: :ruby
+end
