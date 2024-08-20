@@ -29,6 +29,8 @@ jobs:
           - rails: main
             ruby: 3.0
           # JDBC adapters don't support the latest Rails
+          - rails: 7.2
+            ruby: jruby-9.4
           - rails: main
             ruby: jruby-9.4
 
