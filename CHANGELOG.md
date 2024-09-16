@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Feature - Add SDK eager loading to optimize load times.  See: https://github.com/aws/aws-sdk-ruby/pull/3105.
+
 4.0.3 (2024-07-31)
 ------------------
 
