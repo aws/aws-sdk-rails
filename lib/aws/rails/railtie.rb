@@ -93,10 +93,6 @@ module Aws
       end
     end
 
-    def self.setup_sdk_eager_load
-
-    end
-
     # Register a middleware that will handle requests from the Elastic Beanstalk worker SQS Daemon.
     # This will only be added in the presence of the AWS_PROCESS_BEANSTALK_WORKER_REQUESTS environment variable.
     # The expectation is this variable should only be set on EB worker environments.
