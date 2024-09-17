@@ -23,6 +23,11 @@ module Aws
         expect(Aws.config[:logger]).to eq ::Rails.logger
       end
 
+      it 'sets up eager loading for sdk services' do
+        expect(Aws.methods).to include(:eager_load!)
+        expect(::Rails.application.config.eager_load_namespaces).to include(Aws)
+      end
+
       describe '.use_rails_encrypted_credentials' do
         let(:rails_creds) { ::Rails.application.credentials.aws }
         it 'sets aws credentials' do
