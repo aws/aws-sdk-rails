@@ -48,7 +48,7 @@ module ActiveJob
               data_type: 'String'
             },
             'aws_sqs_active_job_version' => {
-              string_value: Aws::Rails::VERSION,
+              string_value: Aws::Rails::SqsActiveJob::VERSION,
               data_type: 'String'
             }
           }
