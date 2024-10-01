@@ -32,5 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency('concurrent-ruby', '~> 1.3', '>= 1.3.1') # Utilities for concurrent processing
   spec.add_dependency('railties', '>= 7.0.0') # Minimum supported Rails version
 
+  spec.add_dependency('sqs-active-job', version)
+
   spec.required_ruby_version = '>= 2.7'
 end

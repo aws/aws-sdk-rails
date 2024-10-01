@@ -13,7 +13,7 @@ module Aws
           shutdown_timeout: 15,
           retry_standard_errors: true, # TODO: Remove in next MV
           queues: {},
-          logger: ::Rails.logger,
+          logger: defined?(Rails) && Rails.respond_to?(:logger) ? Rails.logger : ::Logger.new($stdout),
           message_group_id: 'SqsActiveJobGroup',
           excluded_deduplication_keys: ['job_id']
         }.freeze
@@ -150,9 +150,12 @@ module Aws
         end
 
         def config_file
-          file = ::Rails.root.join("config/aws_sqs_active_job/#{::Rails.env}.yml")
-          file = ::Rails.root.join('config/aws_sqs_active_job.yml') unless File.exist?(file)
-          file
+          if defined?(Rails) && Rails.respond_to?(:root)
+            file = ::Rails.root.join("config/aws_sqs_active_job/#{::Rails.env}.yml")
+            File.exist?(file) ? file : ::Rails.root.join('config/aws_sqs_active_job.yml')
+          else
+            'config/aws_sqs_active_job.yml'
+          end
         end
 
         # Load options from YAML file
