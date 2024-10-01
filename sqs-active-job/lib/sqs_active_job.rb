@@ -16,6 +16,8 @@ module Aws
     #
     # SQS-based queuing backend for Active Job.
     module SqsActiveJob
+      VERSION = File.read(File.expand_path('../../VERSION', __dir__)).strip
+
       # @return [Configuration] the (singleton) Configuration
       def self.config
         @config ||= Configuration.new
