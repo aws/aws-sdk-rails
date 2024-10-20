@@ -1,4 +1,4 @@
-class CreateDynamoDbSessionsTable < ActiveRecord::Migration[6.1]
+class CreateDynamoDbSessionsTable < ActiveRecord::Migration[7.2]
   def up
     Aws::SessionStore::DynamoDB::Table.create_table
   end

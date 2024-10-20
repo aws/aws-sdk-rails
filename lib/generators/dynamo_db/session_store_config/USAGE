@@ -1,0 +1,16 @@
+Description:
+    Generates a sample configuration file DynamoDB session store.
+
+Examples:
+    `rails generate dynamo_db:session_store_config`
+
+    This will create:
+        config/dynamo_db_session_store.yml
+
+    Optionally, you can specify the Rails environment to generate
+    the configuration file for:
+
+    `rails generate dynamo_db:session_store_config --environment=development`
+
+    This will create:
+        config/dynamo_db_session_store/development.yml

@@ -2,6 +2,7 @@
 
 require 'test_helper'
 
+require 'fileutils'
 require 'rails/generators/test_case'
 require 'generators/dynamo_db/session_store_migration/session_store_migration_generator'
 
@@ -12,18 +13,15 @@ module DynamoDb
       destination File.expand_path('../../../dummy', __dir__)
 
       def test_migration_with_default_name
-        run_generator ['-f']
+        FileUtils.rm_rf(Dir["#{destination_root}/db/migrate/*create_dynamo_db_sessions_table.rb"])
+        run_generator
         assert_migration 'db/migrate/create_dynamo_db_sessions_table.rb'
       end
 
       def test_migration_with_custom_name
-        run_generator ['CustomName', '-f']
+        FileUtils.rm_rf( Dir["#{destination_root}/db/migrate/*custom_name.rb"])
+        run_generator %w[CustomName]
         assert_migration 'db/migrate/custom_name.rb'
-      end
-
-      def test_migration_includes_config_file
-        run_generator ['-f']
-        assert_file 'config/dynamo_db_session_store.yml'
       end
     end
   end

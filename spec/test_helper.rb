@@ -5,6 +5,8 @@ ENV['RAILS_ENV'] = 'test'
 require_relative 'dummy/config/environment'
 require 'webmock/rspec'
 require 'rspec/rails'
+# require 'minitest/autorun'
+require 'minitest-spec-rails'
 
 ActiveRecord::Migration.maintain_test_schema!
 

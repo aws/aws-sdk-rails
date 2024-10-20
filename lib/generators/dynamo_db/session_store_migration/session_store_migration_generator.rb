@@ -2,8 +2,6 @@
 
 require 'rails/generators/named_base'
 
-# This class generates a migration file for deleting and creating
-# a DynamoDB sessions table.
 module DynamoDb
   module Generators
     # Generates an ActiveRecord migration that creates and deletes a DynamoDB
@@ -13,22 +11,16 @@ module DynamoDb
 
       source_root File.expand_path('templates', __dir__)
 
-      # Desired name of migration class
-      argument :name, type: :string, default: 'create_dynamo_db_sessions_table'
+      # Desired name of the migration class
+      argument :name,
+        desc: 'Optional name of the migration class',
+        type: :string,
+        default: 'create_dynamo_db_sessions_table'
 
-      # @return [Rails Migration File] migration file for creation and deletion
-      #   of a DynamoDB session table.
       def generate_migration_file
         migration_template(
           'session_store_migration.erb',
           "db/migrate/#{name.underscore}.rb"
-        )
-      end
-
-      def copy_sample_config_file
-        template(
-          'dynamo_db_session_store.yml',
-          'config/dynamo_db_session_store.yml'
         )
       end
 
@@ -39,7 +31,6 @@ module DynamoDb
 
       private
 
-      # @return [String] activerecord migration version
       def migration_version
         "#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}"
       end

@@ -24,7 +24,6 @@ This gem also brings in the following AWS gems:
 * `aws-sdk-sqs`
 * `aws-sdk-sns`
 * `aws-record`
-* `aws-sessionstore-dynamodb`
 
 You will have to ensure that you provide credentials for the SDK to use. See the
 latest [AWS SDK for Ruby Docs](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/index.html#Configuration)
@@ -72,7 +71,35 @@ configuration: they will be loaded automatically.
 
 You can configure session storage in Rails to use DynamoDB instead of cookies,
 allowing access to sessions from other applications and devices. You will need
-to have an existing Amazon DynamoDB session table to use this feature.
+to have or create an existing Amazon DynamoDB session table to use this feature.
+
+To enable this feature, add the following to your Gemfile:
+
+```ruby
+gem 'aws-sessionstore-dynamodb', '~> 2'
+```
+
+For more information about this feature and configuration options, see the
+[API reference](https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/)
+and the
+[GitHub repository](https://github.com/aws/aws-sessionstore-dynamodb-ruby).
+
+### Configuration generator
+
+You can generate a configuration file for the session store using the following
+command (--environment=<environment> is optional):
+
+```bash
+rails generate dynamo_db:session_store_config --environment=<Rails.env>
+```
+
+The session store configuration generator command will generate a YAML file
+`config/dynamo_db_session_store.yml` with default options. If provided an
+environment, the file will be named
+`config/dynamo_db_session_store/<Rails.env>.yml`, which takes precedence over
+the default file.
+
+### ActiveRecord Migration generator
 
 You can generate a migration file for the session table using the following
 command (<MigrationName> is optional):
@@ -81,13 +108,15 @@ command (<MigrationName> is optional):
 rails generate dynamo_db:session_store_migration <MigrationName>
 ```
 
-The session store migration generator command will generate two	files: a
-migration file, `db/migration/#{VERSION}_#{MIGRATION_NAME}.rb`, and a
-configuration YAML file, `config/dynamo_db_session_store.yml`.
+The session store migration generator command will generate a
+migration file  `db/migration/#{VERSION}_#{MIGRATION_NAME}.rb`.
 
 The migration file will create and delete a table with default options. These
-options can be changed prior to running the migration and are documented in the
-[Table](https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Table.html) class.
+options can be changed prior to running the migration either in code by editing
+the migration file or in the config YAML file. These options are documented in
+the
+[Table](https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Table.html)
+class.
 
 To create the table, run migrations as normal with:
 
@@ -95,15 +124,39 @@ To create the table, run migrations as normal with:
 rails db:migrate
 ```
 
-Next, configure the Rails session store to be `:dynamodb_store` by editing
-`config/initializers/session_store.rb` to contain the following:
+To delete the table and rollback, run the following command:
 
-```ruby
-# config/initializers/session_store.rb
-Rails.application.config.session_store :dynamodb_store, key: '_your_app_session'
+```bash
+rails db:migrate:down VERSION=<VERSION>
 ```
 
-You can now start your Rails application with session support.
+### Migration Rake tasks
+
+If you are not using ActiveRecord, you can manage the table using the provided
+Rake tasks:
+
+```bash
+rake dynamo_db:session_store:create_table
+rake dynamo_db:session_store:delete_table
+```
+
+The rake tasks will create and delete a table with default options. These
+options can be changed prior to running the task in the config YAML file. These
+options are documented in the
+[Table](https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Table.html)
+class.
+
+### Usage
+
+To use the session store, add or edit your
+`config/initializers/session_store.rb` file:
+
+```ruby
+options = { table_name: '_your_app_session' } # overrides from YAML or ENV
+Rails.application.config.session_store :dynamo_db_store, **options
+```
+
+You can now start your Rails application with DynamoDB session support.
 
 ### Configuration
 
@@ -113,38 +166,41 @@ initializer like so:
 
 ```ruby
 # config/initializers/session_store.rb
-Rails.application.config.session_store :dynamodb_store,
-  key: '_your_app_session',
-  table_name: 'foo',
+Rails.application.config.session_store :dynamo_db_store,
+  table_name: 'your-table-name',
+  table_key: 'your-session-key',
   dynamo_db_client: my_ddb_client
 ```
 
-Alternatively, you can use the generated YAML configuration file
-`config/dynamo_db_session_store.yml`. YAML configuration may also be specified
-per environment, with environment configuration having precedence. To do this,
-create `config/dynamo_db_session_store/#{Rails.env}.yml` files as needed.
+Alternatively, you can use the generated YAML configuration files
+`config/dynamo_db_session_store.yml` or
+`config/dynamo_db_session_store/<Rails.env>.yml`.
 
-For configuration options, see the [Configuration](https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html) class.
+For configuration options, see the [Configuration]
+(https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html)
+class.
 
-#### Rack Configuration
-
-DynamoDB session storage is implemented in the [\`aws-sessionstore-dynamodb\`](https://github.com/aws/aws-sessionstore-dynamodb-ruby)
-gem. The Rack middleware inherits from the [\`Rack::Session::Abstract::Persisted\`](https://www.rubydoc.info/github/rack/rack/Rack/Session/Abstract/Persisted)
+The session store inherits from the
+[`Rack::Session::Abstract::Persisted`](https://rubydoc.info/github/rack/rack-session/main/Rack/Session/Abstract/Persisted)
 class, which also includes additional options (such as `:key`) that can be
 passed into the Rails initializer.
 
 ### Cleaning old sessions
 
-By default sessions do not expire. See `config/dynamo_db_session_store.yml` to
+By default sessions do not expire. You can use `:max_age` and `:max_stale` to
 configure the max age or stale period of a session.
 
-You can use the DynamoDB [Time to Live (TTL) feature](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html)
-on the `expire_at` attribute to automatically delete expired items.
+You can use the DynamoDB
+[Time to Live (TTL) feature](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html)
+on the `expire_at` attribute to automatically delete expired items, saving you
+the trouble of manually deleting them and reducing costs.
 
-Alternatively, a Rake task for garbage collection is provided:
+If you wish to delete old sessions based on creation age (invalidating valid
+sessions) or if you want control over the garbage collection process, you can
+use the provided Rake task:
 
 ```bash
-rake dynamo_db:collect_garbage
+rake dynamo_db:session_store:clean_table
 ```
 
 ## Amazon Simple Email Service (SES) as an ActionMailer Delivery Method

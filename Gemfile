@@ -14,6 +14,7 @@ end
 
 group :test do
   gem 'bcrypt'
+  gem 'minitest-spec-rails'
   gem 'rspec-rails'
   gem 'webmock'
 end
