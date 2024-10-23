@@ -13,13 +13,8 @@ namespace 'dynamo_db' do
     end
 
     desc 'Clean up old sessions in the Amazon DynamoDB session store table'
-    task clean_table: :environment do
+    task collect_garbage: :environment do
       Aws::SessionStore::DynamoDB::GarbageCollection.collect_garbage
-    end
-
-    task clean: :clean_table do
-      puts 'The `dynamo_db:session_store:clean` task will be removed in aws-sdk-rails ~> 5. ' \
-           'Please use `dynamo_db:session_store:clean_table` instead.'
     end
   end
 end

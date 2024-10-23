@@ -36,8 +36,8 @@ module DynamoDb
       expect_mock(:delete_table, 'dynamo_db:session_store:delete_table')
     end
 
-    it 'has a cleans table task' do
-      expect_mock(:collect_garbage, 'dynamo_db:session_store:clean_table')
+    it 'has a collect garbage task' do
+      expect_mock(:collect_garbage, 'dynamo_db:session_store:collect_garbage')
     end
   end
 end
