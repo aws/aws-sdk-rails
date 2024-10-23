@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'rails/generators/named_base'
-
 module DynamoDb
   module Generators
     # Generates a config file for DynamoDB session storage.
