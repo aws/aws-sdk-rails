@@ -110,9 +110,6 @@ jobs:
           mkdir -p ${{ github.workspace }}/sample_app/public/packs-test
           echo "{\"application.js\":\"/packs-test/js/application-dummy.js\"}" >> ${{ github.workspace }}/sample_app/public/packs-test/manifest.json
 
-      - name: DB Migrate
-        run: bin/rails db:migrate
-
       - name: Test
         run: bundle exec rake test
         working-directory: ${{ github.workspace }}/sample_app
