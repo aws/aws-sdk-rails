@@ -11,9 +11,7 @@ require_relative 'aws/rails/middleware/ebs_sqs_active_job_middleware'
 # remove this in aws-sdk-rails 5
 require 'aws-sessionstore-dynamodb'
 
-if defined?(Aws::SessionStore::DynamoDB::RackMiddleware)
-  require_relative 'action_dispatch/session/dynamo_db_store'
-end
+require_relative 'action_dispatch/session/dynamo_db_store' if defined?(Aws::SessionStore::DynamoDB::RackMiddleware)
 
 require_relative 'generators/aws_record/base'
 

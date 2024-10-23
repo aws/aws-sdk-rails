@@ -10,9 +10,9 @@ module DynamoDb
 
       # Environment to generate the config file for
       class_option :environment,
-        desc: 'Optional rails environment to generate the config file for',
-        type: :string,
-        default: nil
+                   desc: 'Optional rails environment to generate the config file for',
+                   type: :string,
+                   default: nil
 
       def copy_sample_config_file
         path = 'config/dynamo_db_session_store'

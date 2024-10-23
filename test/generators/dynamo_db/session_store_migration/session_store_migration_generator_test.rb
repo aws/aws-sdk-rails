@@ -18,7 +18,7 @@ module DynamoDb
       end
 
       it 'generates migration with custom name' do
-        FileUtils.rm_rf( Dir["#{destination_root}/db/migrate/*custom_name.rb"])
+        FileUtils.rm_rf(Dir["#{destination_root}/db/migrate/*custom_name.rb"])
         run_generator %w[CustomName]
         assert_migration 'db/migrate/custom_name.rb'
       end

@@ -13,9 +13,9 @@ module DynamoDb
 
       # Desired name of the migration class
       argument :name,
-        desc: 'Optional name of the migration class',
-        type: :string,
-        default: 'create_dynamo_db_sessions_table'
+               desc: 'Optional name of the migration class',
+               type: :string,
+               default: 'create_dynamo_db_sessions_table'
 
       def generate_migration_file
         migration_template(
