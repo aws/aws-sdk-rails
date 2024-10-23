@@ -7,27 +7,22 @@ require 'aws-sdk-dynamodb'
 module ActionDispatch
   module Session
     class DynamoDbStoreTest < ActiveSupport::TestCase
-      def setup
-        # normally this would be a rack app, but we only want to test that
-        # options are loaded on initialize
-        @app = nil
-        @config = {
-          dynamo_db_client: Aws::DynamoDB::Client.new(stub_responses: true)
-        }
+      let(:options) do
+        { dynamo_db_client: Aws::DynamoDB::Client.new(stub_responses: true) }
       end
 
-      def test_loads_config_file
-        store = ActionDispatch::Session::DynamoDbStore.new(@app, @config)
+      it 'loads config file' do
+        store = ActionDispatch::Session::DynamoDbStore.new(nil, options)
         config_file_path = store.config.config_file.to_s
         assert_match(/dynamo_db_session_store.yml/, config_file_path)
       end
 
-      def test_loads_environment_config_file_and_with_precedence
+      it 'loads environment config file and with precedence' do
         # Set Rails.env to something else so the environment.yml file is loaded
         old_env = Rails.env
         Rails.env = 'development'
 
-        store = ActionDispatch::Session::DynamoDbStore.new(@app, @config)
+        store = ActionDispatch::Session::DynamoDbStore.new(nil, options)
         config_file_path = store.config.config_file.to_s
         assert_match(/development.yml/, config_file_path)
 
@@ -35,24 +30,22 @@ module ActionDispatch
         Rails.env = old_env
       end
 
-      def test_allows_config_file_override
-        options = @config.merge(
-          config_file: 'test/dummy/config/session_store.yml'
-        )
-        store = ActionDispatch::Session::DynamoDbStore.new(@app, options)
+      it 'allows config file override' do
+        options[:config_file] = 'test/dummy/config/session_store.yml'
+        store = ActionDispatch::Session::DynamoDbStore.new(nil, options)
         config_file_path = store.config.config_file.to_s
         assert_match(/session_store.yml/, config_file_path)
       end
 
-      def test_uses_rails_secret_key_base
-        store = ActionDispatch::Session::DynamoDbStore.new(@app, @config)
+      it 'uses rails secret key base' do
+        store = ActionDispatch::Session::DynamoDbStore.new(nil, options)
         assert_equal store.config.secret_key, Rails.application.secret_key_base
       end
 
-      def test_allows_secret_key_override
+      it 'allows secret key override' do
         secret_key = 'SECRET_KEY'
-        options = @config.merge(secret_key: secret_key)
-        store = ActionDispatch::Session::DynamoDbStore.new(@app, options)
+        options[:secret_key] = secret_key
+        store = ActionDispatch::Session::DynamoDbStore.new(nil, options)
         assert_equal store.config.secret_key, secret_key
       end
     end

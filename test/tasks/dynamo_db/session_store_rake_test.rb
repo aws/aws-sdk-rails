@@ -6,7 +6,7 @@ require 'rake'
 
 module DynamoDb
   class SessionStoreRakeTest < ActiveSupport::TestCase
-    def setup
+    before do
       Rake.application.rake_require 'tasks/dynamo_db/session_store'
       Rake::Task.define_task(:environment)
     end
@@ -28,15 +28,15 @@ module DynamoDb
       assert_mock mock
     end
 
-    def test_create_table_task
+    it 'has a creates table task' do
       expect_mock(:create_table, 'dynamo_db:session_store:create_table')
     end
 
-    def test_delete_table_task
+    it 'has a deletes table task' do
       expect_mock(:delete_table, 'dynamo_db:session_store:delete_table')
     end
 
-    def test_clean_task
+    it 'has a cleans table task' do
       expect_mock(:collect_garbage, 'dynamo_db:session_store:clean_table')
     end
   end
