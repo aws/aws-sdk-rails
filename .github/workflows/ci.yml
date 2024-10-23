@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+env:
+  ruby_version: 3.3
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -19,7 +22,7 @@ jobs:
         rails: ['7.0', 7.1, 7.2, main]
 
         exclude:
-          # Rails 7.1 dropped support for older rubygems
+          # Rails 7.2 dropped support for older rubygems
           - rails: 7.2
             ruby: 2.7
           - rails: 7.2
@@ -62,18 +65,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up Ruby 3.3
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.3
-
       - uses: actions/checkout@v4
 
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.ruby_version }}
+
       - name: Install gems
-        run: bundle install
+        run: |
+          bundle config set --local with 'development'
+          bundle install
 
       - name: Rubocop
-        run: bundle exec rubocop -E -S
+        run: bundle exec rake rubocop
 
   test-sample-app:
     runs-on: ubuntu-latest
@@ -93,6 +98,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: ${{ env.ruby_version }}
           bundler-cache: true
           working-directory: ${{ github.workspace }}/sample_app
 

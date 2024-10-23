@@ -9,6 +9,7 @@ group :development, :test do
 end
 
 group :development do
+  gem 'byebug', platforms: :ruby
   gem 'rubocop'
 end
 

@@ -16,5 +16,5 @@ group :test do
       # this is not published for some reason
       git: 'https://github.com/jruby/activerecord-jdbc-adapter',
       glob: 'activerecord-jdbcsqlite3-adapter/activerecord-jdbcsqlite3-adapter.gemspec'
-  gem 'sqlite3', '~> 2.0.0', platform: :ruby
+  gem 'sqlite3', platform: :ruby
 end
