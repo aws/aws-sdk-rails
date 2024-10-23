@@ -22,17 +22,11 @@ module Aws
 
         def initialize(args = ARGV)
           @options = parse_args(args)
-          # Set_environment must be run before we boot_rails
-          set_environment
-        end
-
-        def set_environment
-          @environment = @options[:environment] || ENV['APP_ENV'] || ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
+          @options[:queue] ||= :default
+          # please set environment and boot rails BEFORE initializing this poller
         end
 
         def run
-          # exit 0
-          boot_rails
 
           # cannot load config (from file or initializers) until after
           # rails has been booted.
@@ -97,12 +91,6 @@ module Aws
                                 ))
             end
           end
-        end
-
-        def boot_rails
-          ENV['RACK_ENV'] = ENV['RAILS_ENV'] = @environment
-          require 'rails'
-          require File.expand_path('config/environment.rb')
         end
 
         # rubocop:disable Metrics
