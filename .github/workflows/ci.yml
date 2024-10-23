@@ -111,7 +111,7 @@ jobs:
           echo "{\"application.js\":\"/packs-test/js/application-dummy.js\"}" >> ${{ github.workspace }}/sample_app/public/packs-test/manifest.json
 
       - name: DB Migrate
-        run: ${{ github.workspace }}/sample_app && bin/rails db:migrate
+        run: cd ${{ github.workspace }}/sample_app && bin/rails db:migrate
 
       - name: Test
         run: bundle exec rake test
