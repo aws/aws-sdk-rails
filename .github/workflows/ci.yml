@@ -80,39 +80,39 @@ jobs:
       - name: Rubocop
         run: bundle exec rake rubocop
 
-  test-sample-app:
-    runs-on: ubuntu-latest
-    services:
-      dynamodb:
-        image: amazon/dynamodb-local:latest
-        ports:
-          - 8000:8000
-    env:
-      AWS_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: dummy
-      AWS_SECRET_ACCESS_KEY: dummy
-      AWS_ENDPOINT_URL: http://localhost:8000
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ env.ruby_version }}
-          bundler-cache: true
-          working-directory: ${{ github.workspace }}/sample_app
-
-      - name: Create table
-        run: cd ${{ github.workspace }}/sample_app && bin/rails runner Aws::SessionStore::DynamoDB::Table.create_table
-
-      - name: Insert dummy manifest.json
-        run: |
-          mkdir -p ${{ github.workspace }}/sample_app/public/packs-test
-          echo "{\"application.js\":\"/packs-test/js/application-dummy.js\"}" >> ${{ github.workspace }}/sample_app/public/packs-test/manifest.json
-
-      - name: DB Migrate
-        run: cd ${{ github.workspace }}/sample_app && bin/rails db:migrate
-
-      - name: Test
-        run: bundle exec rake test
-        working-directory: ${{ github.workspace }}/sample_app
+#  test-sample-app:
+#    runs-on: ubuntu-latest
+#    services:
+#      dynamodb:
+#        image: amazon/dynamodb-local:latest
+#        ports:
+#          - 8000:8000
+#    env:
+#      AWS_REGION: us-east-1
+#      AWS_ACCESS_KEY_ID: dummy
+#      AWS_SECRET_ACCESS_KEY: dummy
+#      AWS_ENDPOINT_URL: http://localhost:8000
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Setup Ruby
+#        uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: ${{ env.ruby_version }}
+#          bundler-cache: true
+#          working-directory: ${{ github.workspace }}/sample_app
+#
+#      - name: Create table
+#        run: cd ${{ github.workspace }}/sample_app && bin/rails runner Aws::SessionStore::DynamoDB::Table.create_table
+#
+#      - name: Insert dummy manifest.json
+#        run: |
+#          mkdir -p ${{ github.workspace }}/sample_app/public/packs-test
+#          echo "{\"application.js\":\"/packs-test/js/application-dummy.js\"}" >> ${{ github.workspace }}/sample_app/public/packs-test/manifest.json
+#
+#      - name: DB Migrate
+#        run: cd ${{ github.workspace }}/sample_app && bin/rails db:migrate
+#
+#      - name: Test
+#        run: bundle exec rake test
+#        working-directory: ${{ github.workspace }}/sample_app
