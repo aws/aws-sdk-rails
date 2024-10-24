@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'rails/generators'
+
 module DynamoDb
   module Generators
     # Generates a config file for DynamoDB session storage.

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'rails/generators'
+
 module DynamoDb
   module Generators
     # Generates an ActiveRecord migration that creates and deletes a DynamoDB

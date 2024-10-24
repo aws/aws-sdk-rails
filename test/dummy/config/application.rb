@@ -2,6 +2,7 @@
 
 require 'rails'
 require 'aws-sdk-rails'
+require 'aws-sessionstore-dynamodb'
 
 module Dummy
   class Application < Rails::Application
