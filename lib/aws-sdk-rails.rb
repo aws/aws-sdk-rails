@@ -10,8 +10,6 @@ require_relative 'aws/rails/middleware/ebs_sqs_active_job_middleware'
 
 require_relative 'action_dispatch/session/dynamodb_store'
 
-require_relative 'generators/aws_record/base'
-
 module Aws
   module Rails
     VERSION = File.read(File.expand_path('../VERSION', __dir__)).strip
