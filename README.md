@@ -200,7 +200,7 @@ sessions) or if you want control over the garbage collection process, you can
 use the provided Rake task:
 
 ```bash
-rake dynamo_db:session_store:collect_garbage
+rake dynamo_db:session_store:clean
 ```
 
 ## Amazon Simple Email Service (SES) as an ActionMailer Delivery Method
