@@ -37,7 +37,7 @@ module Aws
 
       rake_tasks do
         load 'tasks/dynamo_db/session_store.rake'
-        load 'tasks/aws_record/migrate.rake'
+        load 'tasks/aws_record/migrate.rake' if defined?(Aws::Record)
       end
     end
 

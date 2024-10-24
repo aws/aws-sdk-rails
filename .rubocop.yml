@@ -10,7 +10,6 @@ AllCops:
     - 'spec/dummy/**/*'
     - 'spec/fixtures/**/*'
     - 'spec/fixtures/**/*'
-    - 'db/**/*'
 
 Gemspec/DevelopmentDependencies:
   EnforcedStyle: Gemfile
@@ -31,17 +30,23 @@ Style/GlobalVars:
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*.rb'
-    - aws-sdk-rails.gemspec
+    - 'test/**/*.rb'
+
+Metrics/ClassLength:
+  Exclude:
+    - 'spec/**/*.rb'
+    - 'test/**/*.rb'
 
 Metrics/ModuleLength:
   Exclude:
     - 'spec/**/*.rb'
+    - 'test/**/*.rb'
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
 
 Style/Documentation:
   Exclude:
-    - 'lib/generators/**/*.rb'
     - 'lib/aws/rails/notifications.rb'
     - 'spec/**/*.rb'
+    - 'test/**/*.rb'
