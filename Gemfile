@@ -9,11 +9,13 @@ group :development, :test do
 end
 
 group :development do
+  gem 'byebug', platforms: :ruby
   gem 'rubocop'
 end
 
 group :test do
   gem 'bcrypt'
+  gem 'minitest-spec-rails'
   gem 'rspec-rails'
   gem 'webmock'
 end

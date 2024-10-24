@@ -1,6 +1,10 @@
 Unreleased Changes
 ------------------
 
+* Feature - Add session store config generation.
+
+* Feature - Prepare modularization of `aws-sessionstore-dynamodb`.
+
 4.1.0 (2024-09-27)
 ------------------
 

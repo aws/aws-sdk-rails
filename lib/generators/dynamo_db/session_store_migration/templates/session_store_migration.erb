@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class <%= name.camelize %> < ActiveRecord::Migration[<%= migration_version %>]
   def up
     Aws::SessionStore::DynamoDB::Table.create_table

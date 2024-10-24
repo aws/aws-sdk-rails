@@ -1,11 +1,6 @@
 # Uncomment and manipulate the key value pairs below
 # in order to configure the DynamoDB Session Store Application.
 
-# [String] The secret key for HMAC encryption. This defaults to
-# `Rails.application.secret_key_base`. You can use a different key if desired.
-#
-# secret_key: SECRET_KEY
-
 # [String] Session table name.
 #
 # table_name: Sessions
@@ -13,6 +8,11 @@
 # [String] Session table hash key name.
 #
 # table_key: session_id
+
+# [String] The secret key for HMAC encryption. This defaults to
+# `Rails.application.secret_key_base`. You can use a different key if desired.
+#
+# secret_key: SECRET_KEY
 
 # [Boolean] Define as true or false depending on if you want a strongly
 # consistent read.
