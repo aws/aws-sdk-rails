@@ -16,7 +16,7 @@ module DynamoDb
     # appropriate methods.
     def expect_mock(method, task)
       klass =
-        if method == :clean
+        if method == :collect_garbage
           Aws::SessionStore::DynamoDB::GarbageCollection
         else
           Aws::SessionStore::DynamoDB::Table
