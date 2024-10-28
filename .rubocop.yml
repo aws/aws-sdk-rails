@@ -48,5 +48,6 @@ Style/HashSyntax:
 Style/Documentation:
   Exclude:
     - 'lib/aws/rails/notifications.rb'
+    - 'test/**/*.rb'
     - 'spec/**/*.rb'
     - 'test/**/*.rb'

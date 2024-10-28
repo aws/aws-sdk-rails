@@ -1,13 +1,17 @@
 Description:
-    Generates a migration file for deleting and a creating a DynamoDB
-    sessions table, and a configuration file for the session store.
+    Generates an ActiveRecord migration for deleting and a creating
+    a DynamoDB sessions table. The migration will be run when the
+    command `rake db:migrate` is run in the command line.
 
 Example:
-    rails generate dynamo_db:session_store_migration <MIGRATION_NAME>
+    `rails generate dynamo_db:session_store_migration`
 
     This will create:
-        db/migrate/#{VERSION}_#{MIGRATION_NAME}.rb
-        config/dynamo_db_session_store.yml
+        db/migrate/#{VERSION}_create_dynamo_db_sessions_table.rb
 
-    The migration will be run when the command rake db:migrate is run
-    in the command line.
+    Optionally, you can specify the name of the migration:
+
+    `rails generate dynamo_db:session_store_migration MIGRATION_NAME`
+
+    This will create:
+        db/migrate/#{VERSION}_<MIGRATION_NAME>.rb

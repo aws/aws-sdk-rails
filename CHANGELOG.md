@@ -3,6 +3,10 @@ Unreleased Changes
 
 * Feature - Prepare modularization of `aws-record`.
 
+* Feature - Prepare modularization of `aws-sessionstore-dynamodb`.
+
+* Feature - Add session store config generation.
+
 4.1.0 (2024-09-27)
 ------------------
 

@@ -1,0 +1,143 @@
+  [1m[35m (3.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2024-10-28 19:34:40.756107', '2024-10-28 19:34:40.756109') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateUsers (20241028193146)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (2.4ms)[0m  [1m[35mCREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "email" varchar, "password_digest" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20241028193146') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mcommit transaction[0m
+Migrating to CreateDynamoDbSessionsTable (20241028193427)
+[Aws::DynamoDB::Client 400 0.399342 0 retries] create_table(attribute_definitions:[{attribute_name:"session_id",attribute_type:"S"}],table_name:"sessions",key_schema:[{attribute_name:"session_id",key_type:"HASH"}],provisioned_throughput:{read_capacity_units:10,write_capacity_units:5}) Aws::DynamoDB::Errors::ResourceInUseException Table already exists: sessions
+
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Create (1.6ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20241028193427') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Started GET "/users" for 127.0.0.1 at 2024-10-28 15:34:57 -0400
+  [1m[36mActiveRecord::SchemaMigration Load (1.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering users/index.html.erb within layouts/application
+  [1m[36mUser Load (1.6ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  ↳ app/views/users/index.html.erb:8
+  Rendered users/index.html.erb within layouts/application (Duration: 17.0ms | GC: 8.2ms)
+  Rendered layout layouts/application.html.erb (Duration: 67.9ms | GC: 9.1ms)
+Completed 200 OK in 188ms (Views: 74.0ms | ActiveRecord: 1.7ms (1 query, 0 cached) | GC: 9.1ms)
+
+
+Started GET "/manifest.json" for 127.0.0.1 at 2024-10-28 15:34:57 -0400
+Processing by Rails::PwaController#manifest as JSON
+  Rendering pwa/manifest.json.erb
+  Rendered pwa/manifest.json.erb (Duration: 4.4ms | GC: 0.0ms)
+Completed 200 OK in 13ms (Views: 11.8ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/users" for 127.0.0.1 at 2024-10-28 15:35:00 -0400
+Processing by UsersController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering users/index.html.erb within layouts/application
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  ↳ app/views/users/index.html.erb:8
+  Rendered users/index.html.erb within layouts/application (Duration: 5.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 12.3ms | GC: 0.2ms)
+Completed 200 OK in 16ms (Views: 12.9ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.2ms)
+
+
+Started GET "/manifest.json" for 127.0.0.1 at 2024-10-28 15:35:00 -0400
+Processing by Rails::PwaController#manifest as JSON
+  Rendering pwa/manifest.json.erb
+  Rendered pwa/manifest.json.erb (Duration: 1.0ms | GC: 0.0ms)
+Completed 200 OK in 2ms (Views: 1.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+** aws-sessionstore-dynamodb will no longer be a direct dependency of aws-sdk-rails ~> 5. To avoid disruption, please add aws-sessionstore-dynamodb ~> 3 to your Gemfile to enable this feature when upgrading to aws-sdk-rails ~> 5. **
+Started GET "/users" for 127.0.0.1 at 2024-10-28 15:35:30 -0400
+  [1m[36mActiveRecord::SchemaMigration Load (1.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering users/index.html.erb within layouts/application
+  [1m[36mUser Load (1.8ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  ↳ app/views/users/index.html.erb:8
+  Rendered users/index.html.erb within layouts/application (Duration: 7.2ms | GC: 0.2ms)
+  Rendered layout layouts/application.html.erb (Duration: 23.7ms | GC: 0.2ms)
+Completed 200 OK in 153ms (Views: 30.9ms | ActiveRecord: 1.9ms (1 query, 0 cached) | GC: 12.2ms)
+
+
+[Aws::DynamoDB::Client 200 0.339022 0 retries] update_item(table_name:"sessions",key:{"session_id"=>{s:"625c438756206cd3cfc90fad20e7fbe8--0e9d5cfcbf481e23bfb91f6dffcc5e42bee59e4615451464e6a1528fb72e58d6"}},attribute_updates:{"updated_at"=>{value:"[FILTERED]",action:"PUT"},"data"=>{value:"[FILTERED]",action:"PUT"},"created_at"=>{value:"[FILTERED]",action:"PUT"},"expire_at"=>{value:"[FILTERED]",action:"PUT"}},return_values:"UPDATED_NEW")  
+
+Started GET "/manifest.json" for 127.0.0.1 at 2024-10-28 15:35:31 -0400
+Processing by Rails::PwaController#manifest as JSON
+  Rendering pwa/manifest.json.erb
+  Rendered pwa/manifest.json.erb (Duration: 1.0ms | GC: 0.0ms)
+Completed 200 OK in 11ms (Views: 10.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users" for 127.0.0.1 at 2024-10-28 15:35:32 -0400
+Processing by UsersController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering users/index.html.erb within layouts/application
+[Aws::DynamoDB::Client 200 0.110501 0 retries] get_item(table_name:"sessions",key:{"session_id"=>{s:"625c438756206cd3cfc90fad20e7fbe8--0e9d5cfcbf481e23bfb91f6dffcc5e42bee59e4615451464e6a1528fb72e58d6"}},attributes_to_get:["data"],consistent_read:true)  
+
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  ↳ app/views/users/index.html.erb:8
+  Rendered users/index.html.erb within layouts/application (Duration: 120.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 130.4ms | GC: 0.0ms)
+Completed 200 OK in 134ms (Views: 131.3ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+[Aws::DynamoDB::Client 200 0.116169 0 retries] update_item(table_name:"sessions",key:{"session_id"=>{s:"625c438756206cd3cfc90fad20e7fbe8--0e9d5cfcbf481e23bfb91f6dffcc5e42bee59e4615451464e6a1528fb72e58d6"}},attribute_updates:{"updated_at"=>{value:"[FILTERED]",action:"PUT"},"expire_at"=>{value:"[FILTERED]",action:"PUT"}},return_values:"UPDATED_NEW")  
+
+Started GET "/manifest.json" for 127.0.0.1 at 2024-10-28 15:35:33 -0400
+Processing by Rails::PwaController#manifest as JSON
+  Rendering pwa/manifest.json.erb
+  Rendered pwa/manifest.json.erb (Duration: 1.4ms | GC: 0.0ms)
+Completed 200 OK in 2ms (Views: 2.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users" for 127.0.0.1 at 2024-10-28 15:35:46 -0400
+Processing by UsersController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering users/index.html.erb within layouts/application
+[Aws::DynamoDB::Client 200 0.338236 0 retries] get_item(table_name:"sessions",key:{"session_id"=>{s:"625c438756206cd3cfc90fad20e7fbe8--0e9d5cfcbf481e23bfb91f6dffcc5e42bee59e4615451464e6a1528fb72e58d6"}},attributes_to_get:["data"],consistent_read:true)  
+
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  ↳ app/views/users/index.html.erb:8
+  Rendered users/index.html.erb within layouts/application (Duration: 355.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 369.4ms | GC: 0.0ms)
+Completed 200 OK in 375ms (Views: 371.8ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+[Aws::DynamoDB::Client 200 0.106115 0 retries] update_item(table_name:"sessions",key:{"session_id"=>{s:"625c438756206cd3cfc90fad20e7fbe8--0e9d5cfcbf481e23bfb91f6dffcc5e42bee59e4615451464e6a1528fb72e58d6"}},attribute_updates:{"updated_at"=>{value:"[FILTERED]",action:"PUT"},"data"=>{value:"[FILTERED]",action:"PUT"},"expire_at"=>{value:"[FILTERED]",action:"PUT"}},return_values:"UPDATED_NEW")  
+
+Started GET "/manifest.json" for 127.0.0.1 at 2024-10-28 15:35:47 -0400
+Processing by Rails::PwaController#manifest as JSON
+  Rendering pwa/manifest.json.erb
+  Rendered pwa/manifest.json.erb (Duration: 1.0ms | GC: 0.0ms)
+Completed 200 OK in 3ms (Views: 1.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users" for 127.0.0.1 at 2024-10-28 15:35:54 -0400
+Processing by UsersController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering users/index.html.erb within layouts/application
+[Aws::DynamoDB::Client 200 0.332438 0 retries] get_item(table_name:"sessions",key:{"session_id"=>{s:"625c438756206cd3cfc90fad20e7fbe8--0e9d5cfcbf481e23bfb91f6dffcc5e42bee59e4615451464e6a1528fb72e58d6"}},attributes_to_get:["data"],consistent_read:true)  
+
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  ↳ app/views/users/index.html.erb:8
+  Rendered users/index.html.erb within layouts/application (Duration: 336.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 349.5ms | GC: 0.0ms)
+Completed 200 OK in 353ms (Views: 350.0ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+[Aws::DynamoDB::Client 200 0.108418 0 retries] update_item(table_name:"sessions",key:{"session_id"=>{s:"625c438756206cd3cfc90fad20e7fbe8--0e9d5cfcbf481e23bfb91f6dffcc5e42bee59e4615451464e6a1528fb72e58d6"}},attribute_updates:{"updated_at"=>{value:"[FILTERED]",action:"PUT"},"expire_at"=>{value:"[FILTERED]",action:"PUT"}},return_values:"UPDATED_NEW")  
+
+Started GET "/manifest.json" for 127.0.0.1 at 2024-10-28 15:35:55 -0400
+Processing by Rails::PwaController#manifest as JSON
+  Rendering pwa/manifest.json.erb
+  Rendered pwa/manifest.json.erb (Duration: 0.1ms | GC: 0.0ms)
+Completed 200 OK in 4ms (Views: 2.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
