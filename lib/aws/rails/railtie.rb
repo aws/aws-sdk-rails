@@ -71,7 +71,7 @@ module Aws
     def self.use_rails_encrypted_credentials
       # limit the config keys we merge to credentials only
       aws_credential_keys = %i[access_key_id secret_access_key session_token account_id]
-      creds = ::Rails.application.credentials[:aws].slice(*aws_credential_keys)
+      creds = ::Rails.application.credentials[:aws].to_h.slice(*aws_credential_keys)
       Aws.config.merge!(creds)
     end
 
