@@ -44,4 +44,5 @@ Style/Documentation:
   Exclude:
     - 'lib/generators/**/*.rb'
     - 'lib/aws/rails/notifications.rb'
+    - 'test/**/*.rb'
     - 'spec/**/*.rb'
