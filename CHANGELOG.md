@@ -5,6 +5,8 @@ Unreleased Changes
 
 * Feature - Prepare modularization of `aws-sessionstore-dynamodb`.
 
+* Issue - `ActionDispatch::Session::DynamoDbStore` now inherits `ActionDispatch::Session::AbstractStore` by wrapping `Aws::SessionStore::DynamoDB::RackMiddleware`.
+
 4.1.0 (2024-09-27)
 ------------------
 
