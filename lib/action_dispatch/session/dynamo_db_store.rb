@@ -16,24 +16,27 @@ module ActionDispatch
     # Configuration files that are environment-specific will take precedence.
     #
     # @see https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html
-    class DynamoDbStore < Aws::SessionStore::DynamoDB::RackMiddleware
-      # Because of how Ruby searches for methods in the inheritance chain,
-      # generate_sid in Compatibility takes precedence over our generate_sid.
-      # Compatibility is needed so that the request is an ActionDispatch::Request.
-      CompatibilityWithoutSid = Compatibility.dup
-      CompatibilityWithoutSid.remove_method(:generate_sid)
-      include CompatibilityWithoutSid
-
-      include StaleSessionCheck
-      include SessionObject
-
+    class DynamoDbStore < ActionDispatch::Session::AbstractStore
       def initialize(app, options = {})
         Rails.logger.warn('** aws-sessionstore-dynamodb will no longer be a direct dependency of aws-sdk-rails ~> 5. ' \
                           'To avoid disruption, please add aws-sessionstore-dynamodb ~> 2 to your Gemfile to enable ' \
                           'this feature when upgrading to aws-sdk-rails ~> 5. **')
         options[:config_file] ||= config_file
         options[:secret_key] ||= Rails.application.secret_key_base
+        @middleware = Aws::SessionStore::DynamoDB::RackMiddleware.new(app, options)
         super
+      end
+
+      def find_session(req, sid)
+        @middleware.find_session(req, sid)
+      end
+
+      def write_session(req, sid, session, options)
+        @middleware.write_session(req, sid, session, options)
+      end
+
+      def delete_session(req, sid, options)
+        @middleware.delete_session(req, sid, options)
       end
 
       private
