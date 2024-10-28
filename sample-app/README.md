@@ -10,6 +10,18 @@ Our gems (`aws-sdk-rails` + feature gems) were added to the Gemfile.
 
 Gem `byebug` is added to help with development.
 
+## AWS Rails Logger
+
+### Setup
+
+The Railtie is already configured to setup the Rails logger as the global `Aws.config[:logger]`.
+
+### Testing
+
+Run `bundle exec rails console` to start the console.
+
+Inspect the output of `Aws.config[:logger]` and ensure it is an `ActiveSupport` logger.
+
 ## Encrypted Credentials
 
 ### Setup
