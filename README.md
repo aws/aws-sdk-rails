@@ -53,19 +53,20 @@ the credentials will be decrypted and loaded under the `:aws` top level key:
 
 ```yml
 # config/credentials.yml.enc
-# viewable with: `rails credentials:edit`
+# viewable with: `bundle exec rails credentials:edit`
 aws:
   access_key_id: YOUR_KEY_ID
   secret_access_key: YOUR_ACCESS_KEY
+  session_token: YOUR_SESSION_TOKEN
+  account_id: YOUR_ACCOUNT_ID
 ```
 
 Encrypted Credentials will take precedence over any other AWS Credentials that
-may exist in your environment (eg: credentials from profiles set in
- `~/.aws/credentials`).
+may exist in your environment (e.g. credentials from profiles set in `~/.aws/credentials`).
 
 If you are using [ActiveStorage](https://edgeguides.rubyonrails.org/active_storage_overview.html)
-with `S3` then you do not need to specify your credentials in your `storage.yml`
-configuration: they will be loaded automatically.
+with `S3`, then you do not need to specify your credentials in your `storage.yml`
+configuration because they will be loaded automatically.
 
 ## DynamoDB Session Store
 
