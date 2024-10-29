@@ -77,7 +77,7 @@ to have or create an existing Amazon DynamoDB session table to use this feature.
 To enable this feature, add the following to your Gemfile:
 
 ```ruby
-gem 'aws-sessionstore-dynamodb', '~> 2'
+gem 'aws-sessionstore-dynamodb', '~> 3'
 ```
 
 For more information about this feature and configuration options, see the

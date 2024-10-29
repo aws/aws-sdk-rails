@@ -6,7 +6,8 @@ AllCops:
   SuggestExtensions: false
   Exclude:
     - 'tasks/release/**/*'
-    - 'sample_app/**/*'
+    - 'sample-app/**/*'
+    - 'sample_app_old/**/*'
     - 'spec/dummy/**/*'
     - 'spec/fixtures/**/*'
     - 'spec/fixtures/**/*'
