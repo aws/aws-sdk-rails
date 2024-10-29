@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.executables = ['aws_sqs_active_job']
 
   spec.add_dependency('aws-record', '~> 2') # for Aws::Record integration
-  spec.add_dependency('aws-sessionstore-dynamodb', '~> 2') # includes DynamoDB
+  spec.add_dependency('aws-sessionstore-dynamodb', '~> 3') # includes DynamoDB
 
   # Require these versions for user_agent_framework configs
   spec.add_dependency('aws-sdk-s3', '~> 1', '>= 1.123.0')

@@ -1,10 +1,10 @@
 .DS_Store
 
-/.byebug_history
+.byebug_history
 /.bundle
 /.yardoc
 /doc
-/Gemfile.lock
+Gemfile.lock
 /coverage
 *.gem
 /.release
@@ -12,6 +12,9 @@
 .idea/
 
 gemfiles/*.gemfile.lock
+sample-app/Gemfile.lock
+sample-app/log
+sample-app/tmp
 
 test/dummy/db/migrate
 test/dummy/log/

@@ -8,6 +8,42 @@ The database was migrated with: `bundle exec rails db:migrate`.
 
 Our gems (`aws-sdk-rails` + feature gems) were added to the Gemfile.
 
+Gem `byebug` is added to help with development.
+
+## AWS Rails Logger
+
+### Setup
+
+The Railtie is already configured to setup the Rails logger as the global `Aws.config[:logger]`.
+
+### Testing
+
+Run `bundle exec rails console` to start the console.
+
+Inspect the output of `Aws.config[:logger]` and ensure it is an `ActiveSupport` logger.
+
+## Encrypted Credentials
+
+### Setup
+
+Run `EDITOR=nano bundle exec rails credentials:edit` to edit credentials.
+
+Commented credentials are defined under the `:aws` key. Uncomment the credentials, which should look like:
+
+```
+aws:
+  access_key_id: secret
+  secret_access_key: akid
+  session_token: token
+  account_id: account
+```
+
+### Testing
+
+Run `bundle exec rails console` to start the console.
+
+Inspect the output of `Aws.config` and ensure the credentials are set.
+
 ## DynamoDB Session Store
 
 ### Setup
