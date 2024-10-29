@@ -20,6 +20,17 @@ module Aws
 
   module Rails
     describe 'Railtie' do
+      it 'uses aws credentials from rails encrypted credentials' do
+        rails_creds = ::Rails.application.credentials.aws
+        expect(Aws.config[:access_key_id]).to eq rails_creds[:access_key_id]
+        expect(Aws.config[:secret_access_key]).to eq rails_creds[:secret_access_key]
+        expect(Aws.config[:session_token]).to eq rails_creds[:session_token]
+        expect(Aws.config[:account_id]).to eq rails_creds[:account_id]
+
+        expect(rails_creds[:something]).not_to be_nil
+        expect(Aws.config[:something]).to be_nil
+      end
+
       it 'adds action mailer delivery methods' do
         expect(ActionMailer::Base.delivery_methods[:ses]).to eq Aws::Rails::SesMailer
         expect(ActionMailer::Base.delivery_methods[:sesv2]).to eq Aws::Rails::Sesv2Mailer
@@ -32,22 +43,6 @@ module Aws
       it 'sets up eager loading for sdk services' do
         expect(Aws.methods).to include(:eager_load!)
         expect(::Rails.application.config.eager_load_namespaces).to include(Aws)
-      end
-
-      describe '.use_rails_encrypted_credentials' do
-        let(:rails_creds) { ::Rails.application.credentials.aws }
-
-        it 'sets aws credential keys' do
-          expect(Aws.config[:access_key_id]).to eq rails_creds[:access_key_id]
-          expect(Aws.config[:secret_access_key]).to eq rails_creds[:secret_access_key]
-          expect(Aws.config[:session_token]).to eq rails_creds[:session_token]
-          expect(Aws.config[:account_id]).to eq rails_creds[:account_id]
-        end
-
-        it 'does not load non credential keys into aws config' do
-          expect(rails_creds[:something]).not_to be_nil
-          expect(Aws.config[:something]).to be_nil
-        end
       end
 
       describe '.instrument_sdk_operations' do

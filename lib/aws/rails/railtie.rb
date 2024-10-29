@@ -8,21 +8,17 @@ module Aws
       initializer 'aws-sdk-rails.initialize',
                   before: :load_config_initializers do
         # Initialization Actions
+        Aws::Rails.log_to_rails_logger
         Aws::Rails.use_rails_encrypted_credentials
         Aws::Rails.add_action_mailer_delivery_method
         Aws::Rails.add_action_mailer_delivery_method(:sesv2)
-        Aws::Rails.log_to_rails_logger
       end
 
       initializer 'aws-sdk-rails.insert_middleware' do |app|
         Aws::Rails.add_sqsd_middleware(app)
       end
 
-      initializer 'aws-sdk-rails.sdk_eager_load' do
-        config.before_eager_load do
-          config.eager_load_namespaces << Aws
-        end
-
+      initializer 'aws-sdk-rails.eager_load' do
         Aws.define_singleton_method(:eager_load!) do
           Aws.constants.each do |c|
             m = Aws.const_get(c)
@@ -33,12 +29,30 @@ module Aws
             end
           end
         end
+
+        config.before_eager_load do
+          config.eager_load_namespaces << Aws
+        end
       end
 
       rake_tasks do
         load 'tasks/dynamo_db/session_store.rake' if defined?(Aws::SessionStore::DynamoDB)
         load 'tasks/aws_record/migrate.rake'
       end
+    end
+
+    # Configures the AWS SDK for Ruby's logger to use the Rails logger.
+    def self.log_to_rails_logger
+      Aws.config[:logger] = ::Rails.logger
+      nil
+    end
+
+    # Configures the AWS SDK with credentials from Rails encrypted credentials.
+    def self.use_rails_encrypted_credentials
+      # limit the config keys we merge to credentials only
+      aws_credential_keys = %i[access_key_id secret_access_key session_token account_id]
+      creds = ::Rails.application.credentials[:aws].to_h.slice(*aws_credential_keys)
+      Aws.config.merge!(creds)
     end
 
     # This is called automatically from the SDK's Railtie, but can be manually
@@ -59,20 +73,6 @@ module Aws
           add_delivery_method(name, Aws::Rails::SesMailer, client_options)
         end
       end
-    end
-
-    # Configures the AWS SDK for Ruby's logger to use the Rails logger.
-    def self.log_to_rails_logger
-      Aws.config[:logger] = ::Rails.logger
-      nil
-    end
-
-    # Configures the AWS SDK with credentials from Rails encrypted credentials.
-    def self.use_rails_encrypted_credentials
-      # limit the config keys we merge to credentials only
-      aws_credential_keys = %i[access_key_id secret_access_key session_token account_id]
-      creds = ::Rails.application.credentials[:aws].to_h.slice(*aws_credential_keys)
-      Aws.config.merge!(creds)
     end
 
     # Add ActiveSupport Notifications instrumentation to AWS SDK client operations.
