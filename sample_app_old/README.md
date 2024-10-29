@@ -16,12 +16,6 @@ Start rails with `ACTIVE_STORAGE_BUCKET=my_bucket rails server`
 
 Upload an `:avatar` using the `/users` route.
 
-## Rails Encrypted Credentials
-
-Add credentials under `:aws` key after running:
-
-`EDITOR=nano rails credentials:edit`
-
 ## SES (Outbound)
 
 Start rails with `ACTION_MAILER_EMAIL=my@email.com rails server`
@@ -33,14 +27,6 @@ Make sure your email address is verified in SES.
 ## SES (Inbound)
 
 Fixture based testing of SES is possible via RSpec request helpers that this gem offers. How to use them is documented within the main README. How to setup inbound emails with SES is also covered there.
-
-## DynamoDB Session Store
-
-This should already be configured following the README.
-
-Running `rails db:migrate` will create the session table in DynamoDB.
-
-To override changes, change this app's Gemfile to use the local dependency.
 
 ## ActiveSupport Notifications
 

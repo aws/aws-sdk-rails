@@ -2,10 +2,12 @@ source "https://rubygems.org"
 
 # Our gems
 gem 'aws-sdk-rails', path: '../'
-gem 'aws-sessionstore-dynamodb', path: '../../aws-sessionstore-dynamodb-ruby'
+gem 'aws-sessionstore-dynamodb' #, path: '../../aws-sessionstore-dynamodb-ruby'
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem "bcrypt"
+gem 'bcrypt'
+
+gem 'byebug', platforms: :ruby
 
 ### Created by generator
 
