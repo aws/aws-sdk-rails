@@ -3,6 +3,9 @@ class UsersController < ApplicationController
 
   # GET /users
   def index
+    ActiveSupport::Notifications.subscribe(/[.]aws/) do |name, start, finish, id, _payload|
+      Rails.logger.info "Got notification: #{name} #{start} #{finish} #{id}"
+    end
     @users = User.all
   end
 

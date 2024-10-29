@@ -9,6 +9,7 @@ AllCops:
     - 'sample-app/**/*'
     - 'sample_app_old/**/*'
     - 'spec/dummy/**/*'
+    - 'test/dummy/**/*'
     - 'spec/fixtures/**/*'
     - 'spec/fixtures/**/*'
     - 'db/**/*'
@@ -32,11 +33,13 @@ Style/GlobalVars:
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*.rb'
+    - 'test/**/*.rb'
     - aws-sdk-rails.gemspec
 
 Metrics/ModuleLength:
   Exclude:
     - 'spec/**/*.rb'
+    - 'test/**/*.rb'
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
@@ -45,5 +48,5 @@ Style/Documentation:
   Exclude:
     - 'lib/generators/**/*.rb'
     - 'lib/aws/rails/notifications.rb'
-    - 'test/**/*.rb'
     - 'spec/**/*.rb'
+    - 'test/**/*.rb'
