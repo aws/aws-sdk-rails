@@ -1,9 +1,13 @@
 Unreleased Changes
 ------------------
 
-* Feature - Add session store config generation.
+* Feature - Add session store config generation with `rails generate dynamo_db:session_store_config`. Config generation is no longer tied to the DynamoDB SessionStore ActiveRecord migration generator.
 
 * Feature - Prepare modularization of `aws-sessionstore-dynamodb`.
+
+* Feature - Depend on `aws-sessionstore-dynamodb ~> 3` which depends on `rack ~> 3` and is not supported by Rails `7.0`.
+
+* Issue - `ActionDispatch::Session::DynamoDbStore` now inherits `ActionDispatch::Session::AbstractStore` by wrapping `Aws::SessionStore::DynamoDB::RackMiddleware`.
 
 4.1.0 (2024-09-27)
 ------------------
