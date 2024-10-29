@@ -9,6 +9,8 @@ Unreleased Changes
 
 * Issue - `ActionDispatch::Session::DynamoDbStore` now inherits `ActionDispatch::Session::AbstractStore` by wrapping `Aws::SessionStore::DynamoDB::RackMiddleware`.
 
+* Issue - Do not skip autoload modules for `Aws::Rails.instrument_sdk_operations`.
+
 4.1.0 (2024-09-27)
 ------------------
 

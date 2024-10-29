@@ -6,6 +6,7 @@ require 'aws-sdk-core'
 
 module Aws
   # Test service for Notifications
+  # rubocop:disable Lint/EmptyClass
   module Service
     class Client < Seahorse::Client::Base; end
   end
@@ -15,6 +16,7 @@ module Aws
   end
 
   class Client; end
+  # rubocop:enable Lint/EmptyClass
 
   module Rails
     describe 'Railtie' do
