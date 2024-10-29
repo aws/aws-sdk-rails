@@ -27,19 +27,27 @@ module ActionDispatch
         super
       end
 
+      # @return [Aws::SessionStore::DynamoDB::Configuration]
+      def config
+        @middleware.config
+      end
+
+      private
+
+      # Required by `ActionDispatch::Session::AbstractStore`
       def find_session(req, sid)
         @middleware.find_session(req, sid)
       end
 
+      # Required by `ActionDispatch::Session::AbstractStore`
       def write_session(req, sid, session, options)
         @middleware.write_session(req, sid, session, options)
       end
 
+      # Required by `ActionDispatch::Session::AbstractStore`
       def delete_session(req, sid, options)
         @middleware.delete_session(req, sid, options)
       end
-
-      private
 
       def config_file
         file = Rails.root.join("config/dynamo_db_session_store/#{Rails.env}.yml")
