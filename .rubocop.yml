@@ -9,6 +9,7 @@ AllCops:
     - 'sample-app/**/*'
     - 'sample_app_old/**/*'
     - 'spec/dummy/**/*'
+    - 'test/dummy/**/*'
     - 'spec/fixtures/**/*'
     - 'spec/fixtures/**/*'
 
@@ -49,6 +50,5 @@ Style/HashSyntax:
 Style/Documentation:
   Exclude:
     - 'lib/aws/rails/notifications.rb'
-    - 'test/**/*.rb'
     - 'spec/**/*.rb'
     - 'test/**/*.rb'

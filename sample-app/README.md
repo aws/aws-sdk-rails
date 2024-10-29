@@ -30,7 +30,7 @@ Run `EDITOR=nano bundle exec rails credentials:edit` to edit credentials.
 
 Commented credentials are defined under the `:aws` key. Uncomment the credentials, which should look like:
 
-```
+```yaml
 aws:
   access_key_id: secret
   secret_access_key: akid
@@ -43,6 +43,31 @@ aws:
 Run `bundle exec rails console` to start the console.
 
 Inspect the output of `Aws.config` and ensure the credentials are set.
+
+## ActiveSupport Notifications
+
+### Setup
+
+This is configured in `config/initializers/instrument_aws_sdk.rb`. See the `aws-sdk-rails` README.
+
+`UsersController#index` captures any AWS SDK notification with:
+
+```ruby
+ActiveSupport::Notifications.subscribe(/[.]aws/) do |name, start, finish, id, _payload|
+  Rails.logger.info "Got notification: #{name} #{start} #{finish} #{id}"
+end
+```
+
+### Testing
+
+Start the service with `bundle exec rails server` and visit `http://127.0.0.1:3000/users`.
+
+In the logs, you should at least see a notification for DynamoDB `update_item` from the session store.
+It should look like:
+
+```
+Got notification: update_item.DynamoDB.aws ...
+```
 
 ## DynamoDB Session Store
 

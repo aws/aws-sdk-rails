@@ -2,24 +2,41 @@
 
 require 'test_helper'
 
+require 'aws-sdk-core'
+
 module Aws
-  # Test services namespaces
-  module Service1
-    Client = Aws::SES::Client.dup
+  # Test service for Notifications
+  # rubocop:disable Lint/EmptyClass
+  module Service
+    class Client < Seahorse::Client::Base; end
   end
 
-  module Service2
-    Client = Aws::SES::Client.dup
+  module NotService
+    class Client; end
   end
+
+  class Client; end
+  # rubocop:enable Lint/EmptyClass
 
   module Rails
     describe 'Railtie' do
-      it 'adds action mailer delivery method' do
+      it 'uses aws credentials from rails encrypted credentials' do
+        rails_creds = ::Rails.application.credentials.aws
+        expect(Aws.config[:access_key_id]).to eq rails_creds[:access_key_id]
+        expect(Aws.config[:secret_access_key]).to eq rails_creds[:secret_access_key]
+        expect(Aws.config[:session_token]).to eq rails_creds[:session_token]
+        expect(Aws.config[:account_id]).to eq rails_creds[:account_id]
+
+        expect(rails_creds[:something]).not_to be_nil
+        expect(Aws.config[:something]).to be_nil
+      end
+
+      it 'adds action mailer delivery methods' do
         expect(ActionMailer::Base.delivery_methods[:ses]).to eq Aws::Rails::SesMailer
         expect(ActionMailer::Base.delivery_methods[:sesv2]).to eq Aws::Rails::Sesv2Mailer
       end
 
-      it 'sets the Aws logger' do
+      it 'sets the Rails logger to Aws global config' do
         expect(Aws.config[:logger]).to eq ::Rails.logger
       end
 
@@ -28,27 +45,11 @@ module Aws
         expect(::Rails.application.config.eager_load_namespaces).to include(Aws)
       end
 
-      describe '.use_rails_encrypted_credentials' do
-        let(:rails_creds) { ::Rails.application.credentials.aws }
-
-        it 'sets aws credentials' do
-          expect(Aws.config[:access_key_id]).to eq rails_creds[:access_key_id]
-          expect(Aws.config[:secret_access_key]).to eq rails_creds[:secret_access_key]
-        end
-
-        it 'does not load non credential keys into aws config' do
-          expect(rails_creds[:non_credential_key]).not_to be_nil
-          expect(Aws.config[:non_credential_key]).to be_nil
-        end
-      end
-
       describe '.instrument_sdk_operations' do
         it 'adds the Notifications plugin to sdk clients' do
-          expect(Aws::Service1::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
-          expect(Aws::Service2::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
-
-          # Ensure other Clients don't get plugin added
-          allow_any_instance_of(Class).to receive(:add_plugin)
+          expect(Aws::Service::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
+          expect(Aws::NotService::Client).not_to receive(:add_plugin)
+          expect(Aws::Client).not_to receive(:add_plugin)
 
           Aws::Rails.instrument_sdk_operations
         end
