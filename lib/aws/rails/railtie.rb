@@ -75,10 +75,9 @@ module Aws
       Aws.config.merge!(creds)
     end
 
-    # Adds ActiveSupport Notifications instrumentation to AWS SDK
-    # client operations.  Each operation will produce an event with a name:
-    # <operation>.<service>.aws.  For example, S3's put_object has an event
-    # name of: put_object.S3.aws
+    # Add ActiveSupport Notifications instrumentation to AWS SDK client operations.
+    # Each operation will produce an event with a name `<operation>.<service>.aws`.
+    # For example, S3's put_object has an event name of: put_object.S3.aws
     def self.instrument_sdk_operations
       Aws.constants.each do |c|
         next if Aws.autoload?(c)

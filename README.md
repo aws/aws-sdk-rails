@@ -149,8 +149,7 @@ class.
 
 ### Usage
 
-To use the session store, add or edit your
-`config/initializers/session_store.rb` file:
+To use the session store, add or edit your `config/initializers/session_store.rb` file:
 
 ```ruby
 options = { table_name: '_your_app_session' } # overrides from YAML or ENV
@@ -348,25 +347,22 @@ message['X-SES-FROM-ARN'] = 'arn:aws:ses:us-west-2:012345678910:identity/bigchun
 message.deliver
 ```
 
-## Active Support Notification Instrumentation for AWS SDK calls
-To add `ActiveSupport::Notifications` Instrumentation to all AWS SDK client
-operations call `Aws::Rails.instrument_sdk_operations` before you construct any
-SDK clients.
+## Active Support Notifications for AWS SDK calls
 
-Example usage in `config/initializers/instrument_aws_sdk.rb`
+To add `ActiveSupport::Notifications` instrumentation to all AWS SDK client operations,
+add or edit your `config/initializers/instrument_aws_sdk.rb` file:
+
 ```ruby
 Aws::Rails.instrument_sdk_operations
 ```
 
-Events are published for each client operation call with the following event
-name: <operation>.<serviceId>.aws.  For example, S3's put_object has an event
-name of: `put_object.S3.aws`.  The service name will always match the
-namespace of the service client (eg Aws::S3::Client => 'S3').
-The payload of the event is the
+Events are published for each client operation call with the following event name:
+`<operation>.<serviceId>.aws`. For example, S3's `:put_object` has an event name
+of: `put_object.S3.aws`. The service name will always match the namespace of the
+service client (e.g. Aws::S3::Client => 'S3'). The payload of the event is the
 [request context](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Seahorse/Client/RequestContext.html).
 
-You can subscribe to these events as you would other
- `ActiveSupport::Notifications`:
+You can subscribe to these events as you would for other `ActiveSupport::Notifications`:
 
  ```ruby
 ActiveSupport::Notifications.subscribe('put_object.S3.aws') do |name, start, finish, id, payload|

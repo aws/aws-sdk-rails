@@ -28,15 +28,6 @@ Make sure your email address is verified in SES.
 
 Fixture based testing of SES is possible via RSpec request helpers that this gem offers. How to use them is documented within the main README. How to setup inbound emails with SES is also covered there.
 
-## ActiveSupport Notifications
-
-ActiveSupport notifications for AWS clients are configured in
-`config/initializers/instrument_aws_sdk/rb` to log an event
-whenever an AWS client makes any service calls.  To demo, follow
-any one of the ActiveStorage, SES or SQS ActiveJob and the
-AWS calls should be logged with:
-`Recieved an ActiveSupport::Notification for: send_message.SQS.aws event`
-
 ## SQS ActiveJob
 
 * Start rails with `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url rails server`

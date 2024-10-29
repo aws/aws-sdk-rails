@@ -2,15 +2,19 @@
 
 require 'test_helper'
 
+require 'aws-sdk-core'
+
 module Aws
-  # Test services namespaces
-  module Service1
-    Client = Aws::SES::Client.dup
+  # Test service for Notifications
+  module Service
+    class Client < Seahorse::Client::Base; end
   end
 
-  module Service2
-    Client = Aws::SES::Client.dup
+  module NotService
+    class Client; end
   end
+
+  class Client; end
 
   module Rails
     describe 'Railtie' do
@@ -44,11 +48,9 @@ module Aws
 
       describe '.instrument_sdk_operations' do
         it 'adds the Notifications plugin to sdk clients' do
-          expect(Aws::Service1::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
-          expect(Aws::Service2::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
-
-          # Ensure other Clients don't get plugin added
-          allow_any_instance_of(Class).to receive(:add_plugin)
+          expect(Aws::Service::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
+          expect(Aws::NotService::Client).not_to receive(:add_plugin)
+          expect(Aws::Client).not_to receive(:add_plugin)
 
           Aws::Rails.instrument_sdk_operations
         end
