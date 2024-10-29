@@ -20,12 +20,12 @@ module Aws
 
   module Rails
     describe 'Railtie' do
-      it 'adds action mailer delivery method' do
+      it 'adds action mailer delivery methods' do
         expect(ActionMailer::Base.delivery_methods[:ses]).to eq Aws::Rails::SesMailer
         expect(ActionMailer::Base.delivery_methods[:sesv2]).to eq Aws::Rails::Sesv2Mailer
       end
 
-      it 'sets the Aws logger' do
+      it 'sets the Rails logger to Aws global config' do
         expect(Aws.config[:logger]).to eq ::Rails.logger
       end
 
@@ -37,14 +37,16 @@ module Aws
       describe '.use_rails_encrypted_credentials' do
         let(:rails_creds) { ::Rails.application.credentials.aws }
 
-        it 'sets aws credentials' do
+        it 'sets aws credential keys' do
           expect(Aws.config[:access_key_id]).to eq rails_creds[:access_key_id]
           expect(Aws.config[:secret_access_key]).to eq rails_creds[:secret_access_key]
+          expect(Aws.config[:session_token]).to eq rails_creds[:session_token]
+          expect(Aws.config[:account_id]).to eq rails_creds[:account_id]
         end
 
         it 'does not load non credential keys into aws config' do
-          expect(rails_creds[:non_credential_key]).not_to be_nil
-          expect(Aws.config[:non_credential_key]).to be_nil
+          expect(rails_creds[:something]).not_to be_nil
+          expect(Aws.config[:something]).to be_nil
         end
       end
 
