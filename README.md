@@ -414,7 +414,19 @@ queues:
   default: 'https://my-queue-url.amazon.aws'
 ```
 
+Or (note the key must be a symbol):
+
+```ruby
+Aws::Rails::SqsActiveJob.configure do |config|
+  config.queues = {
+    :default => 'https://my-queue-url.amazon.aws',
+    ENV.fetch('JOB_QUEUE_NAME').to_sym => 'https://my-other-queue-url.amazon.aws',
+  }
+end
+```
+
 To queue a job, you can just use standard ActiveJob methods:
+
 ```ruby
 # To queue for immediate processing
 YourJob.perform_later(args)
@@ -523,14 +535,14 @@ require_relative 'config/environment' # load rails
 ### Elastic Beanstalk workers: processing activejobs using worker environments
 
 Another option for processing jobs without managing the worker process is hosting the application in a scalable
-[Elastic Beanstalk worker environment](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html).  
-[Configure the worker](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html#using-features-managing-env-tiers-worker-settings) 
-to read from the correct SQS queue that you want to process jobs from and set the 
+[Elastic Beanstalk worker environment](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html).
+[Configure the worker](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html#using-features-managing-env-tiers-worker-settings)
+to read from the correct SQS queue that you want to process jobs from and set the
 ```AWS_PROCESS_BEANSTALK_WORKER_REQUESTS``` environment variable to `true` in the worker environment configuration.
 Note that this will NOT start the poller.  Instead the
 [SQS Daemon](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html#worker-daemon)
-running on the worker sends messages as a POST request to `http://localhost/`. The middleware will forward each 
-request and parameters to their appropriate jobs. The middleware will only process requests from the SQS daemon 
+running on the worker sends messages as a POST request to `http://localhost/`. The middleware will forward each
+request and parameters to their appropriate jobs. The middleware will only process requests from the SQS daemon
 and will pass on others and so will not interfere with other routes in your application.
 
 To add the middleware on application startup, set the ```AWS_PROCESS_BEANSTALK_WORKER_REQUESTS``` environment variable to true
