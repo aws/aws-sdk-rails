@@ -118,6 +118,20 @@ module Aws
         expect(response[2]).to eq(['Successfully ran job ElasticBeanstalkJob.'])
       end
 
+      it 'successfully invokes job in docker container with dockerenv' do
+        mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', is_periodic_task: false)
+        test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)
+
+        allow(File).to receive(:exist?).and_call_original
+        expect(File).to receive(:exist?).with('/.dockerenv').and_return(true)
+
+        response = test_middleware.call(mock_rack_env)
+
+        expect(response[0]).to eq(200)
+        expect(response[1]['Content-Type']).to eq('text/plain')
+        expect(response[2]).to eq(['Successfully ran job ElasticBeanstalkJob.'])
+      end
+
       it 'successfully invokes job in docker container with cgroup1' do
         mock_rack_env = create_mock_env('172.17.0.1', 'aws-sqsd/1.1', is_periodic_task: false)
         test_middleware = EbsSqsActiveJobMiddleware.new(mock_rack_app)

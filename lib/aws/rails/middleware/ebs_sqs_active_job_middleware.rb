@@ -85,7 +85,7 @@ module Aws
       end
 
       def app_runs_in_docker_container?
-        @app_runs_in_docker_container ||= in_docker_container_with_cgroup1? || in_docker_container_with_cgroup2?
+        @app_runs_in_docker_container ||= File.exist?('/.dockerenv') || in_docker_container_with_cgroup1? || in_docker_container_with_cgroup2?
       end
 
       def in_docker_container_with_cgroup1?
