@@ -19,6 +19,7 @@ module AwsRecord
       expect(Dir).to receive(:[]).and_return([File.join(__dir__, 'test_table_config')])
       expect($stdout).to receive(:puts).with(/test_table_config.rb/)
       Rake.application.invoke_task 'aws_record:migrate'
+      assert_mock ModelTableConfig.mock
     end
   end
 end
