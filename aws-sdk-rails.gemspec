@@ -3,21 +3,18 @@
 version = File.read(File.expand_path('VERSION', __dir__)).strip
 
 Gem::Specification.new do |spec|
-  spec.name          = 'aws-sdk-rails'
-  spec.version       = version
-  spec.authors       = ['Amazon Web Services']
-  spec.email         = ['aws-dr-rubygems@amazon.com']
-
-  spec.summary       = 'AWS SDK for Ruby on Rails Plugin'
-  spec.description   = 'Integrates the AWS Ruby SDK with Ruby on Rails'
+  spec.name         = 'aws-sdk-rails'
+  spec.version      = version
+  spec.author       = 'Amazon Web Services'
+  spec.email        = ['aws-dr-rubygems@amazon.com']
+  spec.summary       = 'AWS SDK for Ruby on Rails Railtie'
+  spec.description   = 'Integrates the AWS SDK for Ruby with Ruby on Rails'
   spec.homepage      = 'https://github.com/aws/aws-sdk-rails'
   spec.license       = 'Apache-2.0'
-
-  spec.require_paths = ['lib']
-  spec.files += Dir['lib/**/*', 'bin/*', 'app/**/*', 'config/*']
-  spec.files << 'VERSION'
+  spec.files         = Dir['LICENSE.txt', 'CHANGELOG.md', 'VERSION', 'lib/**/*', 'bin/*', 'app/**/*', 'config/*']
   spec.executables = ['aws_sqs_active_job']
 
+  # These will be removed in aws-sdk-rails ~> 5
   spec.add_dependency('aws-record', '~> 2') # for Aws::Record integration
   spec.add_dependency('aws-sessionstore-dynamodb', '~> 3') # includes DynamoDB
 
@@ -30,7 +27,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency('actionmailbox', '>= 7.0.0') # for SES ActionMailbox
   spec.add_dependency('concurrent-ruby', '~> 1.3', '>= 1.3.1') # Utilities for concurrent processing
-  spec.add_dependency('railties', '>= 7.0.0') # Minimum supported Rails version
+  spec.add_dependency('railties', '>= 7.1.0') # Minimum supported Rails version
 
   spec.required_ruby_version = '>= 2.7'
 end
