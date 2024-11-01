@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Feature - Prepare modularization of `aws-record`.
+
 * Feature - Add session store config generation with `rails generate dynamo_db:session_store_config`. Config generation is no longer tied to the DynamoDB SessionStore ActiveRecord migration generator.
 
 * Feature - Prepare modularization of `aws-sessionstore-dynamodb`.

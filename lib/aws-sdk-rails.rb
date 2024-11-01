@@ -13,8 +13,6 @@ require 'aws-sessionstore-dynamodb'
 
 require_relative 'action_dispatch/session/dynamo_db_store' if defined?(Aws::SessionStore::DynamoDB::RackMiddleware)
 
-require_relative 'generators/aws_record/base'
-
 module Aws
   module Rails
     VERSION = File.read(File.expand_path('../VERSION', __dir__)).strip

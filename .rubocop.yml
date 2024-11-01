@@ -12,7 +12,6 @@ AllCops:
     - 'test/dummy/**/*'
     - 'spec/fixtures/**/*'
     - 'spec/fixtures/**/*'
-    - 'db/**/*'
 
 Gemspec/DevelopmentDependencies:
   EnforcedStyle: Gemfile
@@ -34,7 +33,11 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*.rb'
     - 'test/**/*.rb'
-    - aws-sdk-rails.gemspec
+
+Metrics/ClassLength:
+  Exclude:
+    - 'spec/**/*.rb'
+    - 'test/**/*.rb'
 
 Metrics/ModuleLength:
   Exclude:
@@ -46,7 +49,6 @@ Style/HashSyntax:
 
 Style/Documentation:
   Exclude:
-    - 'lib/generators/**/*.rb'
     - 'lib/aws/rails/notifications.rb'
     - 'spec/**/*.rb'
     - 'test/**/*.rb'

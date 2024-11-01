@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 require 'aws-record'
-<% if has_validations? -%>
+<% if active_model_validations? -%>
 require 'active_model'
 <% end -%>
 
@@ -9,7 +11,7 @@ class <%= class_name %>
 <% if options.key? :scaffold -%>
   extend ActiveModel::Naming
 <% end -%>
-<% if has_validations? -%>
+<% if active_model_validations? -%>
   include ActiveModel::Validations
 <% end -%>
 <% if options.key? :password_digest -%>
@@ -32,14 +34,14 @@ class <%= class_name %>
     }
   )
 <% end -%>
-<% if !required_attrs.empty? -%>
+<% if required_attrs.any? -%>
   validates_presence_of <% *req, last_req = required_attrs -%><% req.each do |required_validation|-%>:<%= required_validation %>, <% end -%>:<%= last_req %>
 <% end -%>
 <% length_validations.each do |attribute, validation| -%>
   validates_length_of :<%= attribute %>, within: <%= validation %>
 <% end -%>
 <% if options['table_name'] -%>
-  set_table_name "<%= options['table_name'] %>"
+  set_table_name '<%= options['table_name'] %>'
 <% end -%>
 <% if options.key? :password_digest -%>
   has_secure_password

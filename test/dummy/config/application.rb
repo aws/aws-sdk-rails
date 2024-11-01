@@ -6,7 +6,9 @@ require 'action_mailer/railtie'
 
 require 'aws-sdk-rails'
 require 'aws-sessionstore-dynamodb'
+require 'aws-record'
 
+# @api private
 module Dummy
   class Application < Rails::Application
     config.load_defaults Rails::VERSION::STRING.to_f
