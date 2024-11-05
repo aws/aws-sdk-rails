@@ -24,7 +24,7 @@ module Aws
 
         # Only accept requests from this user agent if it is from localhost or a docker host in case of forgery.
         unless request.local? || sent_from_docker_host?(request)
-          @logger.warn("SQSD request detected from untrusted address #{request.ip}; returning 403 forbidden.")
+          @logger.warn('SQSD request detected from untrusted address; returning 403 forbidden.')
           return FORBIDDEN_RESPONSE
         end
 
@@ -81,7 +81,7 @@ module Aws
       end
 
       def sent_from_docker_host?(request)
-        app_runs_in_docker_container? && default_gw_ips.include?(request.ip)
+        app_runs_in_docker_container? && ip_originates_from_docker_host?(request)
       end
 
       def app_runs_in_docker_container?
@@ -96,7 +96,16 @@ module Aws
         File.exist?('/proc/self/mountinfo') && File.read('/proc/self/mountinfo') =~ %r{/docker/containers/}
       end
 
-      def default_gw_ips
+      def ip_originates_from_docker_host?(request)
+        default_docker_ips.include?(request.remote_ip) ||
+          default_docker_ips.include?(request.remote_addr)
+      end
+
+      def default_docker_ips
+        @default_docker_ips ||= build_default_docker_ips
+      end
+
+      def build_default_docker_ips
         default_gw_ips = ['172.17.0.1']
 
         if File.exist?('/proc/net/route')
