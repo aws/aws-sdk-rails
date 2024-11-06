@@ -9,6 +9,13 @@ module DynamoDb
     before do
       Rake.application.rake_require 'tasks/dynamo_db/session_store'
       Rake::Task.define_task(:environment)
+      # MiniTest has an issue with kwargs in 2.7
+      # https://github.com/minitest/minitest/blob/master/lib/minitest/mock.rb#L293C8-L293C30
+      ENV["MT_KWARGS_HAC\K"] = '1' if RUBY_VERSION < '3'
+    end
+
+    after do
+      ENV.delete("MT_KWARGS_HAC\K")
     end
 
     # Functionality for these methods are tested in aws-sessionstore-dynamodb.
@@ -23,7 +30,9 @@ module DynamoDb
         end
 
       mock = MiniTest::Mock.new
-      mock.expect(:call, nil, [Rails.application.config.session_options])
+      # After removing ENV["MT_KWARGS_HAC\K"], this can be stronger by asserting
+      # Rails.application.config.session_options is passed to the method.
+      mock.expect(:call, nil, [Hash])
       klass.stub(method, mock) { Rake.application.invoke_task task }
       assert_mock mock
     end
