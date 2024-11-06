@@ -23,7 +23,7 @@ module DynamoDb
         end
 
       mock = MiniTest::Mock.new
-      mock.expect(:call, nil)
+      mock.expect(:call, nil, [Rails.application.config.session_options])
       klass.stub(method, mock) { Rake.application.invoke_task task }
       assert_mock mock
     end

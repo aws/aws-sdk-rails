@@ -50,7 +50,8 @@ module ActionDispatch
       end
 
       def config_file
-        file = Rails.root.join("config/dynamo_db_session_store/#{Rails.env}.yml")
+        file = ENV['DYNAMO_DB_SESSION_CONFIG_FILE']
+        file = Rails.root.join("config/dynamo_db_session_store/#{Rails.env}.yml") unless file
         file = Rails.root.join('config/dynamo_db_session_store.yml') unless File.exist?(file)
         file if File.exist?(file)
       end
