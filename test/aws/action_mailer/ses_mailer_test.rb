@@ -8,7 +8,7 @@ module Aws
   module ActionMailer
     describe SESMailer do
       let(:client_options) do
-        { stub_responses: { send_email: { message_id: ses_message_id } } }
+        { stub_responses: { send_raw_email: { message_id: ses_message_id } } }
       end
 
       let(:mailer) { SESMailer.new(client_options) }
