@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'aws/rails/ses_mailer'
-require_relative 'aws/rails/sesv2_mailer'
+require_relative 'aws/action_mailer/ses_mailer'
+require_relative 'aws/action_mailer/ses_v2_mailer'
 require_relative 'aws/rails/railtie'
 require_relative 'aws/rails/action_mailbox/engine'
 require_relative 'aws/rails/notifications'
@@ -18,3 +18,10 @@ module Aws
     VERSION = File.read(File.expand_path('../VERSION', __dir__)).strip
   end
 end
+
+# Remove these in aws-sdk-rails ~> 5
+Aws::Rails::SesMailer = Aws::ActionMailer::SESMailer
+Aws::Rails::Sesv2Mailer = Aws::ActionMailer::SESV2Mailer
+# This is for backwards compatibility after introducing support for SESv2.
+# The old mailer is now replaced with the new SES (v1) mailer.
+Aws::Rails::Mailer = Aws::Rails::SesMailer

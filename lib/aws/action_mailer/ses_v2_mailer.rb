@@ -3,19 +3,22 @@
 require 'aws-sdk-sesv2'
 
 module Aws
-  module Rails
-    # Provides a delivery method for ActionMailer that uses Amazon Simple Email
-    # Service V2.
+  module ActionMailer
+    # Provides a delivery method for ActionMailer that uses Amazon Simple Email Service V2.
     #
-    # Once you have an SESv2 delivery method you can configure Rails to
-    # use this for ActionMailer in your environment configuration
-    # (e.g. RAILS_ROOT/config/environments/production.rb)
+    # Configure a delivery method with:
     #
-    #     config.action_mailer.delivery_method = :sesv2
+    #   client_options = { region: 'us-west-2' }
+    #   ActionMailer::Base.add_delivery_method :ses_v2, Aws::ActionMailer::SESV2Mailer, **client_options
     #
-    # Uses the AWS SDK for Ruby's credential provider chain when creating an SESV2
-    # client instance.
-    class Sesv2Mailer
+    # Client options are used to construct a new Aws::SESV2::Client instance.
+    #
+    # Once you have a delivery method, you can configure your Rails environment to use it:
+    #
+    #   config.action_mailer.delivery_method = :ses_v2
+    #
+    # @see https://guides.rubyonrails.org/action_mailer_basics.html
+    class SESV2Mailer
       # @param [Hash] options Passes along initialization options to
       #   [Aws::SESV2::Client.new](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SESV2/Client.html#initialize-instance_method).
       def initialize(options = {})
@@ -23,8 +26,7 @@ module Aws
         @client.config.user_agent_frameworks << 'aws-sdk-rails'
       end
 
-      # Rails expects this method to exist, and to handle a Mail::Message object
-      # correctly. Called during mail delivery.
+      # Delivers a Mail::Message object. Called during mail delivery.
       def deliver!(message)
         params = { content: { raw: { data: message.to_s } } }
         # smtp_envelope_from will default to the From address *without* sender names.
@@ -42,7 +44,7 @@ module Aws
         end
       end
 
-      # ActionMailer expects this method to be present and to return a hash.
+      # @return [Hash]
       def settings
         {}
       end

@@ -204,12 +204,22 @@ rake dynamo_db:session_store:clean
 
 ## Amazon Simple Email Service (SES) as an ActionMailer Delivery Method
 
-This gem will automatically register SES and SESV2 as ActionMailer delivery methods.
-You simply need to configure Rails to use it in your environment configuration:
+This gem contains Mailer classes for Amazon SES and SESV2. To use these mailers
+as a delivery method, you need to register them with ActionMailer.
+You can create a Rails initializer `config/initializers/action_mailer.rb`
+with contents similar to the following:
 
 ```ruby
-# for e.g.: config/environments/production.rb
-config.action_mailer.delivery_method = :ses # or :sesv2
+options = { region: 'us-west-2' }
+ActionMailer::Base.add_delivery_method :ses, Aws::ActionMailer::SESMailer, **options
+ActionMailer::Base.add_delivery_method :ses_v2, Aws::ActionMailer::SESV2Mailer, **options
+```
+
+In your environment configuration, set the delivery method to
+`:ses` or `:ses_v2`.
+
+```ruby
+config.action_mailer.delivery_method = :ses # or :ses_v2
 ```
 
 ## Amazon Simple Email Service (SES) as an ActionMailbox Method
@@ -296,32 +306,6 @@ You may also pass the following keyword arguments to both helpers:
 
 * `topic`: The _SNS_ topic used for each notification (default: `topic:arn:default`).
 * `authentic`: The `Aws::SNS::MessageVerifier` class is stubbed by these helpers; set `authentic` to `true` or `false` to define how it will verify incoming notifications (default: `true`).
-
-### Override credentials or other client options
-
-Client options can be overridden by re-registering the mailer with any set of
-SES or SESV2 Client options. You can create a Rails initializer
-`config/initializers/aws.rb` with contents similar to the following:
-
-```ruby
-require 'json'
-
-# Assuming a file "path/to/aws_secrets.json" with contents like:
-#
-#     { "AccessKeyId": "YOUR_KEY_ID", "SecretAccessKey": "YOUR_ACCESS_KEY" }
-#
-# Remember to exclude "path/to/aws_secrets.json" from version control, e.g. by
-# adding it to .gitignore
-secrets = JSON.load(File.read('path/to/aws_secrets.json'))
-creds = Aws::Credentials.new(secrets['AccessKeyId'], secrets['SecretAccessKey'])
-
-Aws::Rails.add_action_mailer_delivery_method(
-  :ses, # or :sesv2
-  credentials: creds,
-  region: 'us-east-1',
-  # some other config
-)
-```
 
 ### Using ARNs with SES
 

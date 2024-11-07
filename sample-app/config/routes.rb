@@ -12,4 +12,8 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  # Action Mailer routes
+  get '/send_ses_email', to: 'mailer#send_ses_email'
+  get '/send_ses_v2_email', to: 'mailer#send_ses_v2_email'
 end

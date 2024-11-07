@@ -1,26 +1,20 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+
 require 'mail'
 
 module Aws
-  module Rails
-    describe SesMailer do
+  module ActionMailer
+    describe SESV2Mailer do
       let(:client_options) do
-        {
-          stub_responses: {
-            send_raw_email: {
-              message_id: ses_message_id
-            }
-          }
-        }
+        { stub_responses: { send_email: { message_id: ses_message_id } } }
       end
 
-      let(:mailer) { SesMailer.new(client_options) }
+      let(:mailer) { SESV2Mailer.new(client_options) }
 
       let(:sample_message) do
         TestMailer.deliverable(
-          delivery_method: :ses,
           body: 'Hallo',
           from: 'Sender <sender@example.com>',
           subject: 'This is a test',
@@ -30,7 +24,8 @@ module Aws
           headers: {
             'X-SES-CONFIGURATION-SET' => 'TestConfigSet',
             'X-SES-LIST-MANAGEMENT-OPTIONS' => 'contactListName; topic=topic'
-          }
+          },
+          delivery_method: :ses_v2
         )
       end
 
@@ -39,7 +34,7 @@ module Aws
       end
 
       before do
-        Aws::Rails.add_action_mailer_delivery_method(:ses, client_options)
+        ::ActionMailer::Base.add_delivery_method :ses_v2, SESV2Mailer, **client_options
       end
 
       describe '#settings' do
@@ -51,14 +46,14 @@ module Aws
       describe '#deliver' do
         it 'delivers the message' do
           mailer_data = mailer.deliver!(sample_message).context.params
-          raw = mailer_data[:raw_message][:data].to_s
+          raw = mailer_data[:content][:raw][:data].to_s
           raw.gsub!("\r\nHallo", "ses-message-id: #{ses_message_id}\r\n\r\nHallo")
           expect(raw).to eq sample_message.to_s
-          expect(mailer_data[:source]).to eq 'sender@example.com'
-          expect(mailer_data[:destinations]).to eq(
-            ['recipient@example.com',
-             'recipient_cc@example.com',
-             'recipient_bcc@example.com']
+          expect(mailer_data[:from_email_address]).to eq nil # Optional for raw messages
+          expect(mailer_data[:destination]).to eq(
+            to_addresses: ['recipient@example.com'], # Default to To header
+            cc_addresses: ['recipient_cc@example.com'],
+            bcc_addresses: ['recipient_bcc@example.com']
           )
         end
 
@@ -67,8 +62,12 @@ module Aws
           message.smtp_envelope_from = 'envelope-sender@example.com'
           message.smtp_envelope_to = 'envelope-recipient@example.com'
           mailer_data = mailer.deliver!(message).context.params
-          expect(mailer_data[:source]).to eq 'envelope-sender@example.com'
-          expect(mailer_data[:destinations]).to eq ['envelope-recipient@example.com']
+          expect(mailer_data[:from_email_address]).to eq 'envelope-sender@example.com'
+          expect(mailer_data[:destination]).to eq(
+            to_addresses: ['envelope-recipient@example.com'],
+            cc_addresses: ['recipient_cc@example.com'],
+            bcc_addresses: ['recipient_bcc@example.com']
+          )
         end
 
         it 'delivers with action mailer' do
@@ -78,7 +77,7 @@ module Aws
 
         it 'passes through SES headers' do
           mailer_data = mailer.deliver!(sample_message).context.params
-          raw = mailer_data[:raw_message][:data].to_s
+          raw = mailer_data[:content][:raw][:data].to_s
           expect(raw).to include('X-SES-CONFIGURATION-SET: TestConfigSet')
           expect(raw).to include('X-SES-LIST-MANAGEMENT-OPTIONS: contactListName; topic=topic')
         end

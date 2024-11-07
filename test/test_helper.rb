@@ -11,3 +11,12 @@ ENV['RAILS_ENV'] = 'test'
 require_relative 'dummy/config/application'
 
 Rails.application.initialize!
+
+class TestMailer < ActionMailer::Base
+  layout nil
+
+  def deliverable(options = {})
+    headers(options.delete(:headers))
+    mail(options)
+  end
+end
