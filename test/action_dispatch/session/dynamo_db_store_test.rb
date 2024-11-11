@@ -16,7 +16,7 @@ module ActionDispatch
       end
 
       def teardown_env
-        ENV['DYNAMO_DB_SESSION_CONFIG_FILE'] = nil
+        ENV.delete('DYNAMO_DB_SESSION_CONFIG_FILE')
       end
 
       it 'loads config file' do

@@ -4,8 +4,6 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'json', '2.7.5' if defined?(JRUBY_VERSION) # temporary
-
 group :development, :test do
   gem 'pry'
 end
