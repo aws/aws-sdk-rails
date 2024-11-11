@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class <%= name.camelize %> < ActiveRecord::Migration[<%= migration_version %>]
+class CreateDynamoDbSessionsTable < ActiveRecord::Migration[7.2]
   def up
     options = Rails.application.config.session_options
     Aws::SessionStore::DynamoDB::Table.create_table(options)

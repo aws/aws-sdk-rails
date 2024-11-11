@@ -11,6 +11,12 @@ Unreleased Changes
 
 * Issue - `ActionDispatch::Session::DynamoDbStore` now inherits `ActionDispatch::Session::AbstractStore` by wrapping `Aws::SessionStore::DynamoDB::RackMiddleware`.
 
+* Issue - `DynamoDbStore` is now configured with the `:dynamo_db_store` configuration instead of `:dynamodb_store`.
+
+* Feature - `DYNAMO_DB_SESSION_CONFIG_FILE` is now searched and with precedence over the default Rails configuration YAML file locations.
+
+* Feature - Session Store configuration passed into `:dynamo_db_store` will now be considered when using the ActiveRecord migrations or rake tasks that create, delete, or clean session tables.
+
 * Issue - Do not skip autoload modules for `Aws::Rails.instrument_sdk_operations`.
 
 4.1.0 (2024-09-27)
