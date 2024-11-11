@@ -107,10 +107,10 @@ An empty controller scaffold was generated with `bundle exec rails generate cont
 
 Delivery methods are configured in `config/initializers/action_mailer.rb`.
 
-**Important**: The email address in SES must be verified.
-
 ### Testing
 
 Start the service with `ACTION_MAILER_EMAIL=<your email> bundle exec rails server`.
+
+> **Important**: The email address in SES must be verified.
 
 Visit `http://127.0.0.1:3000/send_ses_email` or `http://127.0.0.1:3000/send_ses_v2_email` and check your email.
