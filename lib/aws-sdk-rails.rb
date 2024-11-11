@@ -19,8 +19,8 @@ module Aws
 end
 
 # Remove these in aws-sdk-rails ~> 5
-Aws::Rails::SesMailer = Aws::ActionMailer::SESMailer
-Aws::Rails::Sesv2Mailer = Aws::ActionMailer::SESV2Mailer
+Aws::Rails::SesMailer = Aws::ActionMailer::SES::Mailer
+Aws::Rails::Sesv2Mailer = Aws::ActionMailer::SESV2::Mailer
 # This is for backwards compatibility after introducing support for SESv2.
 # The old mailer is now replaced with the new SES (v1) mailer.
 Aws::Rails::Mailer = Aws::Rails::SesMailer
