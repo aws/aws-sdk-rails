@@ -202,7 +202,7 @@ use the provided Rake task:
 rake dynamo_db:session_store:clean
 ```
 
-## Amazon Simple Email Service (SES) as an ActionMailer Delivery Method
+## ActionMailer delivery with Amazon Simple Email Service
 
 This gem contains Mailer classes for Amazon SES and SESV2. To use these mailers
 as a delivery method, you need to register them with ActionMailer.
