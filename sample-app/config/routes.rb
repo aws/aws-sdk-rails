@@ -12,4 +12,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  get '/queue_sqs_job', to: 'job#queue_sqs_job'
+  get '/queue_sqs_async_job', to: 'job#queue_sqs_async_job'
 end

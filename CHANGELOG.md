@@ -19,6 +19,8 @@ Unreleased Changes
 
 * Issue - Do not skip autoload modules for `Aws::Rails.instrument_sdk_operations`.
 
+* Issue - New namespace and class names for SQS ActiveJob. Existing namespace has temporarily been kept for backward compatibility. These now live in the `aws-activejob-sqs` gem.
+
 4.1.0 (2024-09-27)
 ------------------
 

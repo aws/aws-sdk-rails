@@ -69,7 +69,7 @@ It should look like:
 Got notification: update_item.DynamoDB.aws ...
 ```
 
-## DynamoDB Session Store
+## DynamoDB SessionStore
 
 ### Setup
 
@@ -88,3 +88,27 @@ To override changes, change this app's Gemfile to use the local path.
 Start the service with `bundle exec rails server` and visit `http://127.0.0.1:3000/users`.
 
 In the logs, you should see a notification for DynamoDB `update_item` with a `session_id`. This key should exist in your DynamoDB `sessions` table. Refreshing the page should update the session `updated_at` and/or `expired_at` and not create a new session.
+
+## SQS ActiveJob
+
+### Setup
+
+The jobs were generated with `bundle exec rails generate job Test` and `bundle exec rails generate job TestAsync`.
+
+An empty controller scaffold was generated with `bundle exec rails generate controller Job`.
+
+`TestJob` and `TestAsyncJob` was implemented to print the job's args.
+
+`JobController` and routes were added to queue the job.
+
+`config/application.rb` added `require "active_job/railtie"`.
+
+> **Important**: Create an SQS queue and retrieve the queue URL.
+
+### Testing
+
+Start rails with `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url bundle exec rails server`
+
+Poll for and process jobs with: `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url bundle exec aws_sqs_active_job --queue default`
+
+Visit `http://127.0.0.1:3000/queue_sqs_job` and `http://127.0.0.1:3000/queue_sqs_async_job` to queue jobs. The output of both jobs should be printed in the logs.
