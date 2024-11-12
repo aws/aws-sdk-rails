@@ -19,7 +19,7 @@ module Aws
           request = ActionDispatch::Request.new(env)
           return @app.call(env) unless from_sqs_daemon?(request)
 
-          @logger.debug('aws-sdk-rails middleware detected a call from the Elastic Beanstalk SQS Daemon')
+          @logger.debug('aws-sdk-rails middleware detected a call from the Elastic Beanstalk SQS Daemon.')
 
           # Only accept requests from this user agent if it is from localhost or a docker host in case of forgery.
           unless request.local? || sent_from_docker_host?(request)
@@ -39,8 +39,8 @@ module Aws
 
           begin
             ::ActiveJob::Base.execute(job)
-          rescue NoMethodError, NameError => e
-            @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
+          rescue NameError => e
+            @logger.error("Job #{job_name} could not resolve to an Active Job class.")
             @logger.error("Error: #{e}")
             return INTERNAL_ERROR_RESPONSE
           end
@@ -56,8 +56,8 @@ module Aws
           begin
             job = job_name.constantize.new
             job.perform_now
-          rescue NoMethodError, NameError => e
-            @logger.error("Periodic task #{job_name} could not resolve to an Active Job class - check the spelling in cron.yaml.")
+          rescue NameError => e
+            @logger.error("Periodic task #{job_name} could not resolve to an Active Job class.")
             @logger.error("Error: #{e}.")
             return INTERNAL_ERROR_RESPONSE
           end
@@ -102,9 +102,9 @@ module Aws
               next if fields.size != 11
 
               # Destination == 0.0.0.0 and Flags & RTF_GATEWAY != 0
-              if fields[1] == '00000000' && fields[3].hex.anybits?(0x2)
-                default_gw_ips << IPAddr.new_ntoh([fields[2].hex].pack('L')).to_s
-              end
+              next unless fields[1] == '00000000' && fields[3].hex.anybits?(0x2)
+
+              default_gw_ips << IPAddr.new_ntoh([fields[2].hex].pack('L')).to_s
             end
           end
 
@@ -114,4 +114,3 @@ module Aws
     end
   end
 end
-
