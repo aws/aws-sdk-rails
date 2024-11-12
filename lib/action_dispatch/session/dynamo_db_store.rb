@@ -18,9 +18,11 @@ module ActionDispatch
     # @see https://docs.aws.amazon.com/sdk-for-ruby/aws-sessionstore-dynamodb/api/Aws/SessionStore/DynamoDB/Configuration.html
     class DynamoDbStore < ActionDispatch::Session::AbstractStore
       def initialize(app, options = {})
-        Rails.logger.warn('** aws-sessionstore-dynamodb will no longer be a direct dependency of aws-sdk-rails ~> 5. ' \
-                          'To avoid disruption, please add aws-sessionstore-dynamodb ~> 3 to your Gemfile to enable ' \
-                          'this feature when upgrading to aws-sdk-rails ~> 5. **')
+        Rails.logger.warn(<<~MSG)
+          ** aws-sessionstore-dynamodb will no longer be a direct dependency of aws-sdk-rails ~> 5.
+          If you are using this feature, please add aws-sessionstore-dynamodb ~> 3 to your Gemfile to enable
+          this feature when upgrading to aws-sdk-rails ~> 5. **
+        MSG
         options[:config_file] ||= config_file
         options[:secret_key] ||= Rails.application.secret_key_base
         @middleware = Aws::SessionStore::DynamoDB::RackMiddleware.new(app, options)

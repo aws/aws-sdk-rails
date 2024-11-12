@@ -19,6 +19,10 @@ Unreleased Changes
 
 * Issue - Do not skip autoload modules for `Aws::Rails.instrument_sdk_operations`.
 
+* Issue - Add deprecation warning to `Aws::Rails.add_action_mailer_delivery_method` to instead use `ActionMailer::Base.add_delivery_method`.
+
+* Feature - New namespace and class names for SES and SESV2 mailers. Existing namespace has temporarily been kept for backward compatibility. These now live in the `aws-actionmailer-ses` gem.
+
 4.1.0 (2024-09-27)
 ------------------
 
