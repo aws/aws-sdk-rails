@@ -92,15 +92,14 @@ module Aws
     # This will only be added in the presence of the AWS_PROCESS_BEANSTALK_WORKER_REQUESTS environment variable.
     # The expectation is this variable should only be set on EB worker environments.
     def self.add_sqsd_middleware(app)
-      is_eb_worker_hosted = Aws::Util.str_2_bool(ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS'].to_s.downcase)
-
-      return unless is_eb_worker_hosted
+      return unless ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS']
+      return unless defined?(Aws::ActiveJob::SQS::EBMiddleware)
 
       if app.config.force_ssl
         # SQS Daemon sends requests over HTTP - allow and process them before enforcing SSL.
-        app.config.middleware.insert_before(ActionDispatch::SSL, Aws::Rails::EbsSqsActiveJobMiddleware)
+        app.config.middleware.insert_before(ActionDispatch::SSL, Aws::ActiveJob::SQS::EBMiddleware)
       else
-        app.config.middleware.use(Aws::Rails::EbsSqsActiveJobMiddleware)
+        app.config.middleware.use(Aws::ActiveJob::SQS::EBMiddleware)
       end
     end
   end

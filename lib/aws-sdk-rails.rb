@@ -5,11 +5,10 @@ require_relative 'aws/rails/sesv2_mailer'
 require_relative 'aws/rails/railtie'
 require_relative 'aws/rails/action_mailbox/engine'
 require_relative 'aws/rails/notifications'
-require_relative 'aws/rails/sqs_active_job'
-require_relative 'aws/rails/middleware/ebs_sqs_active_job_middleware'
 
 # remove this in aws-sdk-rails 5
 require 'aws-sessionstore-dynamodb'
+require 'aws-activejob-sqs'
 
 require_relative 'action_dispatch/session/dynamo_db_store' if defined?(Aws::SessionStore::DynamoDB::RackMiddleware)
 

@@ -4,6 +4,8 @@ source 'https://rubygems.org'
 
 gemspec
 
+gem 'aws-activejob-sqs', git: 'https://github.com/aws/aws-activejob-sqs-ruby', branch: 'init'
+
 group :development, :test do
   gem 'pry'
 end
