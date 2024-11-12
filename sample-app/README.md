@@ -88,3 +88,29 @@ To override changes, change this app's Gemfile to use the local path.
 Start the service with `bundle exec rails server` and visit `http://127.0.0.1:3000/users`.
 
 In the logs, you should see a notification for DynamoDB `update_item` with a `session_id`. This key should exist in your DynamoDB `sessions` table. Refreshing the page should update the session `updated_at` and/or `expired_at` and not create a new session.
+
+## Action Mailer mailers
+
+### Setup
+
+The mailer was generated with `bundle exec rails generate mailer Test`.
+
+An empty controller scaffold was generated with `bundle exec rails generate controller Mailer`.
+
+`ApplicationMailer` was set to use `ENV['ACTION_MAILER_EMAIL']`.
+
+`TestMailer` implemented SES and SESv2 mailer methods.
+
+`MailerController` (and routes) were added to send mail.
+
+`config/application.rb` added `require "action_mailer/railtie"`.
+
+Delivery methods are configured in `config/initializers/action_mailer.rb`.
+
+### Testing
+
+Start the service with `ACTION_MAILER_EMAIL=<your email> bundle exec rails server`.
+
+> **Important**: The email address in SES must be verified.
+
+Visit `http://127.0.0.1:3000/send_ses_email` or `http://127.0.0.1:3000/send_ses_v2_email` and check your email.

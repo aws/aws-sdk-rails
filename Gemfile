@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'aws-actiondispatch-dynamodb', git: 'https://github.com/aws/aws-actiondispatch-dynamodb-ruby', branch: 'init'
+gem 'aws-actionmailer-ses', git: 'https://github.com/aws/aws-actionmailer-ses-ruby'
 
 group :development, :test do
   gem 'pry'
