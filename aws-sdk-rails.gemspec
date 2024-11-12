@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
   # These will be removed in aws-sdk-rails ~> 5
   spec.add_dependency('aws-record', '~> 2') # for Aws::Record integration
-  spec.add_dependency('aws-sessionstore-dynamodb', '~> 3') # includes DynamoDB
+  spec.add_dependency('aws-actiondispatch-dynamodb', '~> 0')
 
   # Require these versions for user_agent_framework configs
   spec.add_dependency('aws-sdk-s3', '~> 1', '>= 1.123.0')
