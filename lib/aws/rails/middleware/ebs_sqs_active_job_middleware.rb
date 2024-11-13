@@ -15,7 +15,7 @@ module Aws
       end
 
       def call(env)
-        request = ActionDispatch::Request.new(env)
+        request = ::ActionDispatch::Request.new(env)
 
         # Pass through unless user agent is the SQS Daemon
         return @app.call(env) unless from_sqs_daemon?(request)

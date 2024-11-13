@@ -7,10 +7,8 @@ require_relative 'aws/rails/sqs_active_job'
 require_relative 'aws/rails/middleware/ebs_sqs_active_job_middleware'
 
 # remove this in aws-sdk-rails 5
-require 'aws-sessionstore-dynamodb'
+require 'aws-actiondispatch-dynamodb'
 require 'aws-actionmailer-ses'
-
-require_relative 'action_dispatch/session/dynamo_db_store' if defined?(Aws::SessionStore::DynamoDB::RackMiddleware)
 
 module Aws
   module Rails
