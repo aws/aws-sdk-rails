@@ -73,7 +73,7 @@ Got notification: update_item.DynamoDB.aws ...
 
 ### Setup
 
-This is configured in `config/initializers/session_store.rb`. See [this guide](https://guides.rubyonrails.org/v3.1/configuring.html#rails-general-configuration) and the `aws-sdk-rails` README.
+This is configured in `config/initializers/session_store.rb`. See [this guide](https://guides.rubyonrails.org/configuring.html#config-session-store) and the `aws-sdk-rails` README.
 
 The default configuration file was generated with `bundle exec rails generate dynamo_db:session_store_config`.
 
