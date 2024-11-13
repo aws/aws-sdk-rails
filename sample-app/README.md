@@ -112,3 +112,18 @@ Start rails with `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url bundle exec 
 Poll for and process jobs with: `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url bundle exec aws_sqs_active_job --queue default`
 
 Visit `http://127.0.0.1:3000/queue_sqs_job` and `http://127.0.0.1:3000/queue_sqs_async_job` to queue jobs. The output of both jobs should be printed in the logs.
+
+### Testing with ElasticBeanstalk workers
+Create a EB application with a worker environment (rather than web server environment) using the Ruby platform.  Use the default settings (including using the default/sample app initially) except:
+1. Set `AWS_PROCESS_BEANSTALK_WORKER_REQUESTS` to `true` in the environment configuration.
+2. Set the worker queue to your queue.  IF you don't configure this explicitly, a new queue will be created instead.
+3. [optional] Configure a larger instance type (eg x3.large).
+
+After initial deployment of the sample app, create a zip of the sample-app: `zip ../sample-app.zip -r * .[^.]*`.  Create a new version and deploy it.
+
+Run the sample-app locally and submit jobs:
+1. `rails c`
+2. `TestJob.perform_later(hello: 'from ebs')` 
+
+You can then request the logs and should see processing of the job in `/var/log/puma/puma.log`
+
