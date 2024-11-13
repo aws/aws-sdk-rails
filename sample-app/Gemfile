@@ -2,8 +2,9 @@ source "https://rubygems.org"
 
 # Our gems
 gem 'aws-sdk-rails', path: '../'
-gem 'aws-sessionstore-dynamodb' #, path: '../../aws-sessionstore-dynamodb-ruby'
-gem 'aws-actionmailer-ses', git: 'https://github.com/aws/aws-actionmailer-ses-ruby', branch: 'init'
+gem 'aws-actiondispatch-dynamodb', git: 'https://github.com/aws/aws-actiondispatch-dynamodb-ruby'
+gem 'aws-actionmailbox-ses', git: 'https://github.com/aws/aws-actionmailbox-ses-ruby', branch: 'init'
+gem 'aws-actionmailer-ses', git: 'https://github.com/aws/aws-actionmailer-ses-ruby'
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem 'bcrypt'

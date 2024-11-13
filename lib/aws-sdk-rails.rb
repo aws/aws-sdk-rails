@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'aws/rails/railtie'
-require_relative 'aws/rails/action_mailbox/engine'
 require_relative 'aws/rails/notifications'
 require_relative 'aws/rails/sqs_active_job'
 require_relative 'aws/rails/middleware/ebs_sqs_active_job_middleware'
 
 # remove this in aws-sdk-rails 5
 require 'aws-actiondispatch-dynamodb'
+require 'aws-actionmailbox-ses' if defined?(ActionMailbox::Engine)
 require 'aws-actionmailer-ses'
 
 module Aws

@@ -114,3 +114,64 @@ Start the service with `ACTION_MAILER_EMAIL=<your email> bundle exec rails serve
 > **Important**: The email address in SES must be verified.
 
 Visit `http://127.0.0.1:3000/send_ses_email` or `http://127.0.0.1:3000/send_ses_v2_email` and check your email.
+
+## Action Mailbox
+
+### Setup
+
+Following [this guide](https://guides.rubyonrails.org/action_mailbox_basics.html), ActionMailbox was setup with `bundle exec bin/rails action_mailbox:install`.
+
+The database was migrated with: `bundle exec rails db:migrate`.
+
+The ingress and ActiveStorage was configured in `config/environments/development.rb` with:
+
+```ruby
+config.active_storage.service = :local
+config.action_mailbox.ingress = :ses
+```
+
+A default route was added to `app/mailboxes/application_mailbox.rb`.
+
+The test mailbox was created with `bundle exec rails generate mailbox test`.
+
+### Testing
+
+This feature can't fully be tested end to end unless the rails application is hosted on a domain. The SNS topic would have to notify a route such as `https://example.com/rails/action_mailbox/ses/inbound_emails`.
+
+Future work could deploy this sample-app behind a domain to fully test it.
+
+Start the service with `bundle exec rails server` and visit `http://127.0.0.1:3000/rails/conductor/action_mailbox/inbound_emails`.
+
+Click "New inbound email by source".
+
+Use the following message (other messages can be created and signed in aws-actionmailbox-ses):
+
+```
+Return-Path: <bob@example.com>
+Received: from example.com (example.com [127.0.0.1])
+ by inbound-smtp.us-east-1.amazonaws.com with SMTP id 17at0jiq08p0449huhf16qsmdi6sa1ltm069t801
+ for test@test.example.com;
+ Wed, 02 Sep 2020 01:30:50 +0000 (UTC)
+X-SES-Spam-Verdict: PASS
+X-SES-Virus-Verdict: PASS
+X-SES-RECEIPT: AEFBQUFBQUFBQUFHMWlxem9Gb1ZOemNkamlTeFlYdlZUSmUwVVZhYndjK213dHFIM0dVRTYwUlk1UlpBQVVVTXhQRUd1MTN6YTFJalp0TFdMZjhOOUZGSlJCYkxEV2craXhpOG02d2xDc2FtY2dNdVMvRE9QWWpNVkxBWVZzMyt5MHBTUXV5KzM5aDY1Vng5UnZsZTdTK2dGVDF5RVc1QndOd0xvbndNRlR3TDZjd2cxT2c2UVFQbVN2andMS09VM2R5elFrTGk3RnF0WXI3WDZ1alhkUzJxdzhzU1dwT3FPZEFsU0VNc3RpTWM0QStFZDB5RFd5SnpRelBJWnJjelZPRytudEVpNTc5dVZRUXMra2lrby9wOExhR3JqTi9xNkZnNHREN3BmSmVYS25Jeis2NDRyaEE9PQ==
+X-SES-DKIM-SIGNATURE: a=rsa-sha256; q=dns/txt; b=WGBoUguIq9047YXpCaubVCtm/ISR3JEVkvm/yAfL2MrAryQcYsTdUM6zzStPyvOm0QsonOKsWJ0O2YyuQDX1dvBmggdeUqZq08laD+Xuy1L6ODm0O/EQE9wDitj0KqXxOgMr3oM7tpcTTGLcCgXERFZbmI+1ACeeA7fbylMasIM=; c=relaxed/simple; s=224i4yxa5dv7c2xz3womw6peuasteono; d=amazonses.com; t=1599010250; v=1; bh=FUugtX/z1FFtLvVfaVhPhqhi4Gvo1Aam67iRPZYKfTo=; h=From:To:Cc:Bcc:Subject:Date:Message-ID:MIME-Version:Content-Type:X-SES-RECEIPT;
+From: "Smith, Bob E" <bob@example.com>
+To: "test@test.example.com"
+	<test@test.example.com>
+Subject: Test 500
+Thread-Topic: Test 500
+Thread-Index: AQHWgMisvDz2gn/lKEK/giPayBxk7g==
+Date: Wed, 2 Sep 2020 01:30:43 +0000
+Message-ID: <1344C740-07D3-476E-BEE7-6EB162294DF6@example.com>
+Accept-Language: en-US
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <CEC7772B8DEC7E4FAC59C3E8219E7AFB@namprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Aaaron
+```
+
+You should see the message say delivered and not bounced.

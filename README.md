@@ -222,7 +222,30 @@ In your environment configuration, set the delivery method to
 config.action_mailer.delivery_method = :ses # or :ses_v2
 ```
 
-## Amazon Simple Email Service (SES) as an ActionMailbox Method
+### Using ARNs with SES
+
+This gem uses [\`Aws::SES::Client#send_raw_email\`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#send_raw_email-instance_method)
+and [\`Aws::SESV2::Client#send_email\`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SESV2/Client.html#send_email-instance_method)
+to send emails. This operation allows you to specify a cross-account identity
+for the email's Source, From, and Return-Path. To set these ARNs, use any of the
+following headers on your `Mail::Message` object returned by your Mailer class:
+
+* X-SES-SOURCE-ARN
+
+* X-SES-FROM-ARN
+
+* X-SES-RETURN-PATH-ARN
+
+Example:
+
+```
+# in your Rails controller
+message = MyMailer.send_email(options)
+message['X-SES-FROM-ARN'] = 'arn:aws:ses:us-west-2:012345678910:identity/bigchungus@memes.com'
+message.deliver
+```
+
+## Amazon Simple Email Service (SES) as an ActionMailbox Ingress
 
 ### Configuration
 
@@ -307,28 +330,6 @@ You may also pass the following keyword arguments to both helpers:
 * `topic`: The _SNS_ topic used for each notification (default: `topic:arn:default`).
 * `authentic`: The `Aws::SNS::MessageVerifier` class is stubbed by these helpers; set `authentic` to `true` or `false` to define how it will verify incoming notifications (default: `true`).
 
-### Using ARNs with SES
-
-This gem uses [\`Aws::SES::Client#send_raw_email\`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#send_raw_email-instance_method)
-and [\`Aws::SESV2::Client#send_email\`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SESV2/Client.html#send_email-instance_method)
-to send emails. This operation allows you to specify a cross-account identity
-for the email's Source, From, and Return-Path. To set these ARNs, use any of the
-following headers on your `Mail::Message` object returned by your Mailer class:
-
-* X-SES-SOURCE-ARN
-
-* X-SES-FROM-ARN
-
-* X-SES-RETURN-PATH-ARN
-
-Example:
-
-```
-# in your Rails controller
-message = MyMailer.send_email(options)
-message['X-SES-FROM-ARN'] = 'arn:aws:ses:us-west-2:012345678910:identity/bigchungus@memes.com'
-message.deliver
-```
 
 ## Active Support Notifications for AWS SDK calls
 
