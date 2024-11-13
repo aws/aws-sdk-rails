@@ -15,9 +15,9 @@ Gem::Specification.new do |spec|
   spec.executables = ['aws_sqs_active_job']
 
   # These will be removed in aws-sdk-rails ~> 5
+  spec.add_dependency('aws-actiondispatch-dynamodb', '~> 0')
   spec.add_dependency('aws-actionmailer-ses', '~> 0')
   spec.add_dependency('aws-record', '~> 2') # for Aws::Record integration
-  spec.add_dependency('aws-actiondispatch-dynamodb', '~> 0')
 
   # Require these versions for user_agent_framework configs
   spec.add_dependency('aws-sdk-s3', '~> 1', '>= 1.123.0')
