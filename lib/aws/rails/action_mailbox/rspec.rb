@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This can be deleted in aws-sdk-rails ~> 5
 
 require 'aws/action_mailbox/ses/rspec'
