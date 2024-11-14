@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 require 'rails'
-require 'activerecord-jdbc-adapter' if defined? JRUBY_VERSION
 require 'active_job/railtie'
 require 'action_controller/railtie'
 require 'action_mailer/railtie'
 require 'action_view/railtie'
-require 'action_mailbox/engine'
 require 'aws-sdk-rails'
 
 module Dummy
