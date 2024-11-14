@@ -23,6 +23,10 @@ Unreleased Changes
 
 * Issue - Add deprecation warning to `Aws::Rails.add_action_mailer_delivery_method` to instead use `ActionMailer::Base.add_delivery_method`. This method will be removed in the next major version.
 
+* Feature - ActionMailbox SES ingress now lives in the `aws-actionmailbox-ses` gem.
+
+* Issue - The `Aws::Rails::ActionMailbox::RSpec` module has been moved to `Aws::ActionMailbox::SES::RSpec` and will be removed in aws-sdk-rails ~> 5.
+
 4.1.0 (2024-09-27)
 ------------------
 
