@@ -127,3 +127,25 @@ Run the sample-app locally and submit jobs:
 
 You can then request the logs and should see processing of the job in `/var/log/puma/puma.log`
 
+## Deploying / Testing on ElasticBeanstalk Web Server
+Create a EB application with a web server environment using the Ruby platform.  Use the default settings (including using the default/sample app initially) except:
+1. Set `SECRET_KEY_BASE` to some arbitrary alphanumeric string in the environment configuration.
+2. [optional] Configure a larger instance type (eg x3.large).
+
+Edit the sample app and ensure that ssl redirects are disabled.  In `config/environments/production.rb`:
+
+```ruby
+  config.assume_ssl = false
+  config.force_ssl = false
+  config.ssl_options = { redirect: false, secure_cookies: false, hsts: false }
+```
+
+And add an nginix config file at `sample-app/.platform/nginx/conf.d/10-types-hash.conf`:
+
+```
+types_hash_max_size 4096;
+```
+
+After initial deployment of the sample app, create a zip of the sample-app: `zip ../sample-app.zip -r * .[^.]*`.  Create a new version and deploy it.
+
+You can find web logs under `/var/log/puma/puma.log`
