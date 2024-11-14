@@ -127,6 +127,14 @@ Run the sample-app locally and submit jobs:
 
 You can then request the logs and should see processing of the job in `/var/log/puma/puma.log`
 
+### Testing with Docker ElasticBeanstalk workers
+* Install the [eb cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html#eb-cli3-install.scripts).  
+* Ensure docker is running.
+* Create a docker application using `eb create` and then create a worker environment using `eb create -t worker -it t3.large`.  Note: this will create a new SQS queue.
+* Update local sqs active job config to use the new queue and submit a test job: `rails c` and then `TestJob.perform_later(hello: 'from ebs')`
+
+Notes: The dockerfile must set `AWS_PROCESS_BEANSTALK_WORKER_REQUESTS="true"` and `SECRET_KEY_BASE="fortestonly"`.
+
 ## Deploying / Testing on ElasticBeanstalk Web Server
 Create a EB application with a web server environment using the Ruby platform.  Use the default settings (including using the default/sample app initially) except:
 1. Set `SECRET_KEY_BASE` to some arbitrary alphanumeric string in the environment configuration.
