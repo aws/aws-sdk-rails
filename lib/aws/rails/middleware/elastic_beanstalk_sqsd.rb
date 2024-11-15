@@ -5,18 +5,13 @@ module Aws
     module Middleware
       # Middleware to handle requests from the SQS Daemon present on Elastic Beanstalk worker environments.
       class ElasticBeanstalkSQSD
-        INTERNAL_ERROR_MESSAGE = 'Failed to execute job - see Rails log for more details.'
-        INTERNAL_ERROR_RESPONSE = [500, { 'Content-Type' => 'text/plain' }, [INTERNAL_ERROR_MESSAGE]].freeze
-        FORBIDDEN_MESSAGE = 'Request with aws-sqsd user agent was made from untrusted address.'
-        FORBIDDEN_RESPONSE = [403, { 'Content-Type' => 'text/plain' }, [FORBIDDEN_MESSAGE]].freeze
-
         def initialize(app)
           @app = app
           @logger = ::Rails.logger
         end
 
         def call(env)
-          request = ActionDispatch::Request.new(env)
+          request = ::ActionDispatch::Request.new(env)
 
           # Pass through unless user agent is the SQS Daemon
           return @app.call(env) unless from_sqs_daemon?(request)
@@ -26,7 +21,7 @@ module Aws
           # Only accept requests from this user agent if it is from localhost or a docker host in case of forgery.
           unless request.local? || sent_from_docker_host?(request)
             @logger.warn('SQSD request detected from untrusted address; returning 403 forbidden.')
-            return FORBIDDEN_RESPONSE
+            return forbidden_response
           end
 
           # Execute job or periodic task based on HTTP request context
@@ -42,11 +37,11 @@ module Aws
           @logger.debug("Executing job: #{job_name}")
 
           begin
-            ActiveJob::Base.execute(job)
+            ::ActiveJob::Base.execute(job)
           rescue NoMethodError, NameError => e
             @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
             @logger.error("Error: #{e}")
-            return INTERNAL_ERROR_RESPONSE
+            return internal_error_response
           end
 
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran job #{job_name}."]]
@@ -63,10 +58,20 @@ module Aws
           rescue NoMethodError, NameError => e
             @logger.error("Periodic task #{job_name} could not resolve to an Active Job class - check the spelling in cron.yaml.")
             @logger.error("Error: #{e}.")
-            return INTERNAL_ERROR_RESPONSE
+            return internal_error_response
           end
 
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran periodic task #{job_name}."]]
+        end
+
+        def internal_error_response
+          message = 'Failed to execute job - see Rails log for more details.'
+          [500, { 'Content-Type' => 'text/plain' }, [message]]
+        end
+
+        def forbidden_response
+          message = 'Request with aws-sqsd user agent was made from untrusted address.'
+          [403, { 'Content-Type' => 'text/plain' }, [message]]
         end
 
         # The beanstalk worker SQS Daemon sets a specific User-Agent headers that begins with 'aws-sqsd'.

@@ -43,7 +43,7 @@ module Aws
           it 'returns internal server error if job name cannot be resolved' do
             # Stub execute call to avoid invoking Active Job callbacks
             # Local testing indicates this failure results in a NameError
-            allow(ActiveJob::Base).to receive(:execute).and_raise(NameError)
+            allow(::ActiveJob::Base).to receive(:execute).and_raise(NameError)
 
             expect(response[0]).to eq(500)
           end
