@@ -109,7 +109,7 @@ module Aws
 
       if app.config.force_ssl
         # SQS Daemon sends requests over HTTP - allow and process them before enforcing SSL.
-        app.config.middleware.insert_before(ActionDispatch::SSL, Aws::Rails::Middleware::ElasticBeanstalkSQSD)
+        app.config.middleware.insert_before(::ActionDispatch::SSL, Aws::Rails::Middleware::ElasticBeanstalkSQSD)
       else
         app.config.middleware.use(Aws::Rails::Middleware::ElasticBeanstalkSQSD)
       end
