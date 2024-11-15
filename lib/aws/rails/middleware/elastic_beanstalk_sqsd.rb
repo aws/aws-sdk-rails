@@ -6,7 +6,7 @@ module Aws
       # Middleware to handle requests from the SQS Daemon present on Elastic Beanstalk worker environments.
       class ElasticBeanstalkSQSD
         INTERNAL_ERROR_MESSAGE = 'Failed to execute job - see Rails log for more details.'
-        # TODO - move these away from constants so they don't have to be frozen
+        # TODO: move these away from constants so they don't have to be frozen
         INTERNAL_ERROR_RESPONSE = [500, { 'Content-Type' => 'text/plain' }, [INTERNAL_ERROR_MESSAGE]].freeze
         FORBIDDEN_MESSAGE = 'Request with aws-sqsd user agent was made from untrusted address.'
         FORBIDDEN_RESPONSE = [403, { 'Content-Type' => 'text/plain' }, [FORBIDDEN_MESSAGE]].freeze
