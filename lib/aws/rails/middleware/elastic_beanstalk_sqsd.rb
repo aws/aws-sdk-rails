@@ -38,7 +38,7 @@ module Aws
 
           begin
             ::ActiveJob::Base.execute(job)
-          rescue NoMethodError, NameError => e
+          rescue NameError => e
             @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
             @logger.error("Error: #{e}")
             return internal_error_response
@@ -55,7 +55,7 @@ module Aws
           begin
             job = job_name.constantize.new
             job.perform_now
-          rescue NoMethodError, NameError => e
+          rescue NameError => e
             @logger.error("Periodic task #{job_name} could not resolve to an Active Job class - check the spelling in cron.yaml.")
             @logger.error("Error: #{e}.")
             return internal_error_response
@@ -118,11 +118,10 @@ module Aws
             File.open('/proc/net/route').each_line do |line|
               fields = line.strip.split
               next if fields.size != 11
-
               # Destination == 0.0.0.0 and Flags & RTF_GATEWAY != 0
-              if fields[1] == '00000000' && fields[3].hex.anybits?(0x2)
-                default_gw_ips << IPAddr.new_ntoh([fields[2].hex].pack('L')).to_s
-              end
+              next unless fields[1] == '00000000' && fields[3].hex.anybits?(0x2)
+
+              default_gw_ips << IPAddr.new_ntoh([fields[2].hex].pack('L')).to_s
             end
           end
 
