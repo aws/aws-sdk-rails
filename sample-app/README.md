@@ -259,11 +259,14 @@ Send a test job: `TestJob.perform_later('elastic beanstalk worker test')`
 
 You can then request the logs and should see processing of the job in `/var/log/puma/puma.log`
 
-### Testing with Docker ElasticBeanstalk workers
+### Testing with Docker Elastic Beanstalk workers
 
+# TODO - this does not work generally
+
+* Build the sample app with docker: `docker build -t sample-app-docker`
 * Install the [eb cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html#eb-cli3-install.scripts).  
 * Ensure docker is running.
 * Create a docker application using `eb create` and then create a worker environment using `eb create -t worker -it t3.large`. Note: this will create a new SQS queue.
 * Update local sqs active job config to use the new queue and submit a test job: `rails c` and then `TestJob.perform_later(hello: 'from ebs')`
 
-> **Note**: The dockerfile must set `AWS_PROCESS_BEANSTALK_WORKER_REQUESTS="true"` and `SECRET_KEY_BASE="fortestonly"`.
+> **Note**: The dockerfile must set `AWS_REGION="us-west-2"` and `AWS_PROCESS_BEANSTALK_WORKER_REQUESTS="true"` and `SECRET_KEY_BASE="SECRET"`.

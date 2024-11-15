@@ -20,9 +20,10 @@ RUN apt-get update -qq && \
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_WITHOUT="development" \
     AWS_PROCESS_BEANSTALK_WORKER_REQUESTS="true" \
-    SECRET_KEY_BASE="fortestonly"
+    SECRET_KEY_BASE="SECRET" \
+    AWS_REGION="us-west-2"
 
 
 # Throw-away build stage to reduce size of final image
