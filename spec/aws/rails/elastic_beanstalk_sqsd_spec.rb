@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+require 'test_helper'
+
 module Aws
   module Rails
     module Middleware
-      class ElasticBeanstalkSQSDTest < ActiveSupport::TestCase
+      describe ElasticBeanstalkSQSD do
         # Simple mock Rack app that always returns 200
         let(:mock_rack_app) { ->(_) { [200, { 'Content-Type' => 'text/plain' }, ['OK']] } }
 

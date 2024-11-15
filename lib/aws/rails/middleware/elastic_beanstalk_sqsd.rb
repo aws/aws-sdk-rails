@@ -16,7 +16,7 @@ module Aws
         end
 
         def call(env)
-          request = ActionDispatch::Request.new(env)
+          request = ::ActionDispatch::Request.new(env)
           return @app.call(env) unless from_sqs_daemon?(request)
 
           @logger.debug('aws-sdk-rails middleware detected a call from the Elastic Beanstalk SQS Daemon.')
