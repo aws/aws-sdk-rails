@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ElasticBeanstalkJob < ActiveJob::Base
+class ElasticBeanstalkJob < ApplicationJob
   queue_as :default
 
   def perform(); end

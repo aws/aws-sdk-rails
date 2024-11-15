@@ -6,6 +6,7 @@ require 'action_mailer/railtie'
 
 require 'aws-sdk-rails'
 require 'aws-sessionstore-dynamodb'
+require 'aws-activejob-sqs'
 require 'aws-record'
 
 # @api private

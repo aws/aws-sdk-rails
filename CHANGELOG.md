@@ -21,11 +21,15 @@ Unreleased Changes
 
 * Feature - New namespace and class names for SES and SESV2 mailers. `Aws::Rails::SesMailer` has been moved to `Aws::ActionMailer::SES::Mailer` and `Aws::Rails::Sesv2Mailer` has been moved to `Aws::ActionMailer::SESV2::Mailer`. The classes have been symlinked for backwards compatibility in this major version.
 
-* Issue - Add deprecation warning to `Aws::Rails.add_action_mailer_delivery_method` to instead use `ActionMailer::Base.add_delivery_method`. This method will be removed in the next major version.
+* Issue - Add deprecation warning to `Aws::Rails.add_action_mailer_delivery_method` to instead use `ActionMailer::Base.add_delivery_method`. This method will be removed in aws-sdk-rails ~> 5.
 
 * Feature - ActionMailbox SES ingress now lives in the `aws-actionmailbox-ses` gem.
 
 * Issue - The `Aws::Rails::ActionMailbox::RSpec` module has been moved to `Aws::ActionMailbox::SES::RSpec` and will be removed in aws-sdk-rails ~> 5.
+
+* Feature - ActiveJob SQS now lives in the `aws-activejob-sqs` gem.
+
+* Feature - New namespace and class names for SQS ActiveJob. Existing namespace has temporarily been kept for backward compatibility and will be removed in aws-sdk-rails ~> 5.
 
 4.1.0 (2024-09-27)
 ------------------

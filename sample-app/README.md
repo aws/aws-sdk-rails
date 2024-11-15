@@ -6,9 +6,60 @@ An additional user scaffold was created with: `bundle exec rails generate scaffo
 
 The database was migrated with: `bundle exec rails db:migrate`.
 
+The `database.yml` for production was setup to use `storage/production.sqlite3`.
+
 Our gems (`aws-sdk-rails` + feature gems) were added to the Gemfile.
 
 Gem `byebug` is added to help with development.
+
+In `config/environments/production.rb` the following configuration has been changed for Elastic Beanstalk:
+
+```ruby
+config.assume_ssl = false
+config.force_ssl = false
+config.ssl_options = { redirect: false, secure_cookies: false, hsts: false }
+```
+
+The following extension was added to `.ebextensions/ruby.config` to allow to fetch github branch changes in Elastic Beanstalk:
+
+```yaml
+packages:
+  yum:
+    git: []
+```
+
+## Pre-requisite: Deploying an Elastic Beanstalk Web Server and Worker
+
+Some of the features require a web server and worker with Elastic Beanstalk. To deploy the sample app to Elastic Beanstalk, follow these steps:
+
+Create a EB application with a **web server environment** using the Ruby platform. Use the default settings (including using the default/sample app initially) except:
+1. (Optional) Set an EC2 key pair.
+2. Choose the default VPC and enable all of the subnets. Enable a public IP address.
+3. Set the root volume to General Purpose 3.
+4. Select a bigger instance than the micro default, such as m7.large.
+5. Set `SECRET_KEY_BASE` to `SECRET` in the environment configuration.
+6. Set `AWS_REGION` to your region in the environment configuration.
+
+In SQS, create an queue called `active-job-worker`.
+
+Create a EB application with a **worker environment** using the Ruby platform. Use the default settings (including using the default/sample app initially) except:
+1. (Optional) Set an EC2 key pair.
+2. Choose the default VPC and enable all of the subnets. Enable a public IP address.
+3. Set the root volume to General Purpose 3.
+4. Select a bigger instance than the micro default, such as m7.large.
+5. Set the worker queue to your personal `active-job-worker` queue.
+6. Set `AWS_PROCESS_BEANSTALK_WORKER_REQUESTS` to `true` in the environment configuration
+7. Set `SECRET_KEY_BASE` to `SECRET` in the environment configuration.
+8. Set `AWS_REGION` to your region in the environment configuration.
+
+Navigate to IAM and for the new role (`aws-elasticbeanstalk-ec2-role`) add the `AmazonDynamoDBFullAccess` policy.
+
+After initial deployment of the sample app and worker:
+1. Run `rm Gemfile.lock && bundle install && bundle lock --add-platform ruby`
+2. Create a zip of the sample-app: `zip ../sample-app.zip -r * .[^.]*`.
+3. Upload the zip file to your EB web environments.
+
+You can find web logs under `/var/log/puma/puma.log`
 
 ## AWS Rails Logger
 
@@ -69,7 +120,7 @@ It should look like:
 Got notification: update_item.DynamoDB.aws ...
 ```
 
-## DynamoDB Session Store
+## ActionDispatch DynamoDB Session
 
 ### Setup
 
@@ -89,7 +140,7 @@ Start the service with `bundle exec rails server` and visit `http://127.0.0.1:30
 
 In the logs, you should see a notification for DynamoDB `update_item` with a `session_id`. This key should exist in your DynamoDB `sessions` table. Refreshing the page should update the session `updated_at` and/or `expired_at` and not create a new session.
 
-## Action Mailer mailers
+## ActionMailer mailers
 
 ### Setup
 
@@ -115,7 +166,7 @@ Start the service with `ACTION_MAILER_EMAIL=<your email> bundle exec rails serve
 
 Visit `http://127.0.0.1:3000/send_ses_email` or `http://127.0.0.1:3000/send_ses_v2_email` and check your email.
 
-## Action Mailbox
+## ActionMailbox ingress
 
 ### Setup
 
@@ -175,3 +226,47 @@ Aaaron
 ```
 
 You should see the message say delivered and not bounced.
+
+## ActiveJob SQS
+
+### Setup
+
+The jobs were generated with `bundle exec rails generate job Test` and `bundle exec rails generate job TestAsync`.
+
+An empty controller scaffold was generated with `bundle exec rails generate controller Job`.
+
+`TestJob` and `TestAsyncJob` was implemented to print the job's args.
+
+`JobController` and routes were added to queue the job.
+
+`config/application.rb` added `require "active_job/railtie"`.
+
+> **Important**: Create an SQS queue and retrieve the queue URL.
+
+### Testing
+
+Start rails with `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url bundle exec rails server`
+
+Poll for and process jobs with: `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url bundle exec aws_sqs_active_job --queue default`
+
+Visit `http://127.0.0.1:3000/queue_sqs_job` and `http://127.0.0.1:3000/queue_sqs_async_job` to queue jobs. The output of both jobs should be printed in the logs.
+
+### Testing with Elastic Beanstalk workers
+
+Run the sample-app locally with `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url rails console`.
+
+Send a test job: `TestJob.perform_later('elastic beanstalk worker test')` 
+
+You can then request the logs and should see processing of the job in `/var/log/puma/puma.log`
+
+### Testing with Docker Elastic Beanstalk workers
+
+# TODO - this does not work generally
+
+* Build the sample app with docker: `docker build -t sample-app-docker`
+* Install the [eb cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html#eb-cli3-install.scripts).  
+* Ensure docker is running.
+* Create a docker application using `eb create` and then create a worker environment using `eb create -t worker -it t3.large`. Note: this will create a new SQS queue.
+* Update local sqs active job config to use the new queue and submit a test job: `rails c` and then `TestJob.perform_later(hello: 'from ebs')`
+
+> **Note**: The dockerfile must set `AWS_REGION="us-west-2"` and `AWS_PROCESS_BEANSTALK_WORKER_REQUESTS="true"` and `SECRET_KEY_BASE="SECRET"`.

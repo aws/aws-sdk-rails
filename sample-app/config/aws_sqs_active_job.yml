@@ -1,0 +1,2 @@
+queues:
+  default: <%= ENV['AWS_ACTIVE_JOB_QUEUE_URL'] %>
