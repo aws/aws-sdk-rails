@@ -77,7 +77,7 @@ module Aws
             Aws::Rails.add_sqsd_middleware(mock_rails_app)
 
             expect(mock_middleware_stack.count).to eq(1)
-            expect(mock_middleware_stack[0].inspect).to eq('Aws::ActiveJob::SQS::EBMiddleware')
+            expect(mock_middleware_stack[0].inspect).to eq('Aws::Rails::Middleware::ElasticBeanstalkSQSD')
           end
 
           it 'adds the middleware before SSL when force_ssl is true' do
@@ -92,7 +92,7 @@ module Aws
             Aws::Rails.add_sqsd_middleware(mock_rails_app)
 
             expect(mock_middleware_stack.count).to eq(1)
-            expect(mock_middleware_stack[0].inspect).to eq('Aws::ActiveJob::SQS::EBMiddleware')
+            expect(mock_middleware_stack[0].inspect).to eq('Aws::Rails::Middleware::ElasticBeanstalkSQSD')
           end
         end
 
