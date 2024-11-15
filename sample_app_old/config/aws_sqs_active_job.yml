@@ -1,4 +1,0 @@
-queues:
-  default: <%= ENV['AWS_ACTIVE_JOB_QUEUE_URL'] %>
-shutdown_timeout: 10
-retry_standard_errors: true

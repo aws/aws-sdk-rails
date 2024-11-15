@@ -1,17 +1,35 @@
 Unreleased Changes
 ------------------
 
-* Feature - Prepare modularization of `aws-record`.
+* Feature - DynamoDB Session Storage features now live in the `aws-actiondispatch-dynamodb` gem. This gem depends on `aws-sessionstore-dynamodb ~> 3` which depends on `rack ~> 3` and is not supported by Rails `7.0`.
 
 * Feature - Add session store config generation with `rails generate dynamo_db:session_store_config`. Config generation is no longer tied to the DynamoDB SessionStore ActiveRecord migration generator.
 
-* Feature - Prepare modularization of `aws-sessionstore-dynamodb`.
-
-* Feature - Depend on `aws-sessionstore-dynamodb ~> 3` which depends on `rack ~> 3` and is not supported by Rails `7.0`.
-
 * Issue - `ActionDispatch::Session::DynamoDbStore` now inherits `ActionDispatch::Session::AbstractStore` by wrapping `Aws::SessionStore::DynamoDB::RackMiddleware`.
 
+* Issue - `DynamoDbStore` is now configured with the `:dynamo_db_store` configuration instead of `:dynamodb_store`.
+
+* Feature - Session Store configuration passed into `:dynamo_db_store` in an initializer will now be considered when using the ActiveRecord migrations or rake tasks that create, delete, or clean session tables.
+
+* Feature - `AWS_DYNAMO_DB_SESSION_CONFIG_FILE` is now searched and with precedence over the default Rails configuration YAML file locations.
+
+* Feature - Prepare modularization of `aws-record`.
+
 * Issue - Do not skip autoload modules for `Aws::Rails.instrument_sdk_operations`.
+
+* Feature - ActionMailer SES and SESV2 mailers now live in the `aws-actionmailer-ses` gem.
+
+* Feature - New namespace and class names for SES and SESV2 mailers. `Aws::Rails::SesMailer` has been moved to `Aws::ActionMailer::SES::Mailer` and `Aws::Rails::Sesv2Mailer` has been moved to `Aws::ActionMailer::SESV2::Mailer`. The classes have been symlinked for backwards compatibility in this major version.
+
+* Issue - Add deprecation warning to `Aws::Rails.add_action_mailer_delivery_method` to instead use `ActionMailer::Base.add_delivery_method`. This method will be removed in aws-sdk-rails ~> 5.
+
+* Feature - ActionMailbox SES ingress now lives in the `aws-actionmailbox-ses` gem.
+
+* Issue - The `Aws::Rails::ActionMailbox::RSpec` module has been moved to `Aws::ActionMailbox::SES::RSpec` and will be removed in aws-sdk-rails ~> 5.
+
+* Feature - ActiveJob SQS now lives in the `aws-activejob-sqs` gem.
+
+* Feature - New namespace and class names for SQS ActiveJob. Existing namespace has temporarily been kept for backward compatibility and will be removed in aws-sdk-rails ~> 5.
 
 4.1.0 (2024-09-27)
 ------------------

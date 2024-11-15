@@ -12,6 +12,20 @@ module Aws
         Aws::Rails.use_rails_encrypted_credentials
         Aws::Rails.add_action_mailer_delivery_method
         Aws::Rails.add_action_mailer_delivery_method(:sesv2)
+
+        if %i[ses sesv2].include?(::Rails.application.config.action_mailer.delivery_method)
+          ::Rails.logger.warn(<<~MSG)
+            ** Aws::Rails.add_action_mailer_delivery_method will be removed in aws-sdk-rails ~> 5.
+            If you are using this feature, please add your desired delivery methods in an initializer
+            (such as config/initializers/action_mailer.rb):
+
+                options = { ... SES client options ... }
+                ActionMailer::Base.add_delivery_method :ses, Aws::ActionMailer::SESMailer, **options
+                ActionMailer::Base.add_delivery_method :ses_v2, Aws::ActionMailer::SESV2Mailer, **options
+
+            Existing Mailer classes have moved namespaces but will continue to work in this major version. **
+          MSG
+        end
       end
 
       initializer 'aws-sdk-rails.insert_middleware' do |app|
@@ -36,7 +50,7 @@ module Aws
       end
 
       rake_tasks do
-        load 'tasks/dynamo_db/session_store.rake' if defined?(Aws::SessionStore::DynamoDB)
+        load 'tasks/dynamo_db/session_store.rake' if defined?(Aws::ActionDispatch::DynamoDb)
         load 'tasks/aws_record/migrate.rake' if defined?(Aws::Record)
       end
     end
@@ -64,8 +78,7 @@ module Aws
     # @param [Hash] client_options The options you wish to pass on to the
     #   Aws::SES[V2]::Client initialization method.
     def self.add_action_mailer_delivery_method(name = :ses, client_options = {})
-      # TODO: on the next major version, add a "mailer" param to this method
-      # and use it to determine which mailer to use, keeping name free-form.
+      # TODO: remove this method in aws-sdk-rails ~> 5
       ActiveSupport.on_load(:action_mailer) do
         if name == :sesv2
           add_delivery_method(name, Aws::Rails::Sesv2Mailer, client_options)
@@ -92,15 +105,13 @@ module Aws
     # This will only be added in the presence of the AWS_PROCESS_BEANSTALK_WORKER_REQUESTS environment variable.
     # The expectation is this variable should only be set on EB worker environments.
     def self.add_sqsd_middleware(app)
-      is_eb_worker_hosted = Aws::Util.str_2_bool(ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS'].to_s.downcase)
-
-      return unless is_eb_worker_hosted
+      return unless ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS']
 
       if app.config.force_ssl
         # SQS Daemon sends requests over HTTP - allow and process them before enforcing SSL.
-        app.config.middleware.insert_before(ActionDispatch::SSL, Aws::Rails::EbsSqsActiveJobMiddleware)
+        app.config.middleware.insert_before(::ActionDispatch::SSL, Aws::Rails::Middleware::ElasticBeanstalkSQSD)
       else
-        app.config.middleware.use(Aws::Rails::EbsSqsActiveJobMiddleware)
+        app.config.middleware.use(Aws::Rails::Middleware::ElasticBeanstalkSQSD)
       end
     end
   end

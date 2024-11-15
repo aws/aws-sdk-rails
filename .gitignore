@@ -15,6 +15,7 @@ gemfiles/*.gemfile.lock
 sample-app/Gemfile.lock
 sample-app/log
 sample-app/tmp
+sample-app.zip
 
 test/dummy/db/migrate
 test/dummy/log/

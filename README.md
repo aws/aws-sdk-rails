@@ -2,7 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/aws-sdk-rails.svg)](https://badge.fury.io/rb/aws-sdk-rails)
 [![Build Status](https://github.com/aws/aws-sdk-rails/workflows/CI/badge.svg)](https://github.com/aws/aws-sdk-rails/actions)
- [![Github forks](https://img.shields.io/github/forks/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/network)
+[![Github forks](https://img.shields.io/github/forks/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/network)
 [![Github stars](https://img.shields.io/github/stars/aws/aws-sdk-rails.svg)](https://github.com/aws/aws-sdk-rails/stargazers)
 
 A Ruby on Rails plugin that integrates AWS services with your application using
@@ -202,17 +202,50 @@ use the provided Rake task:
 rake dynamo_db:session_store:clean
 ```
 
-## Amazon Simple Email Service (SES) as an ActionMailer Delivery Method
+## ActionMailer delivery with Amazon Simple Email Service
 
-This gem will automatically register SES and SESV2 as ActionMailer delivery methods.
-You simply need to configure Rails to use it in your environment configuration:
+This gem contains Mailer classes for Amazon SES and SESV2. To use these mailers
+as a delivery method, you need to register them with ActionMailer.
+You can create a Rails initializer `config/initializers/action_mailer.rb`
+with contents similar to the following:
 
 ```ruby
-# for e.g.: config/environments/production.rb
-config.action_mailer.delivery_method = :ses # or :sesv2
+options = { region: 'us-west-2' }
+ActionMailer::Base.add_delivery_method :ses, Aws::ActionMailer::SESMailer, **options
+ActionMailer::Base.add_delivery_method :ses_v2, Aws::ActionMailer::SESV2Mailer, **options
 ```
 
-## Amazon Simple Email Service (SES) as an ActionMailbox Method
+In your environment configuration, set the delivery method to
+`:ses` or `:ses_v2`.
+
+```ruby
+config.action_mailer.delivery_method = :ses # or :ses_v2
+```
+
+### Using ARNs with SES
+
+This gem uses [\`Aws::SES::Client#send_raw_email\`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#send_raw_email-instance_method)
+and [\`Aws::SESV2::Client#send_email\`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SESV2/Client.html#send_email-instance_method)
+to send emails. This operation allows you to specify a cross-account identity
+for the email's Source, From, and Return-Path. To set these ARNs, use any of the
+following headers on your `Mail::Message` object returned by your Mailer class:
+
+* X-SES-SOURCE-ARN
+
+* X-SES-FROM-ARN
+
+* X-SES-RETURN-PATH-ARN
+
+Example:
+
+```
+# in your Rails controller
+message = MyMailer.send_email(options)
+message['X-SES-FROM-ARN'] = 'arn:aws:ses:us-west-2:012345678910:identity/bigchungus@memes.com'
+message.deliver
+```
+
+## Amazon Simple Email Service (SES) as an ActionMailbox Ingress
 
 ### Configuration
 
@@ -297,54 +330,6 @@ You may also pass the following keyword arguments to both helpers:
 * `topic`: The _SNS_ topic used for each notification (default: `topic:arn:default`).
 * `authentic`: The `Aws::SNS::MessageVerifier` class is stubbed by these helpers; set `authentic` to `true` or `false` to define how it will verify incoming notifications (default: `true`).
 
-### Override credentials or other client options
-
-Client options can be overridden by re-registering the mailer with any set of
-SES or SESV2 Client options. You can create a Rails initializer
-`config/initializers/aws.rb` with contents similar to the following:
-
-```ruby
-require 'json'
-
-# Assuming a file "path/to/aws_secrets.json" with contents like:
-#
-#     { "AccessKeyId": "YOUR_KEY_ID", "SecretAccessKey": "YOUR_ACCESS_KEY" }
-#
-# Remember to exclude "path/to/aws_secrets.json" from version control, e.g. by
-# adding it to .gitignore
-secrets = JSON.load(File.read('path/to/aws_secrets.json'))
-creds = Aws::Credentials.new(secrets['AccessKeyId'], secrets['SecretAccessKey'])
-
-Aws::Rails.add_action_mailer_delivery_method(
-  :ses, # or :sesv2
-  credentials: creds,
-  region: 'us-east-1',
-  # some other config
-)
-```
-
-### Using ARNs with SES
-
-This gem uses [\`Aws::SES::Client#send_raw_email\`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SES/Client.html#send_raw_email-instance_method)
-and [\`Aws::SESV2::Client#send_email\`](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SESV2/Client.html#send_email-instance_method)
-to send emails. This operation allows you to specify a cross-account identity
-for the email's Source, From, and Return-Path. To set these ARNs, use any of the
-following headers on your `Mail::Message` object returned by your Mailer class:
-
-* X-SES-SOURCE-ARN
-
-* X-SES-FROM-ARN
-
-* X-SES-RETURN-PATH-ARN
-
-Example:
-
-```
-# in your Rails controller
-message = MyMailer.send_email(options)
-message['X-SES-FROM-ARN'] = 'arn:aws:ses:us-west-2:012345678910:identity/bigchungus@memes.com'
-message.deliver
-```
 
 ## Active Support Notifications for AWS SDK calls
 
@@ -412,17 +397,6 @@ You also need to configure a mapping of ActiveJob queue name to SQS Queue URL. F
 # config/aws_sqs_active_job.yml
 queues:
   default: 'https://my-queue-url.amazon.aws'
-```
-
-Or (note the key must be a symbol):
-
-```ruby
-Aws::Rails::SqsActiveJob.configure do |config|
-  config.queues = {
-    :default => 'https://my-queue-url.amazon.aws',
-    ENV.fetch('JOB_QUEUE_NAME').to_sym => 'https://my-other-queue-url.amazon.aws',
-  }
-end
 ```
 
 To queue a job, you can just use standard ActiveJob methods:
