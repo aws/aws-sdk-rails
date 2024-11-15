@@ -210,7 +210,10 @@ Create a EB application with a worker environment (rather than web server enviro
 5. Set the worker queue to your personal queue. You can create a new queue such as `sample-app-worker` in the SQS console.
 6. Set `AWS_PROCESS_BEANSTALK_WORKER_REQUESTS` to `true` in the environment configuration.
 
-After initial deployment of the sample app, create a zip of the sample-app: `zip ../sample-app.zip -r * .[^.]*`.  Create a new version and deploy it.
+After initial deployment of the sample app:
+1. Run `bundle install`
+2. Create a zip of the sample-app: `zip ../sample-app.zip -r * .[^.]*`.
+3. Upload the zip file to your EB worker environment.
 
 Run the sample-app locally and submit jobs:
 1. `rails c`
@@ -250,6 +253,9 @@ The following config was added to `sample-app/.platform/nginx/conf.d/10-types-ha
 types_hash_max_size 4096;
 ```
 
-After initial deployment of the sample app, create a zip of the sample-app: `zip ../sample-app.zip -r * .[^.]*`. Create a new version and deploy it.
+After initial deployment of the sample app:
+1. Run `bundle install`
+2. Create a zip of the sample-app: `zip ../sample-app.zip -r * .[^.]*`.
+3. Upload the zip file to your EB web environment.
 
 You can find web logs under `/var/log/puma/puma.log`
