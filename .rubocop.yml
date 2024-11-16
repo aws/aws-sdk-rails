@@ -5,50 +5,20 @@ AllCops:
   TargetRubyVersion: 2.7
   SuggestExtensions: false
   Exclude:
-    - 'tasks/release/**/*'
     - 'sample-app/**/*'
-    - 'sample_app_old/**/*'
-    - 'spec/dummy/**/*'
-    - 'test/dummy/**/*'
-    - 'spec/fixtures/**/*'
-    - 'spec/fixtures/**/*'
-
-Gemspec/DevelopmentDependencies:
-  EnforcedStyle: Gemfile
 
 Gemspec/RequireMFA:
   Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*.rb'
 
 Naming/FileName:
   Exclude:
     - 'gemfiles/*.gemfile'
     - 'lib/aws-sdk-rails.rb'
 
-Style/GlobalVars:
-  AllowedVariables:
-    - $VERSION
-    - $REPO_ROOT
-
-Metrics/BlockLength:
+Style/BlockComments:
   Exclude:
-    - 'spec/**/*.rb'
-    - 'test/**/*.rb'
-
-Metrics/ClassLength:
-  Exclude:
-    - 'spec/**/*.rb'
-    - 'test/**/*.rb'
-
-Metrics/ModuleLength:
-  Exclude:
-    - 'spec/**/*.rb'
-    - 'test/**/*.rb'
-
-Style/HashSyntax:
-  EnforcedShorthandSyntax: never
-
-Style/Documentation:
-  Exclude:
-    - 'lib/aws/rails/notifications.rb'
-    - 'spec/**/*.rb'
-    - 'test/**/*.rb'
+    - 'spec/spec_helper.rb'

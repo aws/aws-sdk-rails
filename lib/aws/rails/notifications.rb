@@ -13,6 +13,7 @@ module Aws
         handlers.add(Handler, step: :initialize, priority: 99)
       end
 
+      # @api private
       class Handler < Seahorse::Client::Handler
         def call(context)
           event_name = "#{context.operation_name}.#{context.config.api.metadata['serviceId']}.aws"

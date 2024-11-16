@@ -73,7 +73,8 @@ module Aws
           !current_user_agent.nil? && current_user_agent.start_with?('aws-sqsd')
         end
 
-        # The beanstalk worker SQS Daemon will add the custom 'X-Aws-Sqsd-Taskname' header for periodic tasks set in cron.yaml.
+        # The beanstalk worker SQS Daemon will add the custom 'X-Aws-Sqsd-Taskname' header
+        # for periodic tasks set in cron.yaml.
         def periodic_task?(request)
           !request.headers['X-Aws-Sqsd-Taskname'].nil? && request.headers['X-Aws-Sqsd-Taskname'].present?
         end

@@ -82,7 +82,8 @@ module Aws
             mock_rails_app = double
             mock_middleware_stack = []
 
-            allow(mock_rails_app).to receive_message_chain(:config, :middleware, :insert_before) do |_before, middleware|
+            allow(mock_rails_app).to receive_message_chain(:config, :middleware,
+                                                           :insert_before) do |_before, middleware|
               mock_middleware_stack.push(middleware)
             end
             allow(mock_rails_app).to receive_message_chain(:config, :force_ssl).and_return(true)
