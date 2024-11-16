@@ -33,7 +33,7 @@ Unreleased Changes
 
 * Issue - Correctly determine if SQSD is running in a Docker container.
 
-* Feature - Aws::Record scaffold generators now lives in the `aws-activerecord-dynamodb` gem.
+* Feature - Aws::Record scaffold generators now lives in the `aws-record-rails` gem.
 
 4.1.0 (2024-09-27)
 ------------------
