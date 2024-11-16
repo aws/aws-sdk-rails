@@ -1,7 +1,7 @@
 Unreleased Changes
 ------------------
 
-* Feature - DynamoDB Session Storage features now live in the `aws-actiondispatch-dynamodb` gem. This gem depends on `aws-sessionstore-dynamodb ~> 3` which depends on `rack ~> 3` and is not supported by Rails `7.0`.
+* Feature - DynamoDB Session Storage features now live in the `aws-actiondispatch-dynamodb` gem. This gem depends on `aws-sessionstore-dynamodb ~> 2`.
 
 * Feature - Add session store config generation with `rails generate dynamo_db:session_store_config`. Config generation is no longer tied to the DynamoDB SessionStore ActiveRecord migration generator.
 
