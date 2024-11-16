@@ -8,6 +8,7 @@ gem 'aws-actiondispatch-dynamodb', git: 'https://github.com/aws/aws-actiondispat
 gem 'aws-actionmailbox-ses', git: 'https://github.com/aws/aws-actionmailbox-ses-ruby'
 gem 'aws-actionmailer-ses', git: 'https://github.com/aws/aws-actionmailer-ses-ruby'
 gem 'aws-activejob-sqs', git: 'https://github.com/aws/aws-activejob-sqs-ruby'
+gem 'aws-activerecord-dynamodb', git: 'https://github.com/aws/aws-activerecord-dynamodb-ruby', branch: 'init'
 
 group :development, :test do
   gem 'pry'

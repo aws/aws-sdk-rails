@@ -49,9 +49,10 @@ module Aws
         end
       end
 
+      # TODO: move these in the new major version
       rake_tasks do
         load 'tasks/dynamo_db/session_store.rake' if defined?(Aws::ActionDispatch::DynamoDb)
-        load 'tasks/aws_record/migrate.rake' if defined?(Aws::Record)
+        load 'tasks/aws_record/migrate.rake' if defined?(Aws::ActiveRecord::DynamoDb)
       end
     end
 

@@ -18,8 +18,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency('aws-actionmailbox-ses', '~> 0')
   spec.add_dependency('aws-actionmailer-ses', '~> 0')
   spec.add_dependency('aws-activejob-sqs', '~> 0')
-
-  spec.add_dependency('aws-record', '~> 2') # for Aws::Record integration
+  spec.add_dependency('aws-activerecord-dynamodb', '~> 0')
 
   spec.add_dependency('railties', '>= 7.1.0') # Minimum supported Rails version
 

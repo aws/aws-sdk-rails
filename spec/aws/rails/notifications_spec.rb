@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'test_helper'
-
 module Aws
   module Rails
     describe Notifications do
