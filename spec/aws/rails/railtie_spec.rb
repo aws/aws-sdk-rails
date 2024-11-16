@@ -1,22 +1,20 @@
 # frozen_string_literal: true
 
-require 'test_helper'
-
-require 'aws-sdk-core'
-
 module Aws
   # Test service for Notifications
-  # rubocop:disable Lint/EmptyClass
   module Service
     class Client < Seahorse::Client::Base; end
   end
 
   module NotService
-    class Client; end
+    class Client
+      def self.add_plugin(_plugin); end
+    end
   end
 
-  class Client; end
-  # rubocop:enable Lint/EmptyClass
+  class Client
+    def self.add_plugin(_plugin); end
+  end
 
   module Rails
     describe 'Railtie' do
@@ -84,7 +82,8 @@ module Aws
             mock_rails_app = double
             mock_middleware_stack = []
 
-            allow(mock_rails_app).to receive_message_chain(:config, :middleware, :insert_before) do |_before, middleware|
+            allow(mock_rails_app).to receive_message_chain(:config, :middleware,
+                                                           :insert_before) do |_before, middleware|
               mock_middleware_stack.push(middleware)
             end
             allow(mock_rails_app).to receive_message_chain(:config, :force_ssl).and_return(true)

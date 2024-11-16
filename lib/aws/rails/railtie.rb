@@ -48,11 +48,6 @@ module Aws
           config.eager_load_namespaces << Aws
         end
       end
-
-      rake_tasks do
-        load 'tasks/dynamo_db/session_store.rake' if defined?(Aws::ActionDispatch::DynamoDb)
-        load 'tasks/aws_record/migrate.rake' if defined?(Aws::Record)
-      end
     end
 
     # Configures the AWS SDK for Ruby's logger to use the Rails logger.
