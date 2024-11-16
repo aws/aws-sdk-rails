@@ -5,12 +5,6 @@ module Aws
     module Middleware
       # Middleware to handle requests from the SQS Daemon present on Elastic Beanstalk worker environments.
       class ElasticBeanstalkSQSD
-        INTERNAL_ERROR_MESSAGE = 'Failed to execute job - see Rails log for more details.'
-        # TODO: move these away from constants so they don't have to be frozen
-        INTERNAL_ERROR_RESPONSE = [500, { 'Content-Type' => 'text/plain' }, [INTERNAL_ERROR_MESSAGE]].freeze
-        FORBIDDEN_MESSAGE = 'Request with aws-sqsd user agent was made from untrusted address.'
-        FORBIDDEN_RESPONSE = [403, { 'Content-Type' => 'text/plain' }, [FORBIDDEN_MESSAGE]].freeze
-
         def initialize(app)
           @app = app
           @logger = ::Rails.logger
@@ -18,22 +12,26 @@ module Aws
 
         def call(env)
           request = ::ActionDispatch::Request.new(env)
+
+          # Pass through unless user agent is the SQS Daemon
           return @app.call(env) unless from_sqs_daemon?(request)
 
-          @logger.debug('aws-sdk-rails middleware detected a call from the Elastic Beanstalk SQS Daemon.')
+          @logger.debug('aws-sdk-rails middleware detected call from Elastic Beanstalk SQS Daemon.')
 
           # Only accept requests from this user agent if it is from localhost or a docker host in case of forgery.
           unless request.local? || sent_from_docker_host?(request)
-            @logger.warn("SQSD request detected from untrusted address #{request.ip}; returning 403 forbidden.")
-            return FORBIDDEN_RESPONSE
+            @logger.warn('SQSD request detected from untrusted address; returning 403 forbidden.')
+            return forbidden_response
           end
 
+          # Execute job or periodic task based on HTTP request context
           periodic_task?(request) ? execute_periodic_task(request) : execute_job(request)
         end
 
         private
 
         def execute_job(request)
+          # Jobs queued from the Active Job SQS adapter contain the JSON message in the request body.
           job = Aws::Json.load(request.body.string)
           job_name = job['job_class']
           @logger.debug("Executing job: #{job_name}")
@@ -41,9 +39,9 @@ module Aws
           begin
             ::ActiveJob::Base.execute(job)
           rescue NameError => e
-            @logger.error("Job #{job_name} could not resolve to an Active Job class.")
+            @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
             @logger.error("Error: #{e}")
-            return INTERNAL_ERROR_RESPONSE
+            return internal_error_response
           end
 
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran job #{job_name}."]]
@@ -58,12 +56,22 @@ module Aws
             job = job_name.constantize.new
             job.perform_now
           rescue NameError => e
-            @logger.error("Periodic task #{job_name} could not resolve to an Active Job class.")
+            @logger.error("Periodic task #{job_name} could not resolve to an Active Job class - check the spelling in cron.yaml.")
             @logger.error("Error: #{e}.")
-            return INTERNAL_ERROR_RESPONSE
+            return internal_error_response
           end
 
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran periodic task #{job_name}."]]
+        end
+
+        def internal_error_response
+          message = 'Failed to execute job - see Rails log for more details.'
+          [500, { 'Content-Type' => 'text/plain' }, [message]]
+        end
+
+        def forbidden_response
+          message = 'Request with aws-sqsd user agent was made from untrusted address.'
+          [403, { 'Content-Type' => 'text/plain' }, [message]]
         end
 
         # The beanstalk worker SQS Daemon sets a specific User-Agent headers that begins with 'aws-sqsd'.
@@ -80,7 +88,7 @@ module Aws
         end
 
         def sent_from_docker_host?(request)
-          app_runs_in_docker_container? && default_gw_ips.include?(request.ip)
+          app_runs_in_docker_container? && ip_originates_from_docker_host?(request)
         end
 
         def app_runs_in_docker_container?
@@ -95,14 +103,22 @@ module Aws
           File.exist?('/proc/self/mountinfo') && File.read('/proc/self/mountinfo') =~ %r{/docker/containers/}
         end
 
-        def default_gw_ips
+        def ip_originates_from_docker_host?(request)
+          default_docker_ips.include?(request.remote_ip) ||
+            default_docker_ips.include?(request.remote_addr)
+        end
+
+        def default_docker_ips
+          @default_docker_ips ||= build_default_docker_ips
+        end
+
+        def build_default_docker_ips
           default_gw_ips = ['172.17.0.1']
 
           if File.exist?('/proc/net/route')
             File.open('/proc/net/route').each_line do |line|
               fields = line.strip.split
               next if fields.size != 11
-
               # Destination == 0.0.0.0 and Flags & RTF_GATEWAY != 0
               next unless fields[1] == '00000000' && fields[3].hex.anybits?(0x2)
 

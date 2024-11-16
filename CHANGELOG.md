@@ -31,6 +31,8 @@ Unreleased Changes
 
 * Feature - New namespace and class names for SQS ActiveJob. Existing namespace has temporarily been kept for backward compatibility and will be removed in aws-sdk-rails ~> 5.
 
+* Issue - Correctly determine if SQSD is running in a Docker container.
+
 * Feature - Aws::Record scaffold generators now lives in the `aws-activerecord-dynamodb` gem.
 
 4.1.0 (2024-09-27)

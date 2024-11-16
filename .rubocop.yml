@@ -14,6 +14,10 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*.rb'
 
+Metrics/MethodLength:
+  Exclude:
+    - 'spec/**/*.rb'
+
 Naming/FileName:
   Exclude:
     - 'gemfiles/*.gemfile'
