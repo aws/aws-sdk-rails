@@ -28,11 +28,14 @@ packages:
     git: []
 ```
 
+Rails and AWS environment variables were added to the Dockerfile.
+
 ## Pre-requisite: Deploying an Elastic Beanstalk Web Server and Worker
 
 Some of the features require a web server and worker with Elastic Beanstalk. To deploy the sample app to Elastic Beanstalk, follow these steps:
 
-Create a EB application with a **web server environment** using the Ruby platform. Use the default settings (including using the default/sample app initially) except:
+Create a EB application with a **web server environment** using the **Ruby platform**.
+Use the default settings (including using the default/sample app initially) except:
 1. (Optional) Set an EC2 key pair.
 2. Choose the default VPC and enable all of the subnets. Enable a public IP address.
 3. Set the root volume to General Purpose 3.
@@ -40,9 +43,10 @@ Create a EB application with a **web server environment** using the Ruby platfor
 5. Set `SECRET_KEY_BASE` to `SECRET` in the environment configuration.
 6. Set `AWS_REGION` to your region in the environment configuration.
 
-In SQS, create an queue called `active-job-worker`.
+In SQS, create two queues called `active-job-worker` and `active-job-worker-docker`.
 
-Create a EB application with a **worker environment** using the Ruby platform. Use the default settings (including using the default/sample app initially) except:
+Create a EB application with a **worker environment** using the **Ruby platform**.
+Use the default settings (including using the default/sample app initially) except:
 1. (Optional) Set an EC2 key pair.
 2. Choose the default VPC and enable all of the subnets. Enable a public IP address.
 3. Set the root volume to General Purpose 3.
@@ -52,12 +56,21 @@ Create a EB application with a **worker environment** using the Ruby platform. U
 7. Set `SECRET_KEY_BASE` to `SECRET` in the environment configuration.
 8. Set `AWS_REGION` to your region in the environment configuration.
 
+Create a EB application with a **worker environment** using the **Docker platform**.
+Use the default settings (including using the default/sample app initially) except:
+1. (Optional) Set an EC2 key pair.
+2. Choose the default VPC and enable all of the subnets. Enable a public IP address.
+3. Set the root volume to General Purpose 3.
+4. Select a bigger instance than the micro default, such as m7.large.
+5. Set the worker queue to your personal `active-job-worker-docker` queue.
+
 Navigate to IAM and for the new role (`aws-elasticbeanstalk-ec2-role`) add the `AmazonDynamoDBFullAccess` policy.
 
-After initial deployment of the sample app and worker:
-1. Run `rm Gemfile.lock && bundle install && bundle lock --add-platform ruby`
-2. Create a zip of the sample-app: `zip ../sample-app.zip -r * .[^.]*`.
-3. Upload the zip file to your EB web environments.
+After initial deployment of the sample app and workers:
+1. Ensure `path` is not used in the Gemfile - GitHub and branch may be used.
+2. Run `rm Gemfile.lock && bundle install && bundle lock --add-platform ruby`
+3. Create a zip of the sample-app: `zip ../sample-app.zip -r * .[^.]*`.
+4. Upload the zip file to your EB web environments.
 
 You can find web logs under `/var/log/puma/puma.log`
 
@@ -255,18 +268,14 @@ Visit `http://127.0.0.1:3000/queue_sqs_job` and `http://127.0.0.1:3000/queue_sqs
 
 Run the sample-app locally with `AWS_ACTIVE_JOB_QUEUE_URL=https://my_sqs_queue_url rails console`.
 
-Send a test job: `TestJob.perform_later('elastic beanstalk worker test')` 
+Send a test job: `TestJob.perform_later('elastic beanstalk worker test')`.
 
-You can then request the logs and should see processing of the job in `/var/log/puma/puma.log`
+You can then request the logs and should see processing of the job in `/var/log/puma/puma.log`.
 
-### Testing with Docker Elastic Beanstalk workers
+For Docker workers, the logs are in `/var/log/eb-docker/containers/eb-current-app/eb-<container>-stdouterr.log` .
 
-# TODO - this does not work generally
+Repeat this for either the worker or docker worker queues.
 
-* Build the sample app with docker: `docker build -t sample-app-docker`
-* Install the [eb cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html#eb-cli3-install.scripts).  
-* Ensure docker is running.
-* Create a docker application using `eb create` and then create a worker environment using `eb create -t worker -it t3.large`. Note: this will create a new SQS queue.
-* Update local sqs active job config to use the new queue and submit a test job: `rails c` and then `TestJob.perform_later(hello: 'from ebs')`
+### Testing with Lambda
 
-> **Note**: The dockerfile must set `AWS_REGION="us-west-2"` and `AWS_PROCESS_BEANSTALK_WORKER_REQUESTS="true"` and `SECRET_KEY_BASE="SECRET"`.
+TODO
