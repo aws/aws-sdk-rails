@@ -5,11 +5,11 @@ gem 'aws-sdk-rails',
     # path: '../'
     git: 'https://github.com/aws/aws-sdk-rails', branch: '4.2'
 
-gem 'aws-actiondispatch-dynamodb', git: 'https://github.com/aws/aws-actiondispatch-dynamodb-ruby'
-gem 'aws-actionmailbox-ses', git: 'https://github.com/aws/aws-actionmailbox-ses-ruby'
-gem 'aws-actionmailer-ses', git: 'https://github.com/aws/aws-actionmailer-ses-ruby'
-gem 'aws-activejob-sqs', git: 'https://github.com/aws/aws-activejob-sqs-ruby'
-gem 'aws-record-rails', git: 'https://github.com/aws/aws-record-rails'
+gem 'aws-actiondispatch-dynamodb' #, git: 'https://github.com/aws/aws-actiondispatch-dynamodb-ruby'
+gem 'aws-actionmailbox-ses' #, git: 'https://github.com/aws/aws-actionmailbox-ses-ruby'
+gem 'aws-actionmailer-ses' #, git: 'https://github.com/aws/aws-actionmailer-ses-ruby'
+gem 'aws-activejob-sqs' #, git: 'https://github.com/aws/aws-activejob-sqs-ruby'
+gem 'aws-record-rails' #, git: 'https://github.com/aws/aws-record-rails'
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem 'bcrypt'
