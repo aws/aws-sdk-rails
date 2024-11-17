@@ -279,3 +279,9 @@ Repeat this for either the worker or docker worker queues.
 ### Testing with Lambda
 
 TODO
+
+## Aws::Record Generators
+
+Run `bundle exec rails generate aws_record:scaffold aws_record_test --table-config primary:10-5`.
+
+An entire scaffold should be created.
