@@ -46,27 +46,20 @@ jobs:
           - rails: main
             ruby: jruby-9.4
 
-    env:
-      RAILS_ENV: test
-      RAILS_VERSION: ${{ matrix.rails }}
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Set RAILS_VERSION
+        run: echo "RAILS_VERSION=${{ matrix.rails }}" >> $GITHUB_ENV
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
 
-      - uses: actions/checkout@v4
-
-      - name: Install gems
-        run: bundle install
-        env:
-          BUNDLE_GEMFILE: gemfiles/rails-${{ matrix.rails }}.gemfile
-
       - name: Test
         run: bundle exec rake spec
-        env:
-          BUNDLE_GEMFILE: gemfiles/rails-${{ matrix.rails }}.gemfile
 
   rubocop:
     runs-on: ubuntu-latest
