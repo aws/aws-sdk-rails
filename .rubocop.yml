@@ -20,7 +20,6 @@ Metrics/MethodLength:
 
 Naming/FileName:
   Exclude:
-    - 'gemfiles/*.gemfile'
     - 'lib/aws-sdk-rails.rb'
 
 Style/BlockComments:

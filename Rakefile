@@ -3,7 +3,7 @@
 require 'rspec/core/rake_task'
 require 'rubocop/rake_task'
 
-Dir.glob('**/*.rake').each do |task_file|
+Dir.glob('tasks/**/*.rake').each do |task_file|
   load task_file
 end
 

@@ -16,12 +16,10 @@ module Aws
         if %i[ses sesv2].include?(::Rails.application.config.action_mailer.delivery_method)
           ::Rails.logger.warn(<<~MSG)
             ** Aws::Rails.add_action_mailer_delivery_method will be removed in aws-sdk-rails ~> 5.
-            If you are using this feature, please add your desired delivery methods in an initializer
-            (such as config/initializers/action_mailer.rb):
+            In `aws-actionmailer-ses ~> 1`, configuration will be set using config settings:
 
-                options = { ... SES client options ... }
-                ActionMailer::Base.add_delivery_method :ses, Aws::ActionMailer::SESMailer, **options
-                ActionMailer::Base.add_delivery_method :ses_v2, Aws::ActionMailer::SESV2Mailer, **options
+              config.action_mailer.delivery_method = :ses_v2
+              config.action_mailer.ses_v2_settings = { region: 'us-west-2' }
 
             Existing Mailer classes have moved namespaces but will continue to work in this major version. **
           MSG
