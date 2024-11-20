@@ -1,7 +1,7 @@
 Unreleased Changes
 ------------------
 
-* Feature - Remove dependencies on modular feature gems: `aws-actiondispatch-dynamodb`, `aws-actionmailer-ses`, `aws-actionmailbox-ses`, `aws-activejob-sqs`, and `aws-record-rails`.
+* Feature - [Major Version] Remove dependencies on modular feature gems: `aws-actiondispatch-dynamodb`, `aws-actionmailer-ses`, `aws-actionmailbox-ses`, `aws-activejob-sqs`, and `aws-record-rails`.
 
 * Issue - Remove `Aws::Rails.add_action_mailer_delivery_method` in favor of `ActionMailer::Base.add_delivery_method` or the Railtie and configuration in `aws-actionmailer-ses ~> 1`.
 
