@@ -112,9 +112,7 @@ Inspect the output of `Aws.config` and ensure the credentials are set.
 
 ### Setup
 
-This is configured in `config/initializers/instrument_aws_sdk.rb`. See the `aws-sdk-rails` README.
-
-`UsersController#index` captures any AWS SDK notification with:
+This is configured in `config/initializers/notifications.rb`. See the `aws-sdk-rails` README.
 
 ```ruby
 ActiveSupport::Notifications.subscribe(/[.]aws/) do |name, start, finish, id, _payload|

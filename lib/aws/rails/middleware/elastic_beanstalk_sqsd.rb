@@ -64,7 +64,7 @@ module Aws
           job.perform_now
         rescue NameError => e
           @logger.error("Periodic task #{job_name} could not resolve to an Active Job class " \
-                        '- check the spelling in cron.yaml.')
+                        '- check the cron name spelling and set the path as / in cron.yaml.')
           @logger.error("Error: #{e}.")
           raise e
         end

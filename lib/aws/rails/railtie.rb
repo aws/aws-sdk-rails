@@ -51,7 +51,7 @@ module Aws
       end
 
       # Register a middleware that will handle requests from the Elastic Beanstalk worker SQS Daemon.
-      initializer 'aws-sdk-rails.add-sqsd-middleware', after: :build_middleware_stack do |app|
+      initializer 'aws-sdk-rails.add-sqsd-middleware', before: :build_middleware_stack do |app|
         Aws::Rails.add_sqsd_middleware(app)
       end
     end

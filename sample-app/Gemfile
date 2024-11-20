@@ -1,10 +1,8 @@
 source "https://rubygems.org"
 
 # Our gems
-gem 'aws-sdk-rails',
-    # path: '../'
-    git: 'https://github.com/aws/aws-sdk-rails', branch: '4.2'
-
+# bundle config set local.aws-sdk-rails ../
+gem 'aws-sdk-rails', git: 'https://github.com/aws/aws-sdk-rails', branch: '5.0'
 gem 'aws-actiondispatch-dynamodb' #, git: 'https://github.com/aws/aws-actiondispatch-dynamodb-ruby'
 gem 'aws-actionmailbox-ses' #, git: 'https://github.com/aws/aws-actionmailbox-ses-ruby'
 gem 'aws-actionmailer-ses' #, git: 'https://github.com/aws/aws-actionmailer-ses-ruby'
