@@ -9,6 +9,7 @@ require 'aws-actiondispatch-dynamodb'
 require 'aws-actionmailbox-ses' if defined?(ActionMailbox::Engine)
 require 'aws-actionmailer-ses'
 require 'aws-activejob-sqs'
+require 'aws-record-rails'
 
 module Aws
   module Rails
