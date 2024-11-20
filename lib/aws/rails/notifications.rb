@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'aws-sdk-core'
 require 'active_support/notifications'
+
+require 'aws-sdk-core'
 
 module Aws
   module Rails

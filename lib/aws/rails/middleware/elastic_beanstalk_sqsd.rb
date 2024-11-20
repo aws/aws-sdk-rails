@@ -31,37 +31,42 @@ module Aws
         private
 
         def execute_job(request)
-          # Jobs queued from the Active Job SQS adapter contain the JSON message in the request body.
-          job = Aws::Json.load(request.body.string)
+          # Jobs queued from the SQS adapter contain the JSON message in the request body.
+          job = ::ActiveSupport::JSON.decode(request.body.string)
           job_name = job['job_class']
           @logger.debug("Executing job: #{job_name}")
-
-          begin
-            ::ActiveJob::Base.execute(job)
-          rescue NameError => e
-            @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
-            @logger.error("Error: #{e}")
-            return internal_error_response
-          end
-
+          _execute_job(job, job_name)
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran job #{job_name}."]]
+        rescue NameError
+          internal_error_response
+        end
+
+        def _execute_job(job, job_name)
+          ::ActiveJob::Base.execute(job)
+        rescue NameError => e
+          @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
+          @logger.error("Error: #{e}")
+          raise e
         end
 
         def execute_periodic_task(request)
           # The beanstalk worker SQS Daemon will add the 'X-Aws-Sqsd-Taskname' for periodic tasks set in cron.yaml.
           job_name = request.headers['X-Aws-Sqsd-Taskname']
           @logger.debug("Creating and executing periodic task: #{job_name}")
-
-          begin
-            job = job_name.constantize.new
-            job.perform_now
-          rescue NameError => e
-            @logger.error("Periodic task #{job_name} could not resolve to an Active Job class - check the spelling in cron.yaml.")
-            @logger.error("Error: #{e}.")
-            return internal_error_response
-          end
-
+          _execute_periodic_task(job_name)
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran periodic task #{job_name}."]]
+        rescue NameError
+          internal_error_response
+        end
+
+        def _execute_periodic_task(job_name)
+          job = job_name.constantize.new
+          job.perform_now
+        rescue NameError => e
+          @logger.error("Periodic task #{job_name} could not resolve to an Active Job class " \
+                        '- check the spelling in cron.yaml.')
+          @logger.error("Error: #{e}.")
+          raise e
         end
 
         def internal_error_response
@@ -84,7 +89,7 @@ module Aws
         # The beanstalk worker SQS Daemon will add the custom 'X-Aws-Sqsd-Taskname' header
         # for periodic tasks set in cron.yaml.
         def periodic_task?(request)
-          !request.headers['X-Aws-Sqsd-Taskname'].nil? && request.headers['X-Aws-Sqsd-Taskname'].present?
+          request.headers['X-Aws-Sqsd-Taskname'].present? && request.fullpath == '/'
         end
 
         def sent_from_docker_host?(request)
@@ -112,6 +117,7 @@ module Aws
           @default_docker_ips ||= build_default_docker_ips
         end
 
+        # rubocop:disable Metrics/AbcSize
         def build_default_docker_ips
           default_gw_ips = ['172.17.0.1']
 
@@ -128,6 +134,7 @@ module Aws
 
           default_gw_ips
         end
+        # rubocop:enable Metrics/AbcSize
       end
     end
   end

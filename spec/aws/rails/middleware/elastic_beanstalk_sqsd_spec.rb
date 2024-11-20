@@ -279,6 +279,7 @@ module Aws
           }
 
           if is_periodic_task
+            mock_env['PATH_INFO'] = '/'
             mock_env['HTTP_X_AWS_SQSD_TASKNAME'] = period_task_name
           else
             mock_env['rack.input'] = StringIO.new('{"job_class": "ElasticBeanstalkJob"}')
