@@ -1,4 +1,4 @@
-Unreleased Changes
+4.2.0 (2024-11-20)
 ------------------
 
 * Feature - DynamoDB Session Storage features now live in the `aws-actiondispatch-dynamodb` gem. This gem depends on `aws-sessionstore-dynamodb ~> 3` which depends on `rack ~> 3`.
