@@ -1,4 +1,4 @@
-Unreleased Changes
+5.0.0 (2024-11-21)
 ------------------
 
 * Feature - [Major Version] Remove dependencies on modular feature gems: `aws-actiondispatch-dynamodb`, `aws-actionmailer-ses`, `aws-actionmailbox-ses`, `aws-activejob-sqs`, and `aws-record-rails`.
