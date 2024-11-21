@@ -3,34 +3,24 @@
 module Aws
   # Use the Rails namespace.
   module Rails
+    # See https://guides.rubyonrails.org/configuring.html#initializers
     # @api private
     class Railtie < ::Rails::Railtie
-      initializer 'aws-sdk-rails.initialize',
-                  before: :load_config_initializers do
-        # Initialization Actions
-        Aws::Rails.log_to_rails_logger
-        Aws::Rails.use_rails_encrypted_credentials
-        Aws::Rails.add_action_mailer_delivery_method
-        Aws::Rails.add_action_mailer_delivery_method(:sesv2)
-
-        if %i[ses sesv2].include?(::Rails.application.config.action_mailer.delivery_method)
-          ::Rails.logger.warn(<<~MSG)
-            ** Aws::Rails.add_action_mailer_delivery_method will be removed in aws-sdk-rails ~> 5.
-            In `aws-actionmailer-ses ~> 1`, configuration will be set using config settings:
-
-              config.action_mailer.delivery_method = :ses_v2
-              config.action_mailer.ses_v2_settings = { region: 'us-west-2' }
-
-            Existing Mailer classes have moved namespaces but will continue to work in this major version. **
-          MSG
-        end
+      # Set the logger for the AWS SDK to Rails.logger.
+      initializer 'aws-sdk-rails.log-to-rails-logger', after: :initialize_logger do
+        Aws.config[:logger] = ::Rails.logger
       end
 
-      initializer 'aws-sdk-rails.insert_middleware' do |app|
-        Aws::Rails.add_sqsd_middleware(app)
+      # Configures the AWS SDK with credentials from Rails encrypted credentials.
+      initializer 'aws-sdk-rails.use-rails-encrypted-credentials', after: :load_environment_config do
+        # limit the config keys we merge to credentials only
+        aws_credential_keys = %i[access_key_id secret_access_key session_token account_id]
+        creds = ::Rails.application.credentials[:aws].to_h.slice(*aws_credential_keys)
+        Aws.config.merge!(creds)
       end
 
-      initializer 'aws-sdk-rails.eager_load' do
+      # Eager load the AWS SDK Clients.
+      initializer 'aws-sdk-rails.eager-load-sdk', before: :eager_load! do
         Aws.define_singleton_method(:eager_load!) do
           Aws.constants.each do |c|
             m = Aws.const_get(c)
@@ -46,65 +36,37 @@ module Aws
           config.eager_load_namespaces << Aws
         end
       end
+
+      # Add ActiveSupport Notifications instrumentation to AWS SDK client operations.
+      # Each operation will produce an event with a name `<operation>.<service>.aws`.
+      # For example, S3's put_object has an event name of: put_object.S3.aws
+      initializer 'aws-sdk-rails.instrument-sdk-operations', after: :load_active_support do
+        Aws.constants.each do |c|
+          m = Aws.const_get(c)
+          if m.is_a?(Module) && m.const_defined?(:Client) &&
+             (client = m.const_get(:Client)) && client.superclass == Seahorse::Client::Base
+            m.const_get(:Client).add_plugin(Aws::Rails::Notifications)
+          end
+        end
+      end
+
+      # Register a middleware that will handle requests from the Elastic Beanstalk worker SQS Daemon.
+      initializer 'aws-sdk-rails.add-sqsd-middleware', before: :build_middleware_stack do |app|
+        Aws::Rails.add_sqsd_middleware(app)
+      end
     end
 
-    # Configures the AWS SDK for Ruby's logger to use the Rails logger.
-    def self.log_to_rails_logger
-      Aws.config[:logger] = ::Rails.logger
-      nil
-    end
+    class << self
+      # @api private
+      def add_sqsd_middleware(app)
+        return unless ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS']
 
-    # Configures the AWS SDK with credentials from Rails encrypted credentials.
-    def self.use_rails_encrypted_credentials
-      # limit the config keys we merge to credentials only
-      aws_credential_keys = %i[access_key_id secret_access_key session_token account_id]
-      creds = ::Rails.application.credentials[:aws].to_h.slice(*aws_credential_keys)
-      Aws.config.merge!(creds)
-    end
-
-    # This is called automatically from the SDK's Railtie, but can be manually
-    # called if you want to specify options for building the Aws::SES::Client or
-    # Aws::SESV2::Client.
-    #
-    # @param [Symbol] name The name of the ActionMailer delivery method to
-    #   register, either :ses or :sesv2.
-    # @param [Hash] client_options The options you wish to pass on to the
-    #   Aws::SES[V2]::Client initialization method.
-    def self.add_action_mailer_delivery_method(name = :ses, client_options = {})
-      # TODO: remove this method in aws-sdk-rails ~> 5
-      ActiveSupport.on_load(:action_mailer) do
-        if name == :sesv2
-          add_delivery_method(name, Aws::Rails::Sesv2Mailer, client_options)
+        if app.config.force_ssl
+          # SQS Daemon sends requests over HTTP - allow and process them before enforcing SSL.
+          app.config.middleware.insert_before(::ActionDispatch::SSL, Aws::Rails::Middleware::ElasticBeanstalkSQSD)
         else
-          add_delivery_method(name, Aws::Rails::SesMailer, client_options)
+          app.config.middleware.use(Aws::Rails::Middleware::ElasticBeanstalkSQSD)
         end
-      end
-    end
-
-    # Add ActiveSupport Notifications instrumentation to AWS SDK client operations.
-    # Each operation will produce an event with a name `<operation>.<service>.aws`.
-    # For example, S3's put_object has an event name of: put_object.S3.aws
-    def self.instrument_sdk_operations
-      Aws.constants.each do |c|
-        m = Aws.const_get(c)
-        if m.is_a?(Module) && m.const_defined?(:Client) &&
-           (client = m.const_get(:Client)) && client.superclass == Seahorse::Client::Base
-          m.const_get(:Client).add_plugin(Aws::Rails::Notifications)
-        end
-      end
-    end
-
-    # Register a middleware that will handle requests from the Elastic Beanstalk worker SQS Daemon.
-    # This will only be added in the presence of the AWS_PROCESS_BEANSTALK_WORKER_REQUESTS environment variable.
-    # The expectation is this variable should only be set on EB worker environments.
-    def self.add_sqsd_middleware(app)
-      return unless ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS']
-
-      if app.config.force_ssl
-        # SQS Daemon sends requests over HTTP - allow and process them before enforcing SSL.
-        app.config.middleware.insert_before(::ActionDispatch::SSL, Aws::Rails::Middleware::ElasticBeanstalkSQSD)
-      else
-        app.config.middleware.use(Aws::Rails::Middleware::ElasticBeanstalkSQSD)
       end
     end
   end

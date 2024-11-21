@@ -1,21 +1,6 @@
 # frozen_string_literal: true
 
 module Aws
-  # Test service for Notifications
-  module Service
-    class Client < Seahorse::Client::Base; end
-  end
-
-  module NotService
-    class Client
-      def self.add_plugin(_plugin); end
-    end
-  end
-
-  class Client
-    def self.add_plugin(_plugin); end
-  end
-
   module Rails
     describe 'Railtie' do
       it 'uses aws credentials from rails encrypted credentials' do
@@ -29,11 +14,6 @@ module Aws
         expect(Aws.config[:something]).to be_nil
       end
 
-      it 'adds action mailer delivery methods' do
-        expect(::ActionMailer::Base.delivery_methods[:ses]).to eq Aws::Rails::SesMailer
-        expect(::ActionMailer::Base.delivery_methods[:sesv2]).to eq Aws::Rails::Sesv2Mailer
-      end
-
       it 'sets the Rails logger to Aws global config' do
         expect(Aws.config[:logger]).to eq ::Rails.logger
       end
@@ -43,17 +23,13 @@ module Aws
         expect(::Rails.application.config.eager_load_namespaces).to include(Aws)
       end
 
-      describe '.instrument_sdk_operations' do
-        it 'adds the Notifications plugin to sdk clients' do
-          expect(Aws::Service::Client).to receive(:add_plugin).with(Aws::Rails::Notifications)
-          expect(Aws::NotService::Client).not_to receive(:add_plugin)
-          expect(Aws::Client).not_to receive(:add_plugin)
-
-          Aws::Rails.instrument_sdk_operations
-        end
+      it 'adds the Notifications plugin to sdk clients' do
+        expect(Aws::STS::Client.plugins).to include(Aws::Rails::Notifications)
+        expect(Aws::NotService::Client.plugins).not_to include(Aws::Rails::Notifications)
+        expect(Aws::Client.plugins).not_to include(Aws::Rails::Notifications)
       end
 
-      describe '.add_sqsd_middleware' do
+      context 'sqsd middleware' do
         describe 'AWS_PROCESS_BEANSTALK_WORKER_REQUESTS is set' do
           before do
             ENV['AWS_PROCESS_BEANSTALK_WORKER_REQUESTS'] = 'true'

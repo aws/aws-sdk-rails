@@ -2,6 +2,24 @@
 
 ENV['RAILS_ENV'] = 'test'
 
+# Test services for Notifications
+# Must exist before initializing the Rails application
+module Aws
+  module NotService
+    class Client
+      def self.plugins
+        []
+      end
+    end
+  end
+
+  class Client
+    def self.plugins
+      []
+    end
+  end
+end
+
 require_relative 'dummy/config/application'
 
 Rails.application.initialize!

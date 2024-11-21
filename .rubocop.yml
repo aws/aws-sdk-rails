@@ -1,5 +1,3 @@
-inherit_from: .rubocop_todo.yml
-
 AllCops:
   NewCops: enable
   TargetRubyVersion: 2.7
@@ -10,11 +8,19 @@ AllCops:
 Gemspec/RequireMFA:
   Enabled: false
 
+Metrics/AbcSize:
+  Exclude:
+    - 'spec/**/*.rb'
+
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*.rb'
 
 Metrics/MethodLength:
+  Exclude:
+    - 'spec/**/*.rb'
+
+Metrics/ModuleLength:
   Exclude:
     - 'spec/**/*.rb'
 

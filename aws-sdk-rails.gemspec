@@ -13,14 +13,9 @@ Gem::Specification.new do |spec|
   spec.license       = 'Apache-2.0'
   spec.files         = Dir['LICENSE.txt', 'CHANGELOG.md', 'VERSION', 'lib/**/*']
 
-  # These will be removed in aws-sdk-rails ~> 5
-  spec.add_dependency('aws-actiondispatch-dynamodb', '~> 0')
-  spec.add_dependency('aws-actionmailbox-ses', '~> 0')
-  spec.add_dependency('aws-actionmailer-ses', '~> 0')
-  spec.add_dependency('aws-activejob-sqs', '~> 0')
-  spec.add_dependency('aws-record-rails', '~> 0')
+  spec.add_dependency('aws-sdk-core', '~> 3')
 
-  spec.add_dependency('railties', '>= 7.1.0') # Minimum supported Rails version
+  spec.add_dependency('railties', '>= 7.1.0')
 
   spec.required_ruby_version = '>= 2.7'
 end
