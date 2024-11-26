@@ -69,7 +69,7 @@ Navigate to IAM and for the new role (`aws-elasticbeanstalk-ec2-role`) add the `
 After initial deployment of the sample app and workers:
 1. Ensure `path` is not used in the Gemfile - GitHub and branch may be used.
 2. Run `rm Gemfile.lock && bundle install && bundle lock --add-platform ruby`
-3. Create a zip of the sample-app: `zip ../sample-app.zip -r * .[^.]*`.
+3. Create a zip of the sample-app: `rm -rf ../sample-app.zip && zip ../sample-app.zip -r * .[^.]*`.
 4. Upload the zip file to your EB web environments.
 
 You can find web logs under `/var/log/puma/puma.log`
