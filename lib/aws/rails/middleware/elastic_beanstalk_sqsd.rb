@@ -33,15 +33,16 @@ module Aws
         def shutdown(timeout = nil)
           return unless @executor
 
+          @logger.info("Shutting down SQS EBS background job executor. Timeout: #{timeout}")
           @executor.shutdown
-          @executor.wait_for_termination(timeout)
+          clean_shutdown = @executor.wait_for_termination(timeout)
+          @logger.info("SQS EBS background executor shutdown complete. Clean: #{clean_shutdown}")
         end
 
         private
 
         def init_executor
           options = {
-            min_threads: 0,
             max_threads: Integer(Concurrent.available_processor_count || Concurrent.processor_count),
             max_queue: 1,
             fallback_policy: :abort # Concurrent::RejectedExecutionError must be handled
@@ -50,6 +51,7 @@ module Aws
             options[:max_threads] = Integer(ENV['AWS_PROCESS_BEANSTALK_WORKER_THREADS'])
           end
           @executor = Concurrent::ThreadPoolExecutor.new(options)
+          at_exit { shutdown }
         end
 
         def execute_job(request)
@@ -76,12 +78,12 @@ module Aws
 
         # Execute a job using the thread pool executor
         def _execute_job_parallel(request)
-          @executor.post(request) do |message|
-            job = ::ActiveSupport::JSON.decode(message.body.string)
+          job_data = ::ActiveSupport::JSON.decode(request.body.string)
+          @executor.post(job_data) do |job|
             @logger.debug("Executing job [in thread]: #{job['job_class']}")
             ::ActiveJob::Base.execute(job)
           end
-          [200, { 'Content-Type' => 'text/plain' }, ['Successfully ran queued job']]
+          [200, { 'Content-Type' => 'text/plain' }, ["Successfully queued job #{job_data['job_class']}"]]
         rescue Concurrent::RejectedExecutionError
           msg = 'No capacity to execute job.'
           @logger.info(msg)
