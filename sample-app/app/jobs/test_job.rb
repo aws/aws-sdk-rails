@@ -4,5 +4,7 @@ class TestJob < ApplicationJob
 
   def perform(*args)
     puts "Job performed with args: #{args}"
+    sleep(5)
+    puts "Job finished"
   end
 end

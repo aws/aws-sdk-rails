@@ -9,20 +9,7 @@ module Aws
           @app = app
           @logger = ::Rails.logger
 
-          if ENV['AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC']
-            options = {
-              min_threads: 0,
-              max_threads: 1, # Integer(Concurrent.available_processor_count || Concurrent.processor_count),
-              auto_terminate: true,
-              max_queue: 1,
-              idletime: 60, # 1 minute
-              fallback_policy: :abort # Concurrent::RejectedExecutionError must be handled
-            }
-            if ENV['AWS_PROCESS_BEANSTALK_WORKER_THREADS']
-              options[:max_threads] = Integer(ENV['AWS_PROCESS_BEANSTALK_WORKER_THREADS'])
-            end
-            @executor = Concurrent::ThreadPoolExecutor.new(options)
-          end
+          init_executor if ENV['AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC']
         end
 
         def call(env)
@@ -43,7 +30,27 @@ module Aws
           periodic_task?(request) ? execute_periodic_task(request) : execute_job(request)
         end
 
+        def shutdown(timeout = nil)
+          return unless @executor
+
+          @executor.shutdown
+          @executor.wait_for_termination(timeout)
+        end
+
         private
+
+        def init_executor
+          options = {
+            min_threads: 0,
+            max_threads: Integer(Concurrent.available_processor_count || Concurrent.processor_count),
+            max_queue: 1,
+            fallback_policy: :abort # Concurrent::RejectedExecutionError must be handled
+          }
+          if ENV['AWS_PROCESS_BEANSTALK_WORKER_THREADS']
+            options[:max_threads] = Integer(ENV['AWS_PROCESS_BEANSTALK_WORKER_THREADS'])
+          end
+          @executor = Concurrent::ThreadPoolExecutor.new(options)
+        end
 
         def execute_job(request)
           if @executor
@@ -69,16 +76,15 @@ module Aws
 
         # Execute a job using the thread pool executor
         def _execute_job_parallel(request)
-          @executor.post(request) do |request|
-            job = ::ActiveSupport::JSON.decode(request.body.string)
-            job_name = job['job_class']
-            @logger.debug("Executing job [in thread]: #{job_name}")
+          @executor.post(request) do |message|
+            job = ::ActiveSupport::JSON.decode(message.body.string)
+            @logger.debug("Executing job [in thread]: #{job['job_class']}")
             ::ActiveJob::Base.execute(job)
           end
           [200, { 'Content-Type' => 'text/plain' }, ['Successfully ran queued job']]
         rescue Concurrent::RejectedExecutionError
           msg = 'No capacity to execute job.'
-          @logger.debug(msg)
+          @logger.info(msg)
           [429, { 'Content-Type' => 'text/plain' }, [msg]]
         end
 

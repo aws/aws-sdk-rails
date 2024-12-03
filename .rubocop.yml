@@ -24,6 +24,9 @@ Metrics/ModuleLength:
   Exclude:
     - 'spec/**/*.rb'
 
+Metrics/ClassLength:
+  Max: 150
+
 Naming/FileName:
   Exclude:
     - 'lib/aws-sdk-rails.rb'
