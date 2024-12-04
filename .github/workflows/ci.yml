@@ -57,7 +57,6 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-          bundler: latest
 
       - name: Test
         run: bundle exec rake spec

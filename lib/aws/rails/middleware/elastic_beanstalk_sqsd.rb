@@ -9,7 +9,9 @@ module Aws
           @app = app
           @logger = ::Rails.logger
 
-          init_executor if ENV['AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC']
+          return unless ENV['AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC']
+
+          @executor = init_executor
         end
 
         def call(env)
@@ -27,7 +29,7 @@ module Aws
           end
 
           # Execute job or periodic task based on HTTP request context
-          periodic_task?(request) ? execute_periodic_task(request) : execute_job(request)
+          execute(request)
         end
 
         def shutdown(timeout = nil)
@@ -44,19 +46,28 @@ module Aws
         def init_executor
           threads = Integer(ENV.fetch('AWS_PROCESS_BEANSTALK_WORKER_THREADS',
                                       Concurrent.available_processor_count || Concurrent.processor_count))
-          puts "Running with threads: #{threads}"
           options = {
             max_threads: threads,
             max_queue: 1,
+            auto_terminate: false, # register our own at_exit to gracefully shutdown
             fallback_policy: :abort # Concurrent::RejectedExecutionError must be handled
           }
-          @executor = Concurrent::ThreadPoolExecutor.new(options)
           at_exit { shutdown }
+
+          Concurrent::ThreadPoolExecutor.new(options)
+        end
+
+        def execute(request)
+          if periodic_task?(request)
+            execute_periodic_task(request)
+          else
+            execute_job(request)
+          end
         end
 
         def execute_job(request)
           if @executor
-            _execute_job_parallel(request)
+            _execute_job_background(request)
           else
             _execute_job_now(request)
           end
@@ -77,10 +88,10 @@ module Aws
         end
 
         # Execute a job using the thread pool executor
-        def _execute_job_parallel(request)
+        def _execute_job_background(request)
           job_data = ::ActiveSupport::JSON.decode(request.body.string)
+          @logger.debug("Queuing background job: #{job_data['job_class']}")
           @executor.post(job_data) do |job|
-            @logger.debug("Executing job [in thread]: #{job['job_class']}")
             ::ActiveJob::Base.execute(job)
           end
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully queued job #{job_data['job_class']}"]]
@@ -93,21 +104,33 @@ module Aws
         def execute_periodic_task(request)
           # The beanstalk worker SQS Daemon will add the 'X-Aws-Sqsd-Taskname' for periodic tasks set in cron.yaml.
           job_name = request.headers['X-Aws-Sqsd-Taskname']
-          @logger.debug("Creating and executing periodic task: #{job_name}")
-          _execute_periodic_task(job_name)
-          [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran periodic task #{job_name}."]]
-        rescue NameError
-          internal_error_response
-        end
-
-        def _execute_periodic_task(job_name)
           job = job_name.constantize.new
-          job.perform_now
+          if @executor
+            _execute_periodic_task_background(job)
+          else
+            _execute_periodic_task_now(job)
+          end
         rescue NameError => e
           @logger.error("Periodic task #{job_name} could not resolve to an Active Job class " \
                         '- check the cron name spelling and set the path as / in cron.yaml.')
           @logger.error("Error: #{e}.")
-          raise e
+          internal_error_response
+        end
+
+        def _execute_periodic_task_now(job)
+          @logger.debug("Executing periodic task: #{job.class}")
+          job.perform_now
+          [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran periodic task #{job.class}."]]
+        end
+
+        def _execute_periodic_task_background(job)
+          @logger.debug("Queuing bakground periodic task: #{job.class}")
+          @executor.post(job, &:perform_now)
+          [200, { 'Content-Type' => 'text/plain' }, ["Successfully queued periodic task #{job.class}"]]
+        rescue Concurrent::RejectedExecutionError
+          msg = 'No capacity to execute periodic task.'
+          @logger.info(msg)
+          [429, { 'Content-Type' => 'text/plain' }, [msg]]
         end
 
         def internal_error_response

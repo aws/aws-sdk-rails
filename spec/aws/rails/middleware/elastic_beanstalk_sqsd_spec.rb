@@ -242,6 +242,25 @@ module Aws
               expect(response[0]).to eq(429)
             end
           end
+
+          context 'periodic task' do
+            let(:is_periodic_task) { true }
+
+            it 'queues job' do
+              expect_any_instance_of(Concurrent::ThreadPoolExecutor).to receive(:post)
+              expect(response[0]).to eq(200)
+              expect(response[2]).to eq(['Successfully queued periodic task ElasticBeanstalkPeriodicTask'])
+            end
+
+            context 'no capacity' do
+              it 'returns too many requests error' do
+                allow_any_instance_of(Concurrent::ThreadPoolExecutor).to receive(:post)
+                                                                           .and_raise Concurrent::RejectedExecutionError
+
+                expect(response[0]).to eq(429)
+              end
+            end
+          end
         end
 
         def stub_runs_in_neither_docker_container
