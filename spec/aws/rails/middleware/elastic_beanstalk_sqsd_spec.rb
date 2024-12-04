@@ -255,7 +255,7 @@ module Aws
             context 'no capacity' do
               it 'returns too many requests error' do
                 allow_any_instance_of(Concurrent::ThreadPoolExecutor).to receive(:post)
-                                                                           .and_raise Concurrent::RejectedExecutionError
+                  .and_raise Concurrent::RejectedExecutionError
 
                 expect(response[0]).to eq(429)
               end
