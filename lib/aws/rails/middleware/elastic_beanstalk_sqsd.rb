@@ -42,14 +42,14 @@ module Aws
         private
 
         def init_executor
+          threads = Integer(ENV.fetch('AWS_PROCESS_BEANSTALK_WORKER_THREADS',
+                                      Concurrent.available_processor_count || Concurrent.processor_count))
+          puts "Running with threads: #{threads}"
           options = {
-            max_threads: Integer(Concurrent.available_processor_count || Concurrent.processor_count),
+            max_threads: threads,
             max_queue: 1,
             fallback_policy: :abort # Concurrent::RejectedExecutionError must be handled
           }
-          if ENV['AWS_PROCESS_BEANSTALK_WORKER_THREADS']
-            options[:max_threads] = Integer(ENV['AWS_PROCESS_BEANSTALK_WORKER_THREADS'])
-          end
           @executor = Concurrent::ThreadPoolExecutor.new(options)
           at_exit { shutdown }
         end
