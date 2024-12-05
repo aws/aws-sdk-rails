@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Feature - Support async job processing in Elastic Beanstalk middleware. (#167)
+
 5.0.0 (2024-11-21)
 ------------------
 
