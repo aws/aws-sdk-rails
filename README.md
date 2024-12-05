@@ -126,7 +126,7 @@ the `AWS_PROCESS_BEANSTALK_WORKER_REQUESTS` environment variable to `true` in
 the worker environment configuration. The
 [SQS Daemon](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html#worker-daemon)
 running on the worker sends messages as a POST request to `http://localhost/`.
-The aws-sdk-rails middleware will forward each request and parameters to their
+The ElasticBeanstalkSQSD middleware will forward each request and parameters to their
 appropriate jobs. The middleware will only process requests from the SQS daemon
 and will pass on others and so will not interfere with other routes in your
 application.
@@ -134,7 +134,34 @@ application.
 To protect against forgeries, daemon requests will only be processed if they
 originate from localhost or the Docker host.
 
-Periodic (scheduled) jobs are also supported with this approach. Elastic
+#### Running Jobs Async
+By default the ElasticBeanstalkSQSD middleware will process jobs synchronously
+and will not complete the request until the job has finished executing.  For
+long running jobs (exceeding the configured nginix timeout on the worker) this
+may cause timeouts and incomplete executions.  
+
+To run jobs asynchronously, set the `AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC`
+environment variable to `true` in your worker environment.  Jobs will be queued
+in a ThreadPoolExecutor and the request will return a 200 OK immediately and the
+SQS message will be deleted and the job will be executed in the background.
+
+By default the executor will use the available processor count as the the
+max_threads.  You can configure the max threads for the executor by setting
+the `AWS_PROCESS_BEANSTALK_WORKER_THREADS` environment variable.
+
+When there is no additional capacity to execute a task, the middleware
+returns a 429 (too many requests) response which will result in the 
+sqsd NOT deleting the message.  The message will be retried again once its
+visibility timeout is reached.
+
+Periodic (scheduled) tasks will also be run asynchronously in the same way.
+Elastic beanstalk queues a message for the periodic task and if there is
+no capacity to execute the task, it will be retried again once the message's
+visibility timeout is reached.
+
+#### Periodic (scheduled) jobs
+[Periodic (scheduled) tasks](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html#worker-periodictasks)
+are also supported with this approach. Elastic
 Beanstalk workers support the addition of a `cron.yaml` file in the application
 root to configure this. You can call your jobs from your controller actions
 or if you name your cron job the same as your job class and set the URL to

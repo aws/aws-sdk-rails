@@ -219,6 +219,50 @@ module Aws
           include_examples 'is valid in either cgroup1 or cgroup2'
         end
 
+        context 'when AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC' do
+          before(:each) do
+            ENV['AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC'] = 'true'
+          end
+
+          after(:each) do
+            ENV.delete('AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC')
+          end
+
+          it 'queues job' do
+            expect_any_instance_of(Concurrent::ThreadPoolExecutor).to receive(:post)
+            expect(response[0]).to eq(200)
+            expect(response[2]).to eq(['Successfully queued job ElasticBeanstalkJob'])
+          end
+
+          context 'no capacity' do
+            it 'returns too many requests error' do
+              allow_any_instance_of(Concurrent::ThreadPoolExecutor).to receive(:post)
+                .and_raise Concurrent::RejectedExecutionError
+
+              expect(response[0]).to eq(429)
+            end
+          end
+
+          context 'periodic task' do
+            let(:is_periodic_task) { true }
+
+            it 'queues job' do
+              expect_any_instance_of(Concurrent::ThreadPoolExecutor).to receive(:post)
+              expect(response[0]).to eq(200)
+              expect(response[2]).to eq(['Successfully queued periodic task ElasticBeanstalkPeriodicTask'])
+            end
+
+            context 'no capacity' do
+              it 'returns too many requests error' do
+                allow_any_instance_of(Concurrent::ThreadPoolExecutor).to receive(:post)
+                  .and_raise Concurrent::RejectedExecutionError
+
+                expect(response[0]).to eq(429)
+              end
+            end
+          end
+        end
+
         def stub_runs_in_neither_docker_container
           proc_1_cgroup = <<~CONTENT
             0::/
