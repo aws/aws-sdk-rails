@@ -151,11 +151,17 @@ the `AWS_PROCESS_BEANSTALK_WORKER_THREADS` environment variable.
 
 When there is no additional capacity to execute a task, the middleware
 returns a 429 (too many requests) response which will result in the 
-sqsd NOT deleting the message.  The mesagge will be retried again once its
+sqsd NOT deleting the message.  The message will be retried again once its
+visibility timeout is reached.
+
+Periodic (scheduled) tasks will also be run asynchronously in the same way.
+Elastic beanstalk queues a message for the periodic task and if there is
+no capacity to execute the task, it will be retried again once the message's
 visibility timeout is reached.
 
 #### Periodic (scheduled) jobs
-Periodic (scheduled) jobs are also supported with this approach. Elastic
+[Periodic (scheduled) tasks](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html#worker-periodictasks)
+are also supported with this approach. Elastic
 Beanstalk workers support the addition of a `cron.yaml` file in the application
 root to configure this. You can call your jobs from your controller actions
 or if you name your cron job the same as your job class and set the URL to
