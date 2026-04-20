@@ -181,26 +181,24 @@ module Aws
           @default_docker_ips ||= build_default_docker_ips
         end
 
-        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/AbcSize, Style/FileOpen
         def build_default_docker_ips
           default_gw_ips = ['172.17.0.1']
 
           if File.exist?('/proc/net/route')
-            File.open('/proc/net/route') do |file|
-              file.each_line do |line|
-                fields = line.strip.split
-                next if fields.size != 11
-                # Destination == 0.0.0.0 and Flags & RTF_GATEWAY != 0
-                next unless fields[1] == '00000000' && fields[3].hex.anybits?(0x2)
+            File.open('/proc/net/route').each_line do |line|
+              fields = line.strip.split
+              next if fields.size != 11
+              # Destination == 0.0.0.0 and Flags & RTF_GATEWAY != 0
+              next unless fields[1] == '00000000' && fields[3].hex.anybits?(0x2)
 
-                default_gw_ips << IPAddr.new_ntoh([fields[2].hex].pack('L')).to_s
-              end
+              default_gw_ips << IPAddr.new_ntoh([fields[2].hex].pack('L')).to_s
             end
           end
 
           default_gw_ips
         end
-        # rubocop:enable Metrics/AbcSize
+        # rubocop:enable Metrics/AbcSize, Style/FileOpen
       end
     end
   end
