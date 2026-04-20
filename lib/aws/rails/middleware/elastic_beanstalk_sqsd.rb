@@ -181,7 +181,7 @@ module Aws
           @default_docker_ips ||= build_default_docker_ips
         end
 
-        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/AbcSize, Style/FileOpen
         def build_default_docker_ips
           default_gw_ips = ['172.17.0.1']
 
@@ -198,7 +198,7 @@ module Aws
 
           default_gw_ips
         end
-        # rubocop:enable Metrics/AbcSize
+        # rubocop:enable Metrics/AbcSize, Style/FileOpen
       end
     end
   end
