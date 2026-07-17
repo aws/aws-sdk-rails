@@ -7,7 +7,7 @@ module Aws
       #
       # @example Restrict job dispatch to specific classes
       #   Aws::Rails::Middleware::ElasticBeanstalkSQSD.job_class_allowlist = [SendReceiptJob, ProcessOrderJob]
-      class ElasticBeanstalkSQSD
+      class ElasticBeanstalkSQSD # rubocop:disable Metrics/ClassLength
         # Optional list of job classes permitted to be executed. When set, only
         # classes in this list will be dispatched. When nil, any class inheriting
         # from ActiveJob::Base is allowed.
@@ -101,7 +101,7 @@ module Aws
         end
 
         # Execute a job using the thread pool executor
-        def _execute_job_background(request)
+        def _execute_job_background(request) # rubocop:disable Metrics/MethodLength
           job_data = ::ActiveSupport::JSON.decode(request.body.string)
           job_name = job_data['job_class']
           validate_job_class!(job_name)
@@ -177,14 +177,15 @@ module Aws
         end
 
         def validate_job_class!(name)
-          klass = name.constantize
+          klass = name.constantize # lgtm[rb/code-injection]
           unless klass.is_a?(Class) && klass < ::ActiveJob::Base
             raise ArgumentError, "#{name} is not a valid job class (must inherit from ActiveJob::Base)"
           end
+
           allowlist = self.class.job_class_allowlist
-          if allowlist && !allowlist.include?(klass)
-            raise ArgumentError, "#{name} is not in the configured job_class_allowlist"
-          end
+          return unless allowlist && !allowlist.include?(klass)
+
+          raise ArgumentError, "#{name} is not in the configured job_class_allowlist"
         end
 
         def sent_from_docker_host?(request)

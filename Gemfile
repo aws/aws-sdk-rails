@@ -5,6 +5,11 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'rake', require: false
+if defined?(JRUBY_VERSION)
+  gem 'rdoc', '< 8.0.0'
+else
+  gem 'rdoc'
+end
 
 case ENV.fetch('RAILS_VERSION', nil)
 when '7.1'
