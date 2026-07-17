@@ -219,6 +219,35 @@ module Aws
           include_examples 'is valid in either cgroup1 or cgroup2'
         end
 
+        context 'job class validation' do
+          let(:remote_ip) { '127.0.0.1' }
+
+          it 'rejects classes that do not inherit from ActiveJob::Base' do
+            mock_env = create_mock_env
+            mock_env['rack.input'] = StringIO.new('{"job_class": "String"}')
+            test_middleware = described_class.new(mock_rack_app)
+            response = test_middleware.call(mock_env)
+            expect(response[0]).to eq(500)
+          end
+
+          context 'with job_class_allowlist configured' do
+            before { described_class.job_class_allowlist = [ElasticBeanstalkJob] }
+            after { described_class.job_class_allowlist = nil }
+
+            it 'allows classes in the allowlist' do
+              expect(response[0]).to eq(200)
+            end
+
+            it 'rejects classes not in the allowlist' do
+              mock_env = create_mock_env
+              mock_env['rack.input'] = StringIO.new('{"job_class": "ElasticBeanstalkPeriodicTask"}')
+              test_middleware = described_class.new(mock_rack_app)
+              response = test_middleware.call(mock_env)
+              expect(response[0]).to eq(500)
+            end
+          end
+        end
+
         context 'when AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC' do
           before(:each) do
             ENV['AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC'] = 'true'

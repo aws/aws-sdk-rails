@@ -4,7 +4,17 @@ module Aws
   module Rails
     module Middleware
       # Middleware to handle requests from the SQS Daemon present on Elastic Beanstalk worker environments.
+      #
+      # @example Restrict job dispatch to specific classes
+      #   Aws::Rails::Middleware::ElasticBeanstalkSQSD.job_class_allowlist = [SendReceiptJob, ProcessOrderJob]
       class ElasticBeanstalkSQSD
+        # Optional list of job classes permitted to be executed. When set, only
+        # classes in this list will be dispatched. When nil, any class inheriting
+        # from ActiveJob::Base is allowed.
+        class << self
+          attr_accessor :job_class_allowlist
+        end
+
         def initialize(app)
           @app = app
           @logger = ::Rails.logger
@@ -22,7 +32,9 @@ module Aws
 
           @logger.debug('aws-sdk-rails middleware detected call from Elastic Beanstalk SQS Daemon.')
 
-          # Only accept requests from this user agent if it is from localhost or a docker host in case of forgery.
+          # Best-effort source check. On Docker-based EB platforms this is unreliable
+          # because all traffic arrives via the docker bridge. Use job_class_allowlist
+          # and network-level controls (security groups) as the primary safeguards.
           unless request.local? || sent_from_docker_host?(request)
             @logger.warn('SQSD request detected from untrusted address; returning 403 forbidden.')
             return forbidden_response
@@ -78,10 +90,11 @@ module Aws
           # Jobs queued from the SQS adapter contain the JSON message in the request body.
           job = ::ActiveSupport::JSON.decode(request.body.string)
           job_name = job['job_class']
+          validate_job_class!(job_name)
           @logger.debug("Executing job: #{job_name}")
           ::ActiveJob::Base.execute(job)
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran job #{job_name}."]]
-        rescue NameError => e
+        rescue NameError, ArgumentError => e
           @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
           @logger.error("Error: #{e}")
           internal_error_response
@@ -90,27 +103,34 @@ module Aws
         # Execute a job using the thread pool executor
         def _execute_job_background(request)
           job_data = ::ActiveSupport::JSON.decode(request.body.string)
-          @logger.debug("Queuing background job: #{job_data['job_class']}")
+          job_name = job_data['job_class']
+          validate_job_class!(job_name)
+          @logger.debug("Queuing background job: #{job_name}")
           @executor.post(job_data) do |job|
             ::ActiveJob::Base.execute(job)
           end
-          [200, { 'Content-Type' => 'text/plain' }, ["Successfully queued job #{job_data['job_class']}"]]
+          [200, { 'Content-Type' => 'text/plain' }, ["Successfully queued job #{job_name}"]]
         rescue Concurrent::RejectedExecutionError
           msg = 'No capacity to execute job.'
           @logger.info(msg)
           [429, { 'Content-Type' => 'text/plain' }, [msg]]
+        rescue NameError, ArgumentError => e
+          @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
+          @logger.error("Error: #{e}")
+          internal_error_response
         end
 
         def execute_periodic_task(request)
           # The beanstalk worker SQS Daemon will add the 'X-Aws-Sqsd-Taskname' for periodic tasks set in cron.yaml.
           job_name = request.headers['X-Aws-Sqsd-Taskname']
+          validate_job_class!(job_name)
           job = job_name.constantize.new
           if @executor
             _execute_periodic_task_background(job)
           else
             _execute_periodic_task_now(job)
           end
-        rescue NameError => e
+        rescue NameError, ArgumentError => e
           @logger.error("Periodic task #{job_name} could not resolve to an Active Job class " \
                         '- check the cron name spelling and set the path as / in cron.yaml.')
           @logger.error("Error: #{e}.")
@@ -154,6 +174,17 @@ module Aws
         # for periodic tasks set in cron.yaml.
         def periodic_task?(request)
           request.headers['X-Aws-Sqsd-Taskname'].present? && request.fullpath == '/'
+        end
+
+        def validate_job_class!(name)
+          klass = name.constantize
+          unless klass.is_a?(Class) && klass < ::ActiveJob::Base
+            raise ArgumentError, "#{name} is not a valid job class (must inherit from ActiveJob::Base)"
+          end
+          allowlist = self.class.job_class_allowlist
+          if allowlist && !allowlist.include?(klass)
+            raise ArgumentError, "#{name} is not in the configured job_class_allowlist"
+          end
         end
 
         def sent_from_docker_host?(request)
