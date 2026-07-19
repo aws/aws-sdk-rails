@@ -177,7 +177,7 @@ module Aws
         end
 
         def validate_job_class!(name)
-          klass = name.constantize # lgtm[rb/code-injection]
+          klass = name.constantize # CodeQL [rb/code-injection] Mitigated by ActiveJob::Base ancestry check below
           unless klass.is_a?(Class) && klass < ::ActiveJob::Base
             raise ArgumentError, "#{name} is not a valid job class (must inherit from ActiveJob::Base)"
           end
