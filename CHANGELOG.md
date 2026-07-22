@@ -1,8 +1,8 @@
 Unreleased Changes
 ------------------
 
-* Issue - Validate that job classes inherit from `ActiveJob::Base` before execution in Elastic Beanstalk SQS middleware.
-* Feature - Add optional `job_class_allowlist` class attribute to `ElasticBeanstalkSQSD` middleware to restrict which job classes can be dispatched.
+* Issue - Only classes inheriting from `ActiveJob::Base` are executed by the `ElasticBeanstalkSQSD` middleware, preventing arbitrary classes named in an SQS message from being instantiated and run.
+* Feature - Add optional `job_class_allowlist` configuration to `ElasticBeanstalkSQSD` middleware to restrict which job classes can be dispatched.
 
 5.1.0 (2024-12-05)
 ------------------

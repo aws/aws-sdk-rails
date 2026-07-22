@@ -136,7 +136,9 @@ further restrict which jobs are allowed by configuring an allowlist:
 
 ```ruby
 # config/initializers/aws.rb
-Aws::Rails::Middleware::ElasticBeanstalkSQSD.job_class_allowlist = [SomeJob, AnotherJob]
+Aws::Rails::Middleware::ElasticBeanstalkSQSD.configure do |config|
+  config.job_class_allowlist = [SomeJob, AnotherJob]
+end
 ```
 
 **Important:** Ensure that your worker environment's port 80 is not accessible

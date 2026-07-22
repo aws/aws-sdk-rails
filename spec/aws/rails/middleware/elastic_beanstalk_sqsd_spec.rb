@@ -231,8 +231,8 @@ module Aws
           end
 
           context 'with job_class_allowlist configured' do
-            before { described_class.job_class_allowlist = [ElasticBeanstalkJob] }
-            after { described_class.job_class_allowlist = nil }
+            before { described_class.config.job_class_allowlist = [ElasticBeanstalkJob] }
+            after { described_class.config.job_class_allowlist = nil }
 
             it 'allows classes in the allowlist' do
               expect(response[0]).to eq(200)

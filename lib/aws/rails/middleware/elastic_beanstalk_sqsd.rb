@@ -6,13 +6,43 @@ module Aws
       # Middleware to handle requests from the SQS Daemon present on Elastic Beanstalk worker environments.
       #
       # @example Restrict job dispatch to specific classes
-      #   Aws::Rails::Middleware::ElasticBeanstalkSQSD.job_class_allowlist = [SendReceiptJob, ProcessOrderJob]
+      #   Aws::Rails::Middleware::ElasticBeanstalkSQSD.configure do |config|
+      #     config.job_class_allowlist = [SendReceiptJob, ProcessOrderJob]
+      #   end
       class ElasticBeanstalkSQSD # rubocop:disable Metrics/ClassLength
-        # Optional list of job classes permitted to be executed. When set, only
-        # classes in this list will be dispatched. When nil, any class inheriting
-        # from ActiveJob::Base is allowed.
-        class << self
+        # Configuration for the {ElasticBeanstalkSQSD} middleware.
+        class Configuration
+          # @return [Array<Class>, nil] Optional list of job classes permitted
+          #   to be executed. When set, only classes in this list will be
+          #   dispatched. When nil, any class inheriting from ActiveJob::Base
+          #   is allowed.
           attr_accessor :job_class_allowlist
+        end
+
+        # Raised when a job message names a class that cannot be executed -
+        # either it does not inherit from ActiveJob::Base or it is not in the
+        # configured job_class_allowlist.
+        class InvalidJobClassError < StandardError; end
+
+        class << self
+          # Yields the middleware configuration for customization.
+          #
+          # @example Restrict job dispatch to specific classes
+          #   Aws::Rails::Middleware::ElasticBeanstalkSQSD.configure do |config|
+          #     config.job_class_allowlist = [SendReceiptJob, ProcessOrderJob]
+          #   end
+          #
+          # @yieldparam [Configuration] config
+          # @return [Configuration]
+          def configure
+            yield(config) if block_given?
+            config
+          end
+
+          # @return [Configuration] the current middleware configuration.
+          def config
+            @config ||= Configuration.new
+          end
         end
 
         def initialize(app)
@@ -94,7 +124,7 @@ module Aws
           @logger.debug("Executing job: #{job_name}")
           ::ActiveJob::Base.execute(job)
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran job #{job_name}."]]
-        rescue NameError, ArgumentError => e
+        rescue NameError, InvalidJobClassError => e
           @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
           @logger.error("Error: #{e}")
           internal_error_response
@@ -114,7 +144,7 @@ module Aws
           msg = 'No capacity to execute job.'
           @logger.info(msg)
           [429, { 'Content-Type' => 'text/plain' }, [msg]]
-        rescue NameError, ArgumentError => e
+        rescue NameError, InvalidJobClassError => e
           @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
           @logger.error("Error: #{e}")
           internal_error_response
@@ -130,7 +160,7 @@ module Aws
           else
             _execute_periodic_task_now(job)
           end
-        rescue NameError, ArgumentError => e
+        rescue NameError, InvalidJobClassError => e
           @logger.error("Periodic task #{job_name} could not resolve to an Active Job class " \
                         '- check the cron name spelling and set the path as / in cron.yaml.')
           @logger.error("Error: #{e}.")
@@ -179,13 +209,13 @@ module Aws
         def validate_job_class!(name)
           klass = name.constantize # CodeQL [rb/code-injection] Mitigated by ActiveJob::Base ancestry check below
           unless klass.is_a?(Class) && klass < ::ActiveJob::Base
-            raise ArgumentError, "#{name} is not a valid job class (must inherit from ActiveJob::Base)"
+            raise InvalidJobClassError, "#{name} is not a valid job class (must inherit from ActiveJob::Base)"
           end
 
-          allowlist = self.class.job_class_allowlist
+          allowlist = self.class.config.job_class_allowlist
           return unless allowlist && !allowlist.include?(klass)
 
-          raise ArgumentError, "#{name} is not in the configured job_class_allowlist"
+          raise InvalidJobClassError, "#{name} is not in the configured job_class_allowlist"
         end
 
         def sent_from_docker_host?(request)
