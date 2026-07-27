@@ -39,11 +39,10 @@ module Aws
           end
 
           it 'returns internal server error if job name cannot be resolved' do
-            # Stub execute call to avoid invoking Active Job callbacks
-            # Local testing indicates this failure results in a NameError
-            allow(::ActiveJob::Base).to receive(:execute).and_raise(NameError)
-
-            expect(response[0]).to eq(500)
+            mock_env = create_mock_env
+            mock_env['rack.input'] = StringIO.new('{"job_class": "NoSuchJobClass"}')
+            test_middleware = described_class.new(mock_rack_app)
+            expect(test_middleware.call(mock_env)[0]).to eq(500)
           end
 
           context 'when user-agent is not sqs daemon' do
@@ -245,6 +244,36 @@ module Aws
               response = test_middleware.call(mock_env)
               expect(response[0]).to eq(500)
             end
+
+            context 'when the allowlist holds a stale class object (Zeitwerk reload)' do
+              # Simulate a Zeitwerk reload: the allowlist was populated at boot
+              # with one class object, but the message now resolves to a brand-
+              # new object with the same name. Matching by object identity would
+              # reject it; matching by name must still accept it.
+              let(:stale_class) do
+                Class.new(ElasticBeanstalkJob.superclass).tap do |klass|
+                  allow(klass).to receive(:name).and_return('ElasticBeanstalkJob')
+                  allow(klass).to receive(:to_s).and_return('ElasticBeanstalkJob')
+                end
+              end
+
+              before { described_class.config.job_class_allowlist = [stale_class] }
+
+              it 'still accepts the reloaded, identically-named class' do
+                expect(stale_class).not_to equal(ElasticBeanstalkJob)
+                expect(response[0]).to eq(200)
+              end
+            end
+          end
+
+          it 'does not mislabel a NameError raised from within a valid job' do
+            # A resolvable job whose execution raises NameError (e.g. a typo'd
+            # constant in #perform) must not be treated as a class-resolution
+            # failure. It should propagate rather than becoming a 500 logged as
+            # "could not resolve to a class".
+            allow(::ActiveJob::Base).to receive(:execute)
+              .and_raise(NameError, 'uninitialized constant TypoedConstant')
+            expect { response }.to raise_error(NameError, /TypoedConstant/)
           end
         end
 

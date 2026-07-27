@@ -12,10 +12,12 @@ module Aws
       class ElasticBeanstalkSQSD # rubocop:disable Metrics/ClassLength
         # Configuration for the {ElasticBeanstalkSQSD} middleware.
         class Configuration
-          # @return [Array<Class>, nil] Optional list of job classes permitted
-          #   to be executed. When set, only classes in this list will be
-          #   dispatched. When nil, any class inheriting from ActiveJob::Base
-          #   is allowed.
+          # @return [Array<Class, String>, nil] Optional list of job classes
+          #   permitted to be executed. When set, only classes in this list
+          #   will be dispatched. When nil, any class inheriting from
+          #   ActiveJob::Base is allowed. Entries may be given as Class objects
+          #   or Strings; matching is by class name, so an allowlisted class is
+          #   still recognized after a Zeitwerk reload replaces the class object.
           attr_accessor :job_class_allowlist
         end
 
@@ -120,21 +122,24 @@ module Aws
           # Jobs queued from the SQS adapter contain the JSON message in the request body.
           job = ::ActiveSupport::JSON.decode(request.body.string)
           job_name = job['job_class']
-          validate_job_class!(job_name)
+          # Scope the rescue to resolution only. A NameError raised from inside
+          # the job's own #perform must not be mislabeled as a class-resolution
+          # failure, so ::ActiveJob::Base.execute runs outside the begin/rescue.
+          begin
+            resolve_job_class(job_name)
+          rescue NameError, InvalidJobClassError => e
+            return unresolved_job_class_response(job_name, e)
+          end
           @logger.debug("Executing job: #{job_name}")
           ::ActiveJob::Base.execute(job)
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran job #{job_name}."]]
-        rescue NameError, InvalidJobClassError => e
-          @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
-          @logger.error("Error: #{e}")
-          internal_error_response
         end
 
         # Execute a job using the thread pool executor
-        def _execute_job_background(request) # rubocop:disable Metrics/MethodLength
+        def _execute_job_background(request)
           job_data = ::ActiveSupport::JSON.decode(request.body.string)
           job_name = job_data['job_class']
-          validate_job_class!(job_name)
+          resolve_job_class(job_name)
           @logger.debug("Queuing background job: #{job_name}")
           @executor.post(job_data) do |job|
             ::ActiveJob::Base.execute(job)
@@ -145,26 +150,27 @@ module Aws
           @logger.info(msg)
           [429, { 'Content-Type' => 'text/plain' }, [msg]]
         rescue NameError, InvalidJobClassError => e
-          @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
-          @logger.error("Error: #{e}")
-          internal_error_response
+          unresolved_job_class_response(job_name, e)
         end
 
         def execute_periodic_task(request)
           # The beanstalk worker SQS Daemon will add the 'X-Aws-Sqsd-Taskname' for periodic tasks set in cron.yaml.
           job_name = request.headers['X-Aws-Sqsd-Taskname']
-          validate_job_class!(job_name)
-          job = job_name.constantize.new
+          # Resolve once and reuse the class, rather than resolving the name a
+          # second time with another constantize (which also left a check-then-
+          # act gap between what was validated and what ran). Scope the rescue
+          # to resolution only, so a NameError from inside the task's own
+          # #perform is not mislabeled as a cron-name resolution failure.
+          begin
+            job = resolve_job_class(job_name).new
+          rescue NameError, InvalidJobClassError => e
+            return unresolved_periodic_task_response(job_name, e)
+          end
           if @executor
             _execute_periodic_task_background(job)
           else
             _execute_periodic_task_now(job)
           end
-        rescue NameError, InvalidJobClassError => e
-          @logger.error("Periodic task #{job_name} could not resolve to an Active Job class " \
-                        '- check the cron name spelling and set the path as / in cron.yaml.')
-          @logger.error("Error: #{e}.")
-          internal_error_response
         end
 
         def _execute_periodic_task_now(job)
@@ -188,6 +194,19 @@ module Aws
           [500, { 'Content-Type' => 'text/plain' }, [message]]
         end
 
+        def unresolved_job_class_response(job_name, error)
+          @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
+          @logger.error("Error: #{error}")
+          internal_error_response
+        end
+
+        def unresolved_periodic_task_response(job_name, error)
+          @logger.error("Periodic task #{job_name} could not resolve to an Active Job class " \
+                        '- check the cron name spelling and set the path as / in cron.yaml.')
+          @logger.error("Error: #{error}.")
+          internal_error_response
+        end
+
         def forbidden_response
           message = 'Request with aws-sqsd user agent was made from untrusted address.'
           [403, { 'Content-Type' => 'text/plain' }, [message]]
@@ -206,14 +225,21 @@ module Aws
           request.headers['X-Aws-Sqsd-Taskname'].present? && request.fullpath == '/'
         end
 
-        def validate_job_class!(name)
+        # Resolves +name+ to a job class, raising InvalidJobClassError if it
+        # does not name a class inheriting from ActiveJob::Base or is not in the
+        # configured allowlist. Returns the resolved class so callers can reuse
+        # it without resolving the name a second time.
+        def resolve_job_class(name)
           klass = name.constantize # CodeQL [rb/code-injection] Mitigated by ActiveJob::Base ancestry check below
           unless klass.is_a?(Class) && klass < ::ActiveJob::Base
             raise InvalidJobClassError, "#{name} is not a valid job class (must inherit from ActiveJob::Base)"
           end
 
           allowlist = self.class.config.job_class_allowlist
-          return unless allowlist && !allowlist.include?(klass)
+          # Match by class name, not object identity: in development Zeitwerk
+          # reloads produce a new class object with the same name, so an
+          # allowlist of Class objects would reject every job after a reload.
+          return klass if allowlist.nil? || allowlist.map(&:to_s).include?(klass.name)
 
           raise InvalidJobClassError, "#{name} is not in the configured job_class_allowlist"
         end
