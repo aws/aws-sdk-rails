@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'aws/rails/middleware/elastic_beanstalk_sqsd/configuration'
 require_relative 'aws/rails/middleware/elastic_beanstalk_sqsd'
 require_relative 'aws/rails/railtie'
 require_relative 'aws/rails/notifications'

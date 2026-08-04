@@ -1,6 +1,9 @@
 Unreleased Changes
 ------------------
 
+* Issue - Only classes inheriting from `ActiveJob::Base` are executed by the `ElasticBeanstalkSQSD` middleware, preventing arbitrary classes named in an SQS message from being instantiated and run. Job class and periodic task names are validated as constant paths and resolved without searching the namespace's ancestors, so a request cannot name a constant outside the intended namespace.
+* Feature - Adds a new configuration object for elastic beanstalk sqsd middleware, with an optional `job_class_allowlist` configuration to `ElasticBeanstalkSQSD` middleware to restrict which job classes can be dispatched. When set, the allowlist is checked before the class name is resolved, so an excluded class is never loaded.
+
 5.1.0 (2024-12-05)
 ------------------
 

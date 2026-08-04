@@ -39,11 +39,10 @@ module Aws
           end
 
           it 'returns internal server error if job name cannot be resolved' do
-            # Stub execute call to avoid invoking Active Job callbacks
-            # Local testing indicates this failure results in a NameError
-            allow(::ActiveJob::Base).to receive(:execute).and_raise(NameError)
-
-            expect(response[0]).to eq(500)
+            mock_env = create_mock_env
+            mock_env['rack.input'] = StringIO.new('{"job_class": "NoSuchJobClass"}')
+            test_middleware = described_class.new(mock_rack_app)
+            expect(test_middleware.call(mock_env)[0]).to eq(500)
           end
 
           context 'when user-agent is not sqs daemon' do
@@ -217,6 +216,109 @@ module Aws
           let(:remote_addr) { '172.17.0.1' }
 
           include_examples 'is valid in either cgroup1 or cgroup2'
+        end
+
+        context 'job class validation' do
+          let(:remote_ip) { '127.0.0.1' }
+
+          def response_for(class_name)
+            mock_env = create_mock_env
+            mock_env['rack.input'] = StringIO.new(ActiveSupport::JSON.dump('job_class' => class_name))
+            described_class.new(mock_rack_app).call(mock_env)
+          end
+
+          it 'rejects classes that do not inherit from ActiveJob::Base' do
+            expect(response_for('String')[0]).to eq(500)
+          end
+
+          it 'rejects names that are not well-formed constant paths' do
+            ['', 'elastic_beanstalk_job', 'ElasticBeanstalkJob; puts 1', 'Elastic Beanstalk', '@job'].each do |name|
+              expect(response_for(name)[0]).to eq(500)
+            end
+          end
+
+          it 'does not resolve a name through an ancestor of the namespace' do
+            # ElasticBeanstalkJob does not define CallbackChain, but its
+            # ancestors do, so an inheriting lookup would resolve this to
+            # ActiveSupport::Callbacks::CallbackChain. Such a constant fails
+            # the ActiveJob::Base check regardless, so this asserts on the
+            # resolution itself: names must not reach outside the namespace
+            # they appear to address.
+            middleware = described_class.new(mock_rack_app)
+            expect { middleware.send(:resolve_job_class, 'ElasticBeanstalkJob::CallbackChain') }
+              .to raise_error(NameError)
+          end
+
+          it 'does not resolve the constant when the name is malformed' do
+            expect_any_instance_of(described_class).not_to receive(:constantize_job_class)
+            expect(response_for('not_a_class_name')[0]).to eq(500)
+          end
+
+          context 'with job_class_allowlist configured' do
+            before { described_class.config.job_class_allowlist = [ElasticBeanstalkJob] }
+            after { described_class.config.job_class_allowlist = nil }
+
+            it 'allows classes in the allowlist' do
+              expect(response[0]).to eq(200)
+            end
+
+            it 'rejects classes not in the allowlist' do
+              expect(response_for('ElasticBeanstalkPeriodicTask')[0]).to eq(500)
+            end
+
+            it 'rejects a disallowed name without resolving its constant' do
+              # Resolving is what triggers autoloading, so a name the allowlist
+              # excludes must be rejected before the lookup happens.
+              expect_any_instance_of(described_class).not_to receive(:constantize_job_class)
+              expect(response_for('ElasticBeanstalkPeriodicTask')[0]).to eq(500)
+            end
+
+            it 'rejects a disallowed name even when it is undefined' do
+              expect(response_for('NoSuchJobClass')[0]).to eq(500)
+            end
+
+            context 'when the request is a periodic task' do
+              let(:is_periodic_task) { true }
+              let(:period_task_name) { 'ElasticBeanstalkPeriodicTask' }
+
+              it 'rejects a disallowed task without resolving its constant' do
+                # The task name comes from a request header, so the periodic
+                # path must gate on the allowlist before resolving too.
+                expect_any_instance_of(described_class).not_to receive(:constantize_job_class)
+                expect(response[0]).to eq(500)
+              end
+            end
+
+            context 'when the allowlist holds a stale class object (Zeitwerk reload)' do
+              # Simulate a Zeitwerk reload: the allowlist was populated at boot
+              # with one class object, but the message now resolves to a brand-
+              # new object with the same name. Matching by object identity would
+              # reject it; matching by name must still accept it.
+              let(:stale_class) do
+                Class.new(ElasticBeanstalkJob.superclass).tap do |klass|
+                  allow(klass).to receive(:name).and_return('ElasticBeanstalkJob')
+                  allow(klass).to receive(:to_s).and_return('ElasticBeanstalkJob')
+                end
+              end
+
+              before { described_class.config.job_class_allowlist = [stale_class] }
+
+              it 'still accepts the reloaded, identically-named class' do
+                expect(stale_class).not_to equal(ElasticBeanstalkJob)
+                expect(response[0]).to eq(200)
+              end
+            end
+          end
+
+          it 'does not mislabel a NameError raised from within a valid job' do
+            # A resolvable job whose execution raises NameError (e.g. a typo'd
+            # constant in #perform) must not be treated as a class-resolution
+            # failure. It should propagate rather than becoming a 500 logged as
+            # "could not resolve to a class".
+            allow(::ActiveJob::Base).to receive(:execute)
+              .and_raise(NameError, 'uninitialized constant TypoedConstant')
+            expect { response }.to raise_error(NameError, /TypoedConstant/)
+          end
         end
 
         context 'when AWS_PROCESS_BEANSTALK_WORKER_JOBS_ASYNC' do

@@ -131,8 +131,25 @@ appropriate jobs. The middleware will only process requests from the SQS daemon
 and will pass on others and so will not interfere with other routes in your
 application.
 
-To protect against forgeries, daemon requests will only be processed if they
-originate from localhost or the Docker host.
+Only job classes that inherit from `ActiveJob::Base` will be executed. You can
+further restrict which jobs are allowed by configuring an allowlist:
+
+```ruby
+# config/initializers/aws.rb
+Aws::Rails::Middleware::ElasticBeanstalkSQSD.configure do |config|
+  config.job_class_allowlist = [SomeJob, AnotherJob]
+end
+```
+
+The allowlist is checked before the class name is resolved, so a request naming
+a class outside the list cannot cause that class to be loaded. It applies to
+periodic task names from `cron.yaml` as well as to job messages.
+
+**Important:** Ensure that your worker environment's port 80 is not accessible
+from outside the instance (e.g. via security group rules). The middleware
+performs a local-origin check, but on Docker-based EB platforms all traffic is
+proxied through the Docker bridge and appears as a local request regardless of
+its true origin.
 
 #### Running Jobs Async
 By default the ElasticBeanstalkSQSD middleware will process jobs synchronously

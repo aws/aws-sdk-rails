@@ -4,7 +4,42 @@ module Aws
   module Rails
     module Middleware
       # Middleware to handle requests from the SQS Daemon present on Elastic Beanstalk worker environments.
-      class ElasticBeanstalkSQSD
+      #
+      # See {Configuration} for the available options and {configure} for
+      # setting them in code.
+      class ElasticBeanstalkSQSD # rubocop:disable Metrics/ClassLength
+        # Raised when a job message names a class that cannot be executed -
+        # the name is not a well-formed constant path, it is not in the
+        # configured job_class_allowlist, or it does not inherit from
+        # ActiveJob::Base.
+        class InvalidJobClassError < StandardError; end
+
+        # A job class name is an (optionally namespaced) constant path and
+        # nothing else. Names that cannot match this can never name a job
+        # class, so rejecting them keeps them out of the constant lookup.
+        JOB_CLASS_NAME_PATTERN = /\A[A-Z]\w*(::[A-Z]\w*)*\z/.freeze
+
+        class << self
+          # Yields the middleware configuration for customization.
+          #
+          # @example Restrict job dispatch to specific classes
+          #   Aws::Rails::Middleware::ElasticBeanstalkSQSD.configure do |config|
+          #     config.job_class_allowlist = [SendReceiptJob, ProcessOrderJob]
+          #   end
+          #
+          # @yieldparam [Configuration] config
+          # @return [Configuration]
+          def configure
+            yield(config) if block_given?
+            config
+          end
+
+          # @return [Configuration] the current middleware configuration.
+          def config
+            @config ||= Configuration.new
+          end
+        end
+
         def initialize(app)
           @app = app
           @logger = ::Rails.logger
@@ -22,7 +57,9 @@ module Aws
 
           @logger.debug('aws-sdk-rails middleware detected call from Elastic Beanstalk SQS Daemon.')
 
-          # Only accept requests from this user agent if it is from localhost or a docker host in case of forgery.
+          # Best-effort source check. On Docker-based EB platforms this is unreliable
+          # because all traffic arrives via the docker bridge. Use job_class_allowlist
+          # and network-level controls (security groups) as the primary safeguards.
           unless request.local? || sent_from_docker_host?(request)
             @logger.warn('SQSD request detected from untrusted address; returning 403 forbidden.')
             return forbidden_response
@@ -78,43 +115,55 @@ module Aws
           # Jobs queued from the SQS adapter contain the JSON message in the request body.
           job = ::ActiveSupport::JSON.decode(request.body.string)
           job_name = job['job_class']
+          # Scope the rescue to resolution only. A NameError raised from inside
+          # the job's own #perform must not be mislabeled as a class-resolution
+          # failure, so ::ActiveJob::Base.execute runs outside the begin/rescue.
+          begin
+            resolve_job_class(job_name)
+          rescue NameError, InvalidJobClassError => e
+            return unresolved_job_class_response(job_name, e)
+          end
           @logger.debug("Executing job: #{job_name}")
           ::ActiveJob::Base.execute(job)
           [200, { 'Content-Type' => 'text/plain' }, ["Successfully ran job #{job_name}."]]
-        rescue NameError => e
-          @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
-          @logger.error("Error: #{e}")
-          internal_error_response
         end
 
         # Execute a job using the thread pool executor
         def _execute_job_background(request)
           job_data = ::ActiveSupport::JSON.decode(request.body.string)
-          @logger.debug("Queuing background job: #{job_data['job_class']}")
+          job_name = job_data['job_class']
+          resolve_job_class(job_name)
+          @logger.debug("Queuing background job: #{job_name}")
           @executor.post(job_data) do |job|
             ::ActiveJob::Base.execute(job)
           end
-          [200, { 'Content-Type' => 'text/plain' }, ["Successfully queued job #{job_data['job_class']}"]]
+          [200, { 'Content-Type' => 'text/plain' }, ["Successfully queued job #{job_name}"]]
         rescue Concurrent::RejectedExecutionError
           msg = 'No capacity to execute job.'
           @logger.info(msg)
           [429, { 'Content-Type' => 'text/plain' }, [msg]]
+        rescue NameError, InvalidJobClassError => e
+          unresolved_job_class_response(job_name, e)
         end
 
         def execute_periodic_task(request)
           # The beanstalk worker SQS Daemon will add the 'X-Aws-Sqsd-Taskname' for periodic tasks set in cron.yaml.
           job_name = request.headers['X-Aws-Sqsd-Taskname']
-          job = job_name.constantize.new
+          # Resolve once and reuse the class, rather than resolving the name a
+          # second time with another constantize (which also left a check-then-
+          # act gap between what was validated and what ran). Scope the rescue
+          # to resolution only, so a NameError from inside the task's own
+          # #perform is not mislabeled as a cron-name resolution failure.
+          begin
+            job = resolve_job_class(job_name).new
+          rescue NameError, InvalidJobClassError => e
+            return unresolved_periodic_task_response(job_name, e)
+          end
           if @executor
             _execute_periodic_task_background(job)
           else
             _execute_periodic_task_now(job)
           end
-        rescue NameError => e
-          @logger.error("Periodic task #{job_name} could not resolve to an Active Job class " \
-                        '- check the cron name spelling and set the path as / in cron.yaml.')
-          @logger.error("Error: #{e}.")
-          internal_error_response
         end
 
         def _execute_periodic_task_now(job)
@@ -138,6 +187,19 @@ module Aws
           [500, { 'Content-Type' => 'text/plain' }, [message]]
         end
 
+        def unresolved_job_class_response(job_name, error)
+          @logger.error("Job #{job_name} could not resolve to a class that inherits from Active Job.")
+          @logger.error("Error: #{error}")
+          internal_error_response
+        end
+
+        def unresolved_periodic_task_response(job_name, error)
+          @logger.error("Periodic task #{job_name} could not resolve to an Active Job class " \
+                        '- check the cron name spelling and set the path as / in cron.yaml.')
+          @logger.error("Error: #{error}.")
+          internal_error_response
+        end
+
         def forbidden_response
           message = 'Request with aws-sqsd user agent was made from untrusted address.'
           [403, { 'Content-Type' => 'text/plain' }, [message]]
@@ -154,6 +216,48 @@ module Aws
         # for periodic tasks set in cron.yaml.
         def periodic_task?(request)
           request.headers['X-Aws-Sqsd-Taskname'].present? && request.fullpath == '/'
+        end
+
+        # Resolves +name+ to a job class, raising InvalidJobClassError if it is
+        # not a well-formed constant path, is not in the configured allowlist,
+        # or does not name a class inheriting from ActiveJob::Base. Returns the
+        # resolved class so callers can reuse it without resolving the name a
+        # second time.
+        #
+        # Checks are ordered so that the least trusting one runs first. Merely
+        # resolving a constant is not inert: under Zeitwerk it triggers
+        # autoloading, which runs the body of whichever file defines it. So the
+        # name is matched against the allowlist as a String, before any lookup,
+        # and an excluded name never reaches the constant resolver at all.
+        def resolve_job_class(name)
+          name = name.to_s
+          raise InvalidJobClassError, "#{name.inspect} is not a valid job class name" unless
+            JOB_CLASS_NAME_PATTERN.match?(name)
+
+          allowlist = self.class.config.job_class_allowlist
+          # Match by class name, not object identity: in development Zeitwerk
+          # reloads produce a new class object with the same name, so an
+          # allowlist of Class objects would reject every job after a reload.
+          if allowlist && !allowlist.map(&:to_s).include?(name)
+            raise InvalidJobClassError, "#{name} is not in the configured job_class_allowlist"
+          end
+
+          klass = constantize_job_class(name)
+          unless klass.is_a?(Class) && klass < ::ActiveJob::Base
+            raise InvalidJobClassError, "#{name} is not a valid job class (must inherit from ActiveJob::Base)"
+          end
+
+          klass
+        end
+
+        # Resolves an already-validated name. +inherit+ is false so that each
+        # segment must be defined directly on the preceding one: a name such as
+        # 'SomeJob::Foo' cannot resolve Foo from SomeJob's ancestors when
+        # SomeJob itself does not define it.
+        def constantize_job_class(name)
+          # CodeQL [rb/code-injection] Name is validated against JOB_CLASS_NAME_PATTERN
+          # and the allowlist above, and the result is checked for ActiveJob::Base ancestry below.
+          Object.const_get(name, false)
         end
 
         def sent_from_docker_host?(request)

@@ -3,5 +3,5 @@
 class ElasticBeanstalkJob < ApplicationJob
   queue_as :default
 
-  def perform(); end
+  def perform; end
 end
