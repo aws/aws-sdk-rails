@@ -17,6 +17,7 @@ module Aws
         let(:user_agent) { 'aws-sqsd/1.1' }
         let(:remote_ip) { '127.0.0.1' }
         let(:remote_addr) { nil }
+        let(:forwarded_for) { nil }
         let(:is_periodic_task) { nil }
         let(:period_task_name) { 'ElasticBeanstalkPeriodicTask' }
 
@@ -206,14 +207,31 @@ module Aws
           include_examples 'is invalid in either cgroup1 or cgroup2'
         end
 
-        context 'when remote ip is default docker gw' do
-          let(:remote_ip) { '172.17.0.1' }
+        context 'when remote addr is default docker gw' do
+          let(:remote_addr) { '172.17.0.1' }
 
           include_examples 'is valid in either cgroup1 or cgroup2'
         end
 
-        context 'when remote addr is default docker gw' do
-          let(:remote_addr) { '172.17.0.1' }
+        context 'when remote addr is untrusted but X-Forwarded-For claims the docker gw' do
+          # remote_addr is the raw TCP peer and cannot be forged over HTTP, but
+          # remote_ip is derived from X-Forwarded-For once the peer is private.
+          # A private peer must not become trusted by naming the gateway itself.
+          let(:remote_addr) { '172.31.5.20' }
+          let(:forwarded_for) { '172.17.0.1' }
+
+          it 'resolves remote_ip to the forged value' do
+            expect(::ActionDispatch::Request.new(create_mock_env).remote_ip).to eq('172.17.0.1')
+          end
+
+          include_examples 'is invalid in either cgroup1 or cgroup2'
+        end
+
+        context 'when remote addr is loopback but X-Forwarded-For claims the docker gw' do
+          # Genuinely local: request.local? rejects this only because remote_ip
+          # is not loopback, so the docker check has to accept it on remote_addr.
+          let(:remote_addr) { '127.0.0.1' }
+          let(:forwarded_for) { '172.17.0.1' }
 
           include_examples 'is valid in either cgroup1 or cgroup2'
         end
@@ -419,7 +437,9 @@ module Aws
         # Create a minimal mock Rack environment hash to test just what we need
         def create_mock_env
           mock_env = {
-            'HTTP_X_FORWARDED_FOR' => remote_ip,
+            # Settable independently of remote_addr: X-Forwarded-For is client
+            # supplied, so specs need to be able to forge it on its own.
+            'HTTP_X_FORWARDED_FOR' => forwarded_for || remote_ip,
             'REMOTE_ADDR' => remote_addr || remote_ip,
             'HTTP_USER_AGENT' => user_agent
           }

@@ -146,10 +146,14 @@ a class outside the list cannot cause that class to be loaded. It applies to
 periodic task names from `cron.yaml` as well as to job messages.
 
 **Important:** Ensure that your worker environment's port 80 is not accessible
-from outside the instance (e.g. via security group rules). The middleware
-performs a local-origin check, but on Docker-based EB platforms all traffic is
-proxied through the Docker bridge and appears as a local request regardless of
-its true origin.
+from outside the instance (e.g. via security group rules). The middleware only
+accepts daemon requests whose TCP peer address is loopback or the Docker
+gateway, which cannot be forged with a request header. On Docker-based EB
+platforms, however, inbound traffic is proxied into the container by the host,
+so its peer address is genuinely the Docker gateway regardless of where the
+request originated. Network-level controls are therefore the primary safeguard,
+with `job_class_allowlist` limiting what a request that does get through can
+reach.
 
 #### Running Jobs Async
 By default the ElasticBeanstalkSQSD middleware will process jobs synchronously
