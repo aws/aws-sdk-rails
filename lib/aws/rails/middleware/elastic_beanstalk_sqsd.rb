@@ -5,26 +5,19 @@ module Aws
     module Middleware
       # Middleware to handle requests from the SQS Daemon present on Elastic Beanstalk worker environments.
       #
-      # @example Restrict job dispatch to specific classes
-      #   Aws::Rails::Middleware::ElasticBeanstalkSQSD.configure do |config|
-      #     config.job_class_allowlist = [SendReceiptJob, ProcessOrderJob]
-      #   end
+      # See {Configuration} for the available options and {configure} for
+      # setting them in code.
       class ElasticBeanstalkSQSD # rubocop:disable Metrics/ClassLength
-        # Configuration for the {ElasticBeanstalkSQSD} middleware.
-        class Configuration
-          # @return [Array<Class, String>, nil] Optional list of job classes
-          #   permitted to be executed. When set, only classes in this list
-          #   will be dispatched. When nil, any class inheriting from
-          #   ActiveJob::Base is allowed. Entries may be given as Class objects
-          #   or Strings; matching is by class name, so an allowlisted class is
-          #   still recognized after a Zeitwerk reload replaces the class object.
-          attr_accessor :job_class_allowlist
-        end
-
         # Raised when a job message names a class that cannot be executed -
-        # either it does not inherit from ActiveJob::Base or it is not in the
-        # configured job_class_allowlist.
+        # the name is not a well-formed constant path, it is not in the
+        # configured job_class_allowlist, or it does not inherit from
+        # ActiveJob::Base.
         class InvalidJobClassError < StandardError; end
+
+        # A job class name is an (optionally namespaced) constant path and
+        # nothing else. Names that cannot match this can never name a job
+        # class, so rejecting them keeps them out of the constant lookup.
+        JOB_CLASS_NAME_PATTERN = /\A[A-Z]\w*(::[A-Z]\w*)*\z/.freeze
 
         class << self
           # Yields the middleware configuration for customization.
@@ -225,23 +218,46 @@ module Aws
           request.headers['X-Aws-Sqsd-Taskname'].present? && request.fullpath == '/'
         end
 
-        # Resolves +name+ to a job class, raising InvalidJobClassError if it
-        # does not name a class inheriting from ActiveJob::Base or is not in the
-        # configured allowlist. Returns the resolved class so callers can reuse
-        # it without resolving the name a second time.
+        # Resolves +name+ to a job class, raising InvalidJobClassError if it is
+        # not a well-formed constant path, is not in the configured allowlist,
+        # or does not name a class inheriting from ActiveJob::Base. Returns the
+        # resolved class so callers can reuse it without resolving the name a
+        # second time.
+        #
+        # Checks are ordered so that the least trusting one runs first. Merely
+        # resolving a constant is not inert: under Zeitwerk it triggers
+        # autoloading, which runs the body of whichever file defines it. So the
+        # name is matched against the allowlist as a String, before any lookup,
+        # and an excluded name never reaches the constant resolver at all.
         def resolve_job_class(name)
-          klass = name.constantize # CodeQL [rb/code-injection] Mitigated by ActiveJob::Base ancestry check below
-          unless klass.is_a?(Class) && klass < ::ActiveJob::Base
-            raise InvalidJobClassError, "#{name} is not a valid job class (must inherit from ActiveJob::Base)"
-          end
+          name = name.to_s
+          raise InvalidJobClassError, "#{name.inspect} is not a valid job class name" unless
+            JOB_CLASS_NAME_PATTERN.match?(name)
 
           allowlist = self.class.config.job_class_allowlist
           # Match by class name, not object identity: in development Zeitwerk
           # reloads produce a new class object with the same name, so an
           # allowlist of Class objects would reject every job after a reload.
-          return klass if allowlist.nil? || allowlist.map(&:to_s).include?(klass.name)
+          if allowlist && !allowlist.map(&:to_s).include?(name)
+            raise InvalidJobClassError, "#{name} is not in the configured job_class_allowlist"
+          end
 
-          raise InvalidJobClassError, "#{name} is not in the configured job_class_allowlist"
+          klass = constantize_job_class(name)
+          unless klass.is_a?(Class) && klass < ::ActiveJob::Base
+            raise InvalidJobClassError, "#{name} is not a valid job class (must inherit from ActiveJob::Base)"
+          end
+
+          klass
+        end
+
+        # Resolves an already-validated name. +inherit+ is false so that each
+        # segment must be defined directly on the preceding one: a name such as
+        # 'SomeJob::Foo' cannot resolve Foo from SomeJob's ancestors when
+        # SomeJob itself does not define it.
+        def constantize_job_class(name)
+          # CodeQL [rb/code-injection] Name is validated against JOB_CLASS_NAME_PATTERN
+          # and the allowlist above, and the result is checked for ActiveJob::Base ancestry below.
+          Object.const_get(name, false)
         end
 
         def sent_from_docker_host?(request)

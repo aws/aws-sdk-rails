@@ -221,12 +221,37 @@ module Aws
         context 'job class validation' do
           let(:remote_ip) { '127.0.0.1' }
 
-          it 'rejects classes that do not inherit from ActiveJob::Base' do
+          def response_for(class_name)
             mock_env = create_mock_env
-            mock_env['rack.input'] = StringIO.new('{"job_class": "String"}')
-            test_middleware = described_class.new(mock_rack_app)
-            response = test_middleware.call(mock_env)
-            expect(response[0]).to eq(500)
+            mock_env['rack.input'] = StringIO.new(ActiveSupport::JSON.dump('job_class' => class_name))
+            described_class.new(mock_rack_app).call(mock_env)
+          end
+
+          it 'rejects classes that do not inherit from ActiveJob::Base' do
+            expect(response_for('String')[0]).to eq(500)
+          end
+
+          it 'rejects names that are not well-formed constant paths' do
+            ['', 'elastic_beanstalk_job', 'ElasticBeanstalkJob; puts 1', 'Elastic Beanstalk', '@job'].each do |name|
+              expect(response_for(name)[0]).to eq(500)
+            end
+          end
+
+          it 'does not resolve a name through an ancestor of the namespace' do
+            # ElasticBeanstalkJob does not define CallbackChain, but its
+            # ancestors do, so an inheriting lookup would resolve this to
+            # ActiveSupport::Callbacks::CallbackChain. Such a constant fails
+            # the ActiveJob::Base check regardless, so this asserts on the
+            # resolution itself: names must not reach outside the namespace
+            # they appear to address.
+            middleware = described_class.new(mock_rack_app)
+            expect { middleware.send(:resolve_job_class, 'ElasticBeanstalkJob::CallbackChain') }
+              .to raise_error(NameError)
+          end
+
+          it 'does not resolve the constant when the name is malformed' do
+            expect_any_instance_of(described_class).not_to receive(:constantize_job_class)
+            expect(response_for('not_a_class_name')[0]).to eq(500)
           end
 
           context 'with job_class_allowlist configured' do
@@ -238,11 +263,30 @@ module Aws
             end
 
             it 'rejects classes not in the allowlist' do
-              mock_env = create_mock_env
-              mock_env['rack.input'] = StringIO.new('{"job_class": "ElasticBeanstalkPeriodicTask"}')
-              test_middleware = described_class.new(mock_rack_app)
-              response = test_middleware.call(mock_env)
-              expect(response[0]).to eq(500)
+              expect(response_for('ElasticBeanstalkPeriodicTask')[0]).to eq(500)
+            end
+
+            it 'rejects a disallowed name without resolving its constant' do
+              # Resolving is what triggers autoloading, so a name the allowlist
+              # excludes must be rejected before the lookup happens.
+              expect_any_instance_of(described_class).not_to receive(:constantize_job_class)
+              expect(response_for('ElasticBeanstalkPeriodicTask')[0]).to eq(500)
+            end
+
+            it 'rejects a disallowed name even when it is undefined' do
+              expect(response_for('NoSuchJobClass')[0]).to eq(500)
+            end
+
+            context 'when the request is a periodic task' do
+              let(:is_periodic_task) { true }
+              let(:period_task_name) { 'ElasticBeanstalkPeriodicTask' }
+
+              it 'rejects a disallowed task without resolving its constant' do
+                # The task name comes from a request header, so the periodic
+                # path must gate on the allowlist before resolving too.
+                expect_any_instance_of(described_class).not_to receive(:constantize_job_class)
+                expect(response[0]).to eq(500)
+              end
             end
 
             context 'when the allowlist holds a stale class object (Zeitwerk reload)' do

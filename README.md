@@ -141,6 +141,10 @@ Aws::Rails::Middleware::ElasticBeanstalkSQSD.configure do |config|
 end
 ```
 
+The allowlist is checked before the class name is resolved, so a request naming
+a class outside the list cannot cause that class to be loaded. It applies to
+periodic task names from `cron.yaml` as well as to job messages.
+
 **Important:** Ensure that your worker environment's port 80 is not accessible
 from outside the instance (e.g. via security group rules). The middleware
 performs a local-origin check, but on Docker-based EB platforms all traffic is
