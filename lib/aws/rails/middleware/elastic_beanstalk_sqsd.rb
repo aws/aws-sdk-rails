@@ -276,9 +276,17 @@ module Aws
           File.exist?('/proc/self/mountinfo') && File.read('/proc/self/mountinfo') =~ %r{/docker/containers/}
         end
 
+        # Only consults remote_addr, the raw TCP peer address. remote_ip is
+        # derived from X-Forwarded-For whenever the peer is itself private, and
+        # the docker gateway range (172.16.0.0/12) is one Rack treats as a
+        # trusted proxy to see through - so a request from any private peer can
+        # set remote_ip to the gateway with a header alone. Loopback is accepted
+        # here because such a request is genuinely local; request.local? rejects
+        # it only on the forgeable half of its check.
         def ip_originates_from_docker_host?(request)
-          default_docker_ips.include?(request.remote_ip) ||
-            default_docker_ips.include?(request.remote_addr)
+          remote_addr = request.remote_addr
+          default_docker_ips.include?(remote_addr) ||
+            ::ActionDispatch::Request::LOCALHOST.match?(remote_addr)
         end
 
         def default_docker_ips
