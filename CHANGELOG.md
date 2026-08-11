@@ -1,4 +1,4 @@
-Unreleased Changes
+5.2.0 (2026-08-11)
 ------------------
 
 * Issue - The `ElasticBeanstalkSQSD` middleware's Docker host check now only consults `remote_addr`, the raw TCP peer address, instead of also accepting `remote_ip`. `remote_ip` is derived from the client-supplied `X-Forwarded-For` header whenever the peer address is itself private, so a request from any private address could name the Docker gateway and be treated as local. Loopback peer addresses are accepted by the check, so requests proxied over loopback are unaffected.
