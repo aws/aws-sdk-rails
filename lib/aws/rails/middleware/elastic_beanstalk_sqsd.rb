@@ -113,7 +113,7 @@ module Aws
         # Execute a job in the current thread
         def _execute_job_now(request)
           # Jobs queued from the SQS adapter contain the JSON message in the request body.
-          job = ::ActiveSupport::JSON.decode(request.body.string)
+          job = JSON.parse(request.body.string)
           job_name = job['job_class']
           # Scope the rescue to resolution only. A NameError raised from inside
           # the job's own #perform must not be mislabeled as a class-resolution
@@ -130,7 +130,7 @@ module Aws
 
         # Execute a job using the thread pool executor
         def _execute_job_background(request)
-          job_data = ::ActiveSupport::JSON.decode(request.body.string)
+          job_data = JSON.parse(request.body.string)
           job_name = job_data['job_class']
           resolve_job_class(job_name)
           @logger.debug("Queuing background job: #{job_name}")
@@ -293,12 +293,11 @@ module Aws
           @default_docker_ips ||= build_default_docker_ips
         end
 
-        # rubocop:disable Metrics/AbcSize, Style/FileOpen
-        def build_default_docker_ips
+        def build_default_docker_ips # rubocop:disable Metrics/AbcSize
           default_gw_ips = ['172.17.0.1']
 
           if File.exist?('/proc/net/route')
-            File.open('/proc/net/route').each_line do |line|
+            File.open('/proc/net/route').each_line do |line| # rubocop:disable Style/FileOpen
               fields = line.strip.split
               next if fields.size != 11
               # Destination == 0.0.0.0 and Flags & RTF_GATEWAY != 0
@@ -310,7 +309,6 @@ module Aws
 
           default_gw_ips
         end
-        # rubocop:enable Metrics/AbcSize, Style/FileOpen
       end
     end
   end
