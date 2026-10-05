@@ -113,7 +113,7 @@ module Aws
         # Execute a job in the current thread
         def _execute_job_now(request)
           # Jobs queued from the SQS adapter contain the JSON message in the request body.
-          job = JSON.parse(request.body.string)
+          job = ::ActiveSupport::JSON.decode(request.body.string)
           job_name = job['job_class']
           # Scope the rescue to resolution only. A NameError raised from inside
           # the job's own #perform must not be mislabeled as a class-resolution
@@ -130,7 +130,7 @@ module Aws
 
         # Execute a job using the thread pool executor
         def _execute_job_background(request)
-          job_data = JSON.parse(request.body.string)
+          job_data = ::ActiveSupport::JSON.decode(request.body.string)
           job_name = job_data['job_class']
           resolve_job_class(job_name)
           @logger.debug("Queuing background job: #{job_name}")

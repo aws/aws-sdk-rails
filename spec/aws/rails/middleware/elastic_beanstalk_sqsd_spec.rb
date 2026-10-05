@@ -241,7 +241,7 @@ module Aws
 
           def response_for(class_name)
             mock_env = create_mock_env
-            mock_env['rack.input'] = StringIO.new(JSON.generate('job_class' => class_name))
+            mock_env['rack.input'] = StringIO.new(ActiveSupport::JSON.dump('job_class' => class_name))
             described_class.new(mock_rack_app).call(mock_env)
           end
 
