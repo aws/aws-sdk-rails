@@ -47,6 +47,9 @@ jobs:
             ruby: 3.2
           - rails: main
             ruby: jruby-9.4
+          # jruby-10.0 is incompatible with Rails main (herb has no JRuby support, see https://github.com/marcoroth/herb/issues/1763)
+          - rails: main
+            ruby: jruby-10.0
 
     steps:
       - uses: actions/checkout@v6
