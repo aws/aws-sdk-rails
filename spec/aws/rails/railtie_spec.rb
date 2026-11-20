@@ -22,7 +22,10 @@ module Aws
         source_file, = Aws.method(:eager_load!).source_location
 
         expect(source_file).to end_with('aws-sdk-core.rb')
-        expect(Aws::STS.autoload?(:Client)).to be_nil
+      end
+
+      it 'eager loads service gems that application code requires' do
+        expect(Aws::LateService.autoload?(:Client)).to be_nil
       end
 
       it 'adds the Notifications plugin to sdk clients' do

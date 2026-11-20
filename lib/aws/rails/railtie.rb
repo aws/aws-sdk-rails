@@ -21,7 +21,9 @@ module Aws
 
       # Eager load the AWS SDK Clients.
       initializer 'aws-sdk-rails.eager-load-sdk', before: :eager_load! do
-        config.before_eager_load { Aws.eager_load! }
+        config.before_eager_load do
+          config.eager_load_namespaces << Aws
+        end
       end
 
       # Add ActiveSupport Notifications instrumentation to AWS SDK client operations.
