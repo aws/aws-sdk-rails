@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.license       = 'Apache-2.0'
   spec.files         = Dir['LICENSE.txt', 'CHANGELOG.md', 'VERSION', 'lib/**/*']
 
-  spec.add_dependency('aws-sdk-core', '~> 3')
+  spec.add_dependency('aws-sdk-core', '~> 3', '>= 3.272.0')
 
   spec.add_dependency('railties', '>= 7.1.0')
 

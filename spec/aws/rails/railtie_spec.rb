@@ -18,9 +18,14 @@ module Aws
         expect(Aws.config[:logger]).to eq ::Rails.logger
       end
 
-      it 'sets up eager loading for sdk services' do
-        expect(Aws.methods).to include(:eager_load!)
-        expect(::Rails.application.config.eager_load_namespaces).to include(Aws)
+      it 'uses the aws-sdk-core eager loading API when Rails eager loads' do
+        source_file, = Aws.method(:eager_load!).source_location
+
+        expect(source_file).to end_with('aws-sdk-core.rb')
+      end
+
+      it 'eager loads service gems that application code requires' do
+        expect(Aws::LateService.autoload?(:Client)).to be_nil
       end
 
       it 'adds the Notifications plugin to sdk clients' do
