@@ -85,8 +85,11 @@ configuration because they will be loaded automatically.
 
 ## AWS SDK eager loading
 
-An initializer will eager load the AWS SDK for you. To enable eager loading,
-add the following to your `config/application.rb`:
+When Rails eager loading is enabled, this gem calls `Aws.eager_load!` from
+`aws-sdk-core` to load SDK constants from service gems required during
+application boot. This loads Ruby code but does not make AWS service requests.
+To enable eager loading, add
+the following to your `config/application.rb`:
 
 ```ruby
 config.eager_load = true

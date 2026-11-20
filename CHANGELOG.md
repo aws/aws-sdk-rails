@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Feature - Use `Aws.eager_load!` from `aws-sdk-core` when Rails eager loads the SDK.
+
 5.2.0 (2026-08-11)
 ------------------
 
